@@ -93,7 +93,6 @@ function App() {
               lessonTitle="Library"
               lessonTag="Catalog"
               activePillar="teach"
-              onBrandClick={handleHome}
               hideSidebars
             >
               <Catalog onSelect={handleSelect} />

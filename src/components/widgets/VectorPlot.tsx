@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { resolveColor } from "../../lib/theme";
 import { WidgetExplainer } from "./WidgetExplainer";
 import "./VectorPlot.css";
 
@@ -112,6 +113,10 @@ export function VectorPlot({
     ctx.arc(W / 2, H / 2, 2.5, 0, Math.PI * 2);
     ctx.fill();
 
+    // Resolve theme tokens (canvas can't parse `var(...)`).
+    const C_SUCCESS = resolveColor("var(--widget-success)");
+    const C_TEXT = resolveColor("var(--widget-text)");
+
     // Head-to-tail sum chain.
     if (showSum && vectors.length > 1) {
       let tailX = 0;
@@ -119,14 +124,14 @@ export function VectorPlot({
       for (const vec of vectors) {
         const tail = toPx({ x: tailX, y: tailY });
         const head = toPx({ x: tailX + vec.v.x, y: tailY + vec.v.y });
-        drawArrow(ctx, tail, head, vec.color, 1.5, true);
+        drawArrow(ctx, tail, head, resolveColor(vec.color), 1.5, true);
         tailX += vec.v.x;
         tailY += vec.v.y;
       }
       // Resultant in a distinct style.
       const tail = toPx({ x: 0, y: 0 });
       const head = toPx({ x: tailX, y: tailY });
-      drawArrow(ctx, tail, head, "var(--widget-success)", 2.6, false);
+      drawArrow(ctx, tail, head, C_SUCCESS, 2.6, false);
     }
 
     // Each vector at the origin.
@@ -134,7 +139,7 @@ export function VectorPlot({
       if (showSum) continue; // already drawn above
       const tail = toPx({ x: 0, y: 0 });
       const head = toPx(vec.v);
-      drawArrow(ctx, tail, head, vec.color, 2.4, false);
+      drawArrow(ctx, tail, head, resolveColor(vec.color), 2.4, false);
     }
 
     // Draggable tip handles.
@@ -144,8 +149,8 @@ export function VectorPlot({
         ? sumPrefix(vectors, i + 1)
         : vectors[i].v;
       const head = toPx(headBase);
-      ctx.fillStyle = vectors[i].color;
-      ctx.strokeStyle = "var(--widget-text)";
+      ctx.fillStyle = resolveColor(vectors[i].color);
+      ctx.strokeStyle = C_TEXT;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(head.x, head.y, 7, 0, Math.PI * 2);

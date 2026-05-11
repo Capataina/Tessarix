@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { resolveColor, resolveColorAlpha } from "../../lib/theme";
 import { WidgetExplainer } from "./WidgetExplainer";
 import "./MatrixTransform.css";
 
@@ -15,7 +16,10 @@ import "./MatrixTransform.css";
  */
 
 const CANVAS_SIZE = 360;
-const DOMAIN = 4;
+// Half-extent of the visible plot in math units. 2.5 keeps the unit square
+// at ~40% of the half-canvas so it's clearly the focal subject; we still
+// have room to see scale-2× and rotate-45° matrices without clipping.
+const DOMAIN = 2.5;
 
 interface Matrix2 {
   a: number;
@@ -76,23 +80,42 @@ export function MatrixTransform({
     const H = CANVAS_SIZE;
     ctx.clearRect(0, 0, W, H);
 
-    // Original-grid lines (lighter).
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+    // Resolve theme tokens once per draw — canvas APIs can't parse `var(...)`.
+    const C_CHART_1 = resolveColor("var(--widget-chart-1)");
+    const C_CHART_3 = resolveColor("var(--widget-chart-3)");
+    const C_SUCCESS = resolveColor("var(--widget-success)");
+    const C_TEXT = resolveColor("var(--widget-text)");
+    const C_TEXT_DIM = resolveColor("var(--widget-text-dim)");
+    const fillPositive = resolveColorAlpha("var(--widget-chart-1)", 0.18);
+    const fillNegative = resolveColorAlpha("var(--widget-chart-2)", 0.18);
+    const strokePositive = resolveColor("var(--widget-chart-1)");
+    const strokeNegative = resolveColor("var(--widget-chart-2)");
+
+    // Grid lines — one line per math unit. Bumped opacity so the grid is
+    // legibly present without dominating.
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
     ctx.lineWidth = 1;
-    const step = W / (2 * DOMAIN);
-    for (let i = 0; i <= 2 * DOMAIN; i++) {
-      ctx.beginPath();
-      ctx.moveTo(i * step, 0);
-      ctx.lineTo(i * step, H);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(0, i * step);
-      ctx.lineTo(W, i * step);
-      ctx.stroke();
+    const pxPerUnit = W / (2 * DOMAIN);
+    const unitsPerHalf = Math.ceil(DOMAIN);
+    for (let u = -unitsPerHalf; u <= unitsPerHalf; u++) {
+      const xPx = W / 2 + u * pxPerUnit;
+      const yPx = H / 2 - u * pxPerUnit;
+      if (xPx >= 0 && xPx <= W) {
+        ctx.beginPath();
+        ctx.moveTo(xPx, 0);
+        ctx.lineTo(xPx, H);
+        ctx.stroke();
+      }
+      if (yPx >= 0 && yPx <= H) {
+        ctx.beginPath();
+        ctx.moveTo(0, yPx);
+        ctx.lineTo(W, yPx);
+        ctx.stroke();
+      }
     }
 
     // Axes.
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.32)";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(0, H / 2);
@@ -102,7 +125,7 @@ export function MatrixTransform({
     ctx.stroke();
 
     // Original unit square (dashed outline).
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
     ctx.lineWidth = 1.5;
     ctx.setLineDash([5, 4]);
     const o = toPx({ x: 0, y: 0 });
@@ -129,10 +152,7 @@ export function MatrixTransform({
     const jPx = toPx(jHat);
     const ijPx = toPx(iPlusJ);
 
-    ctx.fillStyle =
-      det >= 0
-        ? "rgba(0, 212, 255, 0.18)"
-        : "rgba(255, 68, 170, 0.18)";
+    ctx.fillStyle = det >= 0 ? fillPositive : fillNegative;
     ctx.beginPath();
     ctx.moveTo(oPx.x, oPx.y);
     ctx.lineTo(iPx.x, iPx.y);
@@ -140,27 +160,25 @@ export function MatrixTransform({
     ctx.lineTo(jPx.x, jPx.y);
     ctx.closePath();
     ctx.fill();
-    ctx.strokeStyle =
-      det >= 0
-        ? "var(--widget-chart-1)"
-        : "var(--widget-chart-2)";
+    ctx.strokeStyle = det >= 0 ? strokePositive : strokeNegative;
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Transformed basis vectors.
-    drawArrow(ctx, oPx, iPx, "var(--widget-chart-1)", 2.4, "î");
-    drawArrow(ctx, oPx, jPx, "var(--widget-chart-3)", 2.4, "ĵ");
+    // Transformed basis vectors (drawn after the parallelogram so they sit
+    // on top of the fill).
+    drawArrow(ctx, oPx, iPx, C_CHART_1, 2.6, "î");
+    drawArrow(ctx, oPx, jPx, C_CHART_3, 2.6, "ĵ");
 
     // Test vector v and its image A·v (if enabled).
     if (showTestVector) {
       const vPx = toPx(v);
       const av = applyM(v);
       const avPx = toPx(av);
-      drawArrow(ctx, oPx, vPx, "var(--widget-text-dim)", 2, "v");
-      drawArrow(ctx, oPx, avPx, "var(--widget-success)", 2.4, "Av");
+      drawArrow(ctx, oPx, vPx, C_TEXT_DIM, 2, "v");
+      drawArrow(ctx, oPx, avPx, C_SUCCESS, 2.4, "Av");
       // Draggable handle on v.
-      ctx.fillStyle = "var(--widget-text-dim)";
-      ctx.strokeStyle = "var(--widget-text)";
+      ctx.fillStyle = C_TEXT_DIM;
+      ctx.strokeStyle = C_TEXT;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(vPx.x, vPx.y, 7, 0, Math.PI * 2);

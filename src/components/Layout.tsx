@@ -119,7 +119,7 @@ export function Layout({
             type="button"
             className="app-topbar__brand app-topbar__brand--button"
             onClick={onBrandClick}
-            title="Back to library"
+            aria-label="Back to library"
           >
             <span className="app-topbar__brand-mark" aria-hidden />
             <span className="app-topbar__brand-text">Tessarix</span>
