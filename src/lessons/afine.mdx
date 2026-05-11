@@ -275,7 +275,7 @@ $$
 > **Why.** CLIP's output embeddings are unit-norm — the final projection L2-normalises them — so the variance of a single embedding across its 512 dimensions is roughly $1/512 \approx 2 \times 10^{-3}$. A `c1` of $10^{-6}$ is small relative to that variance, but its effect on the fidelity ratio is **scale-dependent**: at the natural CLIP scale the difference between $10^{-10}$ and $10^{-6}$ is subtle but consistent, and the trained calibrator parameters in the published checkpoint were fit assuming $10^{-10}$. Substituting $10^{-6}$ shifts the ratio enough that the downstream calibrator no longer matches its training — silently. The widget below lets you sweep over feature scales and verify this empirically: at unit scale the dynamic-range loss is small; drop the feature scale to $0.2 \times$ unit and the larger `c` starts to dominate.
 
 <GoalChain
-  index={8}
+  index={4}
   title="Find the regime where the ratio collapse actually bites"
   steps={[
     {
@@ -319,7 +319,7 @@ This is the standard logistic-calibrator shape from the IQA literature (LPIPS us
 Drag the sliders to see how each parameter shapes the curve. The default values approximate the naturalness-head calibrator from the published checkpoint.
 
 <GoalDrivenWrapper
-  index={4}
+  index={5}
   goal="Set the parameters so the calibrator becomes purely linear — no sigmoid shape at all."
   hint="β₁ multiplies the entire logistic part of the formula. Setting β₁ to zero zeroes out the sigmoid term, leaving only the linear part β₄ · q + β₅. None of the other parameters can achieve this — they shape the sigmoid rather than removing it."
   check={(s) => s.b1 === 0 || s.b1 < 0.05}
@@ -386,7 +386,7 @@ This is what makes A-FINE **asymmetric** in `(distorted, reference)`: swapping t
 The heatmap below shows the final score across the $(s_{\text{nat},r}, s_{\text{fid}})$ plane for fixed $k$ and $s_{\text{nat},d}$. **Click and drag anywhere on the heatmap** to move the cursor; sliders remain for precision. The solid cursor is your current point; the dashed cursor automatically tracks the swap-twin (same fidelity, x-coordinate at $s_{\text{nat},d}$), so both states stay visible without flipping back and forth. A closed form for the asymmetry falls out of the algebra: $\text{asymmetry} = k \cdot |s_{\text{nat},d} - s_{\text{nat},r}| \cdot (1 - s_{\text{fid}})$ — zero when $k = 0$, zero when fidelity is perfect, zero when the two naturalness scores agree.
 
 <GoalChain
-  index={9}
+  index={6}
   title="Discover the three zeros of asymmetry"
   steps={[
     {
@@ -414,7 +414,7 @@ The heatmap below shows the final score across the $(s_{\text{nat},r}, s_{\text{
 />
 
 <GoalDrivenWrapper
-  index={5}
+  index={7}
   goal="Set k so that A-FINE behaves like a non-adaptive metric — i.e., the fidelity weight is constant regardless of how natural the reference is."
   hint="From blend = k · s_nat_r + (1 − k): if k is zero, the s_nat_r term vanishes and blend equals 1 regardless of how natural the reference is. The reader must set k to 0 (or near 0). Any non-zero k still couples blend to s_nat_r, which is the very dependence we are trying to eliminate."
   check={(s) => s.k === 0 || s.k < 0.05}
@@ -497,7 +497,7 @@ This lesson has named two implementation gotchas so far; here's the consolidated
 2. **Fused-QKV attention layout.** The CLIP attention block uses a single `Linear(d_model, 3 * d_model)` followed by `chunk(3, -1)` to split into Q, K, V. `burn_nn`'s `MultiHeadAttention` uses separate Q, K, V linears. Loading the CLIP checkpoint into the standard burn attention would require pre-splitting the weights, and the orientation of the split is non-obvious — easy to transpose the wrong direction. The custom fused-QKV attention in this PR maps the checkpoint one-to-one.
 
 <MultipleChoice
-  index={10}
+  index={8}
   question="You're loading a CLIP checkpoint with fused QKV weights (a single Linear with output dimension 3 * d_model) into burn_nn's standard MultiHeadAttention. Which of these is the silent failure path that gets caught only by the parity test, not by shape checks?"
   options={[
     { id: "wrong-shape", label: "The weight loader rejects the load because the shapes mismatch (3 * d_model vs d_model)." },
@@ -515,7 +515,7 @@ Plus two weight-loader oddities the parity test caught:
 - **0-D scalar parameters drop silently.** The five $\beta_i$ per calibrator, plus the adapter's $k$, are stored as 0-D tensors and need manual loading.
 
 <MultipleChoice
-  index={11}
+  index={9}
   question="You load the A-FINE checkpoint and every shape check passes — but the metric's output is off by ~30%. Which scenario is most consistent with what the parity test catches?"
   options={[
     { id: "wrong-arch", label: "You implemented the naturalness head with a different number of hidden units than the published version." },
@@ -537,7 +537,7 @@ These five things are why the PR's parity test (`test_afine_pretrained_parity`) 
 <KnowledgeCheck>
 
 <MultipleChoice
-  index={6}
+  index={10}
   question="A-FINE is described as 'asymmetric in (distorted, reference)'. What does that mean mechanically?"
   options={[
     { id: "a", label: "The two CLIP backbones (one for each image) have different weights." },
@@ -551,7 +551,7 @@ These five things are why the PR's parity test (`test_afine_pretrained_parity`) 
 <Tier level="complete">
 
 <MultipleChoice
-  index={7}
+  index={11}
   question="Suppose you replaced the naturalness head with a constant function that always returns 0.5 (perfectly uninformative). What does the rest of the A-FINE pipeline reduce to?"
   options={[
     { id: "a", label: "The metric becomes equivalent to LPIPS." },

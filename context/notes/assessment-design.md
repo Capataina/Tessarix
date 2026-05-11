@@ -124,7 +124,50 @@ This is also a concrete example of the [`lessons-as-living-documents.md`](lesson
 - **What does "completed a lesson" mean?** All assessments answered correctly? At least one attempt per assessment? Top-of-lesson reading position reached? Probably mixed — different milestones for "read it" vs "passed it."
 - **Cost calibration for LLM-graded assessments.** Free-response grading via Claude is real API cost per attempt. Probably a per-session limit or a "request grading" button rather than auto-grade on submit.
 
-## 9. Related Systems and Notes
+## 9. Authored vs LLM-generated assessment text
+
+Tessarix already has substantial LLM integration in the assessment surface:
+
+- **Per-pick explanations** (via `<AnswerThread>`) — adaptive, state-aware, fired on every correct AND wrong reveal.
+- **Tiered hints** (via `<GoalDrivenWrapper>`) — adaptive, anchored by an authoritative `solutionHint` so the LLM can't drift from the right answer.
+- **Widget commentary** (via `<WidgetExplainer>`) — adaptive, state-aware, cites the reader's current values.
+- **Widget-scoped chat** — fully open-ended.
+
+What stays **authored** today: question text, option labels, the correct answer, goal predicates.
+
+This split is deliberate and the recommended discipline is:
+
+> **Question text stays authored. The explanation layer adapts.**
+
+### Why questions stay authored
+
+- **Correctness liability.** A 3B local model can write a question whose stated correct answer is actually wrong, or whose options are all equally plausible. Static MC questions are correct-by-construction; LLM-generated ones are correct-only-if-grounded-and-the-LLM-doesn't-hallucinate. The lesson author cannot audit infinite question variants ahead of time.
+- **The hard work is the trap options.** Crafting the *plausible-but-wrong* distractors is what makes a good MC question. The 3B local model tends to produce one obviously-correct and three obviously-wrong options; the question loses bite. A good distractor reflects a *real* misconception, which the author knows from the lesson's content; the LLM has to guess what misconceptions the reader has.
+- **Latency.** Generating a fresh MC question with 4 plausible options takes 3–8 seconds on local Ollama. The reader waits. Static questions are instant.
+- **Reproducibility.** Two readers asked the same conceptual question see different surface forms; harder to compare reader performance, harder to debug "this question feels unfair," impossible to write a parity test for the lesson.
+- **The Teach pillar is a curated artefact.** The lesson is supposed to be the author's best teaching pass on a concept. Outsourcing the assessment text dilutes the curation. The lesson should be *good*, not procedurally generated.
+
+### Where LLM-generation does belong
+
+**The Quiz pillar** (see [`three-pillar-model.md`](three-pillar-model.md)) is the natural home for LLM-generated question variants. Spaced-repetition over a topic wants *variety* in surface form; the canonical authored question becomes the seed, and the LLM produces rephrasings probing the same concept from different angles. The seed stays the canonical version with parity-test-grade question quality; the variants are practice rounds.
+
+**The "give me another question" affordance** within a single authored question — a button that asks the LLM for a variant probing the same concept, framed differently. The reader can opt into more practice; the canonical question still grades cleanly; telemetry distinguishes canonical-question performance from variant performance. This is the cheapest LLM-question feature we could ship and the one that adds value without compromising the authored bar.
+
+**Free-response grading** (deferred to the Interview pillar) — the reader writes a paragraph or runs code; the LLM grades against a rubric. This is genuinely LLM-driven assessment but is a different shape from "the LLM writes the question itself."
+
+### The middle ground worth building
+
+`<MoreLikeThis>` — an affordance on every authored question that lets the reader click "another question on this concept" and get an LLM-generated variant. The variant uses the canonical question as a template ("rephrase to probe the same misconception in a different scenario; preserve the option count and difficulty"). Telemetry tags canonical vs variant. The LLM is anchored by the authored question's *intent* (correct answer + the misconception each wrong option represents), so it can't drift.
+
+This is not yet built. It belongs alongside `<GoalChain>` as a future widget primitive; capture it as a candidate when the Quiz pillar is being designed.
+
+### What this rejects
+
+- **Replacing authored MC questions with LLM-generated ones on lesson load**. Even if the LLM is grounded and the questions look fine, the author has lost authorial control over the assessment surface — and so has the lesson reviewer.
+- **"Generate the whole question bank at lesson author time and check it in"**. Tempting (correctness can be audited once) but quickly becomes maintenance debt — every lesson change desynchronises the generated bank. The seed-question + on-demand variants model has neither problem.
+- **LLM-graded goal predicates**. The check function in `<GoalChain>` is a tight predicate over numerical state. There's no reason to make this LLM-graded — it's already exact.
+
+## 10. Related Systems and Notes
 
 - [`lessons-as-living-documents.md`](lessons-as-living-documents.md) — the principle that A-FINE's assessment layer WILL be rebuilt is what makes the worked example in §6 normal work rather than a heroic rewrite.
 - [`llm-integrations.md`](llm-integrations.md) — LLM-graded free-response and LLM-conversational interview shapes live there.

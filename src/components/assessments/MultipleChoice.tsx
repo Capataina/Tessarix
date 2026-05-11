@@ -81,9 +81,13 @@ export function MultipleChoice({
       <div className="mc__question">{question}</div>
 
       <div className="mc__options" role="radiogroup">
-        {options.map((opt) => {
+        {options.map((opt, i) => {
           const isSelected = selected === opt.id;
           const isCorrect = opt.id === correctId;
+          // Letter marker by position — A, B, C, D, ... — independent of
+          // the option's internal `id`. Semantic IDs (e.g. "wrong-arch")
+          // should never bleed into the visible UI.
+          const letter = String.fromCharCode(65 + i);
           let state = "";
           if (revealed) {
             if (isCorrect) state = "mc__option--correct";
@@ -102,7 +106,7 @@ export function MultipleChoice({
               disabled={revealed}
             >
               <span className="mc__option-marker">
-                {revealed && isCorrect ? "✓" : revealed && isSelected ? "✗" : opt.id.toUpperCase()}
+                {revealed && isCorrect ? "✓" : revealed && isSelected ? "✗" : letter}
               </span>
               <span className="mc__option-label">{opt.label}</span>
             </button>
