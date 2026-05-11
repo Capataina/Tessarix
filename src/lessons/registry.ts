@@ -71,6 +71,7 @@ function loadFrontmatter(
 const afineImport = () => import("./afine.mdx");
 const linAlgImport = () => import("./linear-algebra.mdx");
 const linAlgMatricesImport = () => import("./linear-algebra-matrices.mdx");
+const linAlgDotProductImport = () => import("./linear-algebra-dot-product.mdx");
 
 export const LESSONS: LessonRegistryEntry[] = [
   {
@@ -96,6 +97,14 @@ export const LESSONS: LessonRegistryEntry[] = [
       "2×2 matrices as linear transformations of the plane: the basis-vector view, the unit square's image, determinants as area-scaling, orientation reversal, and matrix-vector composition.",
     Component: lazy(linAlgMatricesImport),
     frontmatter: loadFrontmatter(linAlgMatricesImport),
+  },
+  {
+    slug: "linear-algebra-dot-product",
+    domain: "Mathematics",
+    summary:
+      "The dot product as projection geometry: a 'shadow' visualisation showing |a|·|b|·cos θ as the signed length of a's projection onto b, with sign-coded compatibility. Plus orthogonality test, projection formula, and the bridge to higher-dimensional similarity (cosine similarity, CLIP embeddings, A-FINE's fidelity head).",
+    Component: lazy(linAlgDotProductImport),
+    frontmatter: loadFrontmatter(linAlgDotProductImport),
   },
 ];
 
