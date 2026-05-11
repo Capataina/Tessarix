@@ -70,6 +70,7 @@ function loadFrontmatter(
 // runtime JSX bundle.
 const afineImport = () => import("./afine.mdx");
 const linAlgImport = () => import("./linear-algebra.mdx");
+const linAlgMatricesImport = () => import("./linear-algebra-matrices.mdx");
 
 export const LESSONS: LessonRegistryEntry[] = [
   {
@@ -84,9 +85,17 @@ export const LESSONS: LessonRegistryEntry[] = [
     slug: "linear-algebra-foundations",
     domain: "Mathematics",
     summary:
-      "Elementary linear algebra anchored on interactive plots: scalars, vectors as drag-able arrows, vector addition by head-to-tail composition, scalar multiplication as stacked copies, and 2×2 matrices as transformations of the plane.",
+      "Foundations of linear algebra: scalars, vectors as drag-able arrows, vector addition by head-to-tail composition, scalar multiplication as iterated stacking, and a preview of the dot product. Entry point of the linear-algebra track.",
     Component: lazy(linAlgImport),
     frontmatter: loadFrontmatter(linAlgImport),
+  },
+  {
+    slug: "linear-algebra-matrices",
+    domain: "Mathematics",
+    summary:
+      "2×2 matrices as linear transformations of the plane: the basis-vector view, the unit square's image, determinants as area-scaling, orientation reversal, and matrix-vector composition.",
+    Component: lazy(linAlgMatricesImport),
+    frontmatter: loadFrontmatter(linAlgMatricesImport),
   },
 ];
 

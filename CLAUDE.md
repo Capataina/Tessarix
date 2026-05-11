@@ -332,7 +332,7 @@ Tessarix's content grows through lessons (MDX files) and widgets (TSX components
 
 ### What you do without asking
 
-- Author new lessons against the slugs and scope already in `context/plans/linear-algebra-curriculum.md` (or the parallel curriculum doc for whichever track is active). Use the existing widget kit, build new widgets when needed, follow the metaphor library.
+- Author new lessons against the slugs and scope already laid out in the active curriculum plan(s) under `context/plans/` (e.g. `linear-algebra-curriculum.md`, and any other curriculum tracks added as the project grows). Use the existing widget kit, build new widgets when needed, follow the metaphor library.
 - Build new widgets when an existing lesson demands one. Apply the two-draft rule from `context/notes/widget-creativity-discipline.md` — write the two alternatives in the commit message body, pick one with rationale, then build.
 - Make routine prose edits inside a lesson — wording, structure, ordering of sections, choice of misconception placements.
 - Update `src/lessons/registry.ts` when adding a lesson; update `widgets_used` frontmatter; tick the row in the curriculum plan.
@@ -342,7 +342,7 @@ Tessarix's content grows through lessons (MDX files) and widgets (TSX components
 ### What still warrants confirmation
 
 - Removing or substantially restructuring an existing lesson someone might be reading.
-- Adding lessons OUTSIDE the active curriculum's planned scope (e.g. a "Quantum Computing" lesson when only Linear Algebra is in play).
+- Adding lessons that fall OUTSIDE every curriculum plan currently under `context/plans/` — i.e. opening a brand-new track that has no plan file. Plans should exist *before* lessons in their track.
 - Architectural moves: changing the lesson registry shape, the routing model, the widget kit's prop conventions.
 - Anything that changes how the catalog filters, sorts, or recommends lessons.
 - New dependencies (npm packages, Rust crates).
@@ -354,7 +354,7 @@ The acid test: would the user, opening the diff cold, be surprised? If yes → c
 For every non-trivial widget you build:
 
 1. **Write the two drafts in the commit message body** under a `## Widget design — <concept>` section. Draft A and Draft B must be qualitatively different (per the metaphor library). Pick one explicitly with a one-sentence rationale. This is the forcing function for creativity; do not skip it.
-2. **Consider cross-lesson reuse**. Ask: which existing lessons could benefit from this widget? Which planned lessons in the curriculum doc would use it? If reusable, design the props so reuse is clean from day one (props that gate behaviour rather than hardcoded for one lesson's needs). Capture the reuse intent in a JSDoc comment at the top of the widget component — "Used by linear-algebra-foundations; also planned for matrix-operations (for AB ≠ BA visualisation)."
+2. **Consider cross-lesson reuse**. Ask: which existing lessons could benefit from this widget? Which planned lessons in any curriculum plan would use it? If reusable, design the props so reuse is clean from day one (props that gate behaviour rather than hardcoded for one lesson's needs). Capture the reuse intent in a JSDoc comment at the top of the widget component — list every lesson slug (existing or planned) that the widget is or will be used by, so cross-references are findable via grep.
 3. **Wire `<WidgetExplainer>`** with a real state-summary callback and stateKey. Static captions are forbidden per `context/notes/explanations-must-adapt-to-state.md`; the only exception is widgets with no state at all.
 4. **Use `resolveColor` / `computeDomain` / `makeToPx`** from `src/lib/theme.ts` and `src/lib/geometry.ts` for any canvas widget. Don't hardcode hex literals; don't hardcode viewport extents.
 
@@ -368,7 +368,7 @@ Before declaring any lesson done, walk these five audit dimensions and surface r
 4. **Assessment coverage** (`assessment-design.md`) — every major section has at least one assessment; question text is authored (not LLM-generated).
 5. **Tier coverage** (`interface-affordances.md`) — content at lite, standard, and complete tiers; the `<Tier>` wrapper is used consistently.
 
-If any dimension is incomplete, state it in the commit message ("Tier coverage: lite and standard only — complete-tier content deferred to the matrix-inverse lesson"). Honest incompleteness is fine; silent incompleteness is the failure mode.
+If any dimension is incomplete, state it in the commit message (e.g. "Tier coverage: lite and standard only — complete-tier content deferred to a follow-up lesson"). Honest incompleteness is fine; silent incompleteness is the failure mode.
 
 ### Cross-file upkeep
 
@@ -379,7 +379,7 @@ Widgets and lessons sit in a web of cross-references that you maintain inline:
 - **New pedagogical pattern** → add to the metaphor library in `widget-creativity-discipline.md` §library as a numbered entry with an example.
 - **New shared utility** (geometry, theme resolver, math helper) → add to `src/lib/` with a top-of-file comment explaining what it's for and which widgets use it.
 - **Cross-link between lessons** → use `[](#/lesson/<slug>)` hash-routed anchors in lesson MDX so the link survives the lesson registry being reordered.
-- **Cross-track references** (e.g. a future Neuroevolution lesson links back to the SVD lesson) → handled by the same cross-page-hyperlink mechanism. The lesson registry is the single source of truth for which slugs exist.
+- **Cross-track references** (a lesson in one curriculum track linking back to a lesson in another track for prerequisites or applications) → handled by the same cross-page-hyperlink mechanism. The lesson registry is the single source of truth for which slugs exist.
 
 If something is moved, renamed, or removed: grep the codebase for references and update them. Don't leave dangling links.
 

@@ -1,0 +1,198 @@
+---
+title: "Linear Algebra — Matrices as Transformations"
+tag: "Mathematics"
+last_updated: "2026-05-11"
+tags: ["MATHEMATICS", "LINEAR ALGEBRA", "MATRICES", "TRANSFORMATIONS"]
+estimated_time: "15–35 min depending on tier"
+prerequisites:
+  - linear-algebra-foundations
+widgets_used:
+  - MatrixTransform
+  - MultipleChoice
+  - GoalChain
+  - Misconception
+  - KnowledgeCheck
+---
+
+import { MatrixTransform } from "../components/widgets/MatrixTransform";
+import { MultipleChoice } from "../components/assessments/MultipleChoice";
+import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
+import { GoalChain } from "../components/assessments/GoalChain";
+import { Misconception } from "../components/widgets/Misconception";
+import { Tier } from "../components/Tier";
+import { LessonMeta } from "../components/MDXComponents";
+
+# Linear Algebra — Matrices as Transformations
+
+<LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "MATRICES", "15–35 MIN"]} />
+
+A **matrix** is a rectangular grid of scalars — but that algebraic description undersells what a matrix actually does. A $2 \times 2$ matrix is a **linear transformation of the plane**: it eats every point in $\mathbb{R}^2$ and spits out a new point, in a way that preserves three things — the origin stays at the origin, lines stay lines (no curves), and parallel lines stay parallel. This lesson builds the geometric intuition for matrices through one widget you'll touch over and over.
+
+<Tier level="standard">
+
+**Prerequisites:** this lesson assumes you've already worked through *Linear Algebra — Scalars, Vectors, Matrices* (the foundations lesson). If "vector" and "scalar multiplication" don't feel concrete yet, start there first.
+
+</Tier>
+
+## The 2×2 matrix
+
+A $2 \times 2$ matrix has 4 entries:
+
+$$
+A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}
+$$
+
+Algebraically, a matrix and a vector multiply like this:
+
+$$
+A \mathbf{v} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} ax + by \\ cx + dy \end{pmatrix}
+$$
+
+That's the calculation. The geometric meaning is more revealing: a $2 \times 2$ matrix is fully specified by **where it sends the basis vectors**. The standard basis is $\hat{\imath} = (1, 0)$ and $\hat{\jmath} = (0, 1)$. After the transformation:
+
+- $\hat{\imath} \mapsto (a, c)$ — the matrix's first column
+- $\hat{\jmath} \mapsto (b, d)$ — the matrix's second column
+
+Every other point in the plane is some combination of $\hat{\imath}$ and $\hat{\jmath}$, so once you know where the basis vectors go, the rest of the plane follows by linearity. **A $2 \times 2$ matrix is fully specified by where it sends $\hat{\imath}$ and $\hat{\jmath}$.**
+
+<MatrixTransform
+  widgetName="2×2 matrix transformation — basis vectors and the unit square"
+  widgetDescription="2x2 matrix transformation. Dashed grey outline is the original unit square; filled parallelogram is its image under A. î maps to the cyan basis vector (matrix column 1); ĵ maps to the yellow basis vector (matrix column 2). Determinant shown numerically with orientation indicator."
+/>
+
+## Determinants — the area-scaling factor
+
+The **determinant** of a $2 \times 2$ matrix tells you how the matrix scales **areas**:
+
+$$
+\det A = ad - bc
+$$
+
+Geometrically: the unit square has area 1; after the transformation it becomes a parallelogram whose (signed) area is exactly $\det A$. Three special cases worth feeling:
+
+- $\det A = 1$: the transformation preserves area exactly. Rotations and reflections are like this.
+- $\det A = 0$: the transformation **collapses** the plane onto a line (or a point). The unit square's image has zero area. The matrix is called **singular** in this case — it can't be inverted, because once you've collapsed the plane, no transformation can recover the original.
+- $\det A < 0$: the transformation **flips orientation** — the unit square's image traversed in the original order goes around the parallelogram in the opposite direction. Reflections give this; pure rotations don't.
+
+<GoalChain
+  index={1}
+  title="Discover what determinants tell you"
+  steps={[
+    {
+      goal: "Set the matrix so the determinant is exactly 1 — area-preserving — but the matrix is NOT the identity.",
+      check: (s) => Math.abs(s.det - 1) < 0.05 && (Math.abs(s.a - 1) > 0.1 || Math.abs(s.b) > 0.1 || Math.abs(s.c) > 0.1 || Math.abs(s.d - 1) > 0.1),
+      explanation: "Lots of non-trivial matrices have determinant 1 — rotations, shears, area-preserving deformations. The determinant alone doesn't determine the matrix; it only tells you about area scaling.",
+    },
+    {
+      goal: "Now make the matrix singular — drive the determinant to exactly zero (within ±0.01).",
+      check: (s) => Math.abs(s.det) < 0.01,
+      explanation: "Singular matrices have linearly dependent columns: one column is a scalar multiple of the other. The unit square collapses to a line segment. This matrix has no inverse — given a point in its (degenerate) image, you can't uniquely recover the original point.",
+    },
+    {
+      goal: "Make the determinant negative — the parallelogram should flip orientation (and the fill colour changes).",
+      check: (s) => s.det < -0.3,
+      explanation: "Negative determinants mean the matrix reflects: it swaps the handedness of the plane. The simplest example is the matrix [[1,0],[0,-1]] which reflects across the x-axis. The unit square's vertices, traversed in their original order, now go around the image clockwise instead of anticlockwise.",
+    },
+    {
+      goal: "Find a matrix with det(A) = 2, using only non-zero entries.",
+      check: (s) => Math.abs(s.det - 2) < 0.05 && s.a !== 0 && s.b !== 0 && s.c !== 0 && s.d !== 0,
+      explanation: "det = 2 means areas double. The parallelogram has area 2, twice the unit square's. There are infinitely many such matrices — every preset, every shear with the right slope, every scaling combined with a shear.",
+    },
+  ]}
+  render={(onChange) => (
+    <MatrixTransform
+      onStateChange={onChange}
+      widgetName="2×2 matrix transformation — determinant exploration"
+      widgetDescription="2x2 matrix transformation with focus on the determinant. The dashed unit square has area 1; the filled parallelogram has area |det(A)|. Sign of det indicates orientation."
+    />
+  )}
+/>
+
+<Misconception belief="A matrix with determinant zero just has a really small effect.">
+
+A determinant of zero means the matrix is **singular** — the transformation collapses the entire plane onto a lower-dimensional subspace (a line, or in the $\mathbf{0}$ matrix case, a single point). All of $\mathbb{R}^2$ now lives in a 1D image. This is a fundamentally different regime from "small effect" — it's an *irreversible* operation. You can't recover the original vector from its image because infinitely many original vectors map to the same image point. Algebraically: singular matrices have no inverse.
+
+</Misconception>
+
+<Tier level="complete">
+
+## Matrix-vector multiplication — a transformation in motion
+
+The matrix-vector product $A \mathbf{v}$ is the linear transformation $A$ applied to the specific vector $\mathbf{v}$. Below, the test vector $\mathbf{v}$ is draggable; $A \mathbf{v}$ updates to show where it lands under the current matrix.
+
+<MatrixTransform
+  showTestVector
+  initial={{ a: 1.5, b: -0.5, c: 0.5, d: 1.0 }}
+  widgetName="Matrix-vector product — A·v in motion"
+  widgetDescription="2x2 matrix transformation with a draggable test vector v and its image A·v drawn live. Demonstrates that the matrix acts as a function from vectors to vectors."
+/>
+
+## Composition of transformations is matrix multiplication
+
+Applying transformation $A$ then transformation $B$ to a vector $\mathbf{v}$ gives $B(A\mathbf{v})$. The associativity of matrix multiplication means this equals $(BA)\mathbf{v}$ — there's a single matrix $BA$ that captures the combined transformation. **Matrix multiplication is exactly the algebraic encoding of composing geometric transformations.**
+
+Order matters: $AB \ne BA$ in general. Rotating first and then shearing is different from shearing first and then rotating — try it on a unit square in your head. The matrix-composition lesson (forthcoming) makes this concrete with a side-by-side widget that shows $AB$ and $BA$ simultaneously.
+
+</Tier>
+
+---
+
+<KnowledgeCheck>
+
+<MultipleChoice
+  index={2}
+  question="A matrix A has columns (3, 0) and (0, 2). What does it do to the unit square?"
+  options={[
+    { id: "a", label: "Rotates it by some angle." },
+    { id: "b", label: "Scales the x-direction by 3 and the y-direction by 2 — the unit square becomes a 3×2 rectangle." },
+    { id: "c", label: "Reflects it across the line y = x." },
+    { id: "d", label: "Collapses it to a single point." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={3}
+  question="For a 2×2 matrix A with det(A) = -1, which is TRUE?"
+  options={[
+    { id: "a", label: "A has no inverse." },
+    { id: "b", label: "A is the identity matrix." },
+    { id: "c", label: "A preserves area but flips orientation. It's a reflection, possibly combined with a rotation." },
+    { id: "d", label: "A doubles areas." },
+  ]}
+  correctId="c"
+/>
+
+<Tier level="complete">
+
+<MultipleChoice
+  index={4}
+  question="A and B are both 2×2 matrices. Which of the following is NOT necessarily true?"
+  options={[
+    { id: "a", label: "det(AB) = det(A) · det(B)" },
+    { id: "b", label: "(AB)v = A(Bv) for any vector v" },
+    { id: "c", label: "AB = BA" },
+    { id: "d", label: "If det(A) ≠ 0 and det(B) ≠ 0, then AB is invertible." },
+  ]}
+  correctId="c"
+/>
+
+</Tier>
+
+</KnowledgeCheck>
+
+---
+
+## Where to read next
+
+The next steps in the linear algebra track build on what's here:
+
+- **Matrix Operations** (forthcoming) — addition, scalar multiplication, transpose, and the mechanics of matrix multiplication row-by-row.
+- **The Dot Product** (forthcoming) — multiplying two vectors into a scalar; the projection geometry behind matrix-vector products is built from dot products.
+- **Linear Combinations and Span** (forthcoming) — what set of points a collection of vectors can reach by mixing.
+
+External references:
+
+- **[3Blue1Brown — Linear transformations and matrices](https://www.3blue1brown.com/topics/linear-algebra)** — the visual intuition track this lesson is downstream of.
+- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — the canonical rigorous treatment.
+- **[Immersive Math's interactive linear algebra textbook](http://immersivemath.com/ila/index.html)** — full interactive textbook, browser-rendered.
