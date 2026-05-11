@@ -48,6 +48,10 @@ Some content genuinely doesn't benefit from a widget:
 
 The discrimination: *can the reader's intuition change by manipulating a parameter*? If yes, widget. If no, prose.
 
+## Companion discipline
+
+This note answers "should this concept have a widget at all?" Once the answer is yes, [`widget-creativity-discipline.md`](widget-creativity-discipline.md) answers "what *shape* should that widget take?" — with the two-draft rule that prevents every widget from defaulting to "slider + chart" and the metaphor library of patterns that have proven out. Read both notes together when authoring.
+
 ## What this means in practice
 
 Every lesson's authoring checklist gains one mandatory pass:
