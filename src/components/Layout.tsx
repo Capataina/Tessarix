@@ -131,7 +131,10 @@ export function Layout({
           </div>
         )}
 
-        {lessonTitle && (
+        {/* Lesson title chip + lesson-mode controls (tier, pillar nav) only
+            show in lesson view. Catalog and other non-lesson views surface
+            just the brand and the global Settings affordance. */}
+        {!hideSidebars && lessonTitle && (
           <div className="app-topbar__lesson">
             {lessonTag && (
               <span className="app-topbar__lesson-tag">{lessonTag}</span>
@@ -141,21 +144,23 @@ export function Layout({
         )}
 
         <div className="app-topbar__right">
-          <TierControl />
+          {!hideSidebars && <TierControl />}
           <SettingsButton />
-          <nav className="app-topbar__pillars" aria-label="Lesson view">
-            <button
-              className={`app-topbar__pillar ${activePillar === "teach" ? "app-topbar__pillar--active" : ""}`}
-            >
-              Teach
-            </button>
-            <button className="app-topbar__pillar" disabled>
-              Quiz
-            </button>
-            <button className="app-topbar__pillar" disabled>
-              Interview
-            </button>
-          </nav>
+          {!hideSidebars && (
+            <nav className="app-topbar__pillars" aria-label="Lesson view">
+              <button
+                className={`app-topbar__pillar ${activePillar === "teach" ? "app-topbar__pillar--active" : ""}`}
+              >
+                Teach
+              </button>
+              <button className="app-topbar__pillar" disabled>
+                Quiz
+              </button>
+              <button className="app-topbar__pillar" disabled>
+                Interview
+              </button>
+            </nav>
+          )}
         </div>
       </header>
 
