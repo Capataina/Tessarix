@@ -8,7 +8,10 @@
 - [assessment-design](notes/assessment-design.md) — Memorisation vs understanding tests; 12-shape question taxonomy; `<QuestionGroup>` for progressive difficulty; A-FINE assessment rebuild plan.
 - [interface-affordances](notes/interface-affordances.md) — Left-side TOC sidebar; three-tier complexity control (essential/standard/complete) via inline `<Tier>` wrappers; reading progress bar; right-side AI chatbot layout.
 - [llm-integrations](notes/llm-integrations.md) — Four LLM use cases (ask-the-lesson chatbot, conversational interview, graded free-response, sync-learning agent); local-first by default with Claude API for quality-critical paths.
-- [content-architecture](notes/content-architecture.md) — Three-tier content model: full lessons (warrant widgets) vs glossary entries (definitional) vs chat safety-net (everything else). Gating question: "does this warrant a widget?"
+- [content-architecture](notes/content-architecture.md) — Four-tier content model: full lessons / cross-page hyperlinks to other lessons / glossary entries / chat safety-net. Gating question: "does this warrant a widget, an existing other lesson, a glossary entry, or just the chat?"
+- [visualisation-over-prose](notes/visualisation-over-prose.md) — If a concept depends continuously on a parameter, exhibits a disagreement, or has a silent failure mode, the lesson owes the reader a widget. Prose-only treatment of visualisable concepts is an authoring-discipline failure, not a stylistic choice. Mandatory visualisation audit on every lesson polish pass.
+- [explanations-must-adapt-to-state](notes/explanations-must-adapt-to-state.md) — Sibling principle. Once a widget is interactive, its caption must be LLM-generated and state-aware via `<WidgetExplainer>`, plus an "Ask a question" affordance. Static "try isolating" fallbacks are a regression. Mandatory state-aware-explanation audit per widget on every polish pass.
+- [enrich-lesson-skill](notes/enrich-lesson-skill.md) — Design discussion for a future agent skill that mechanises the lesson audit (visualisation gaps, assessment gaps, cross-page hyperlinks, multi-step goal chains). Not yet built — needs `<GoalChain>` widget designed first.
 
 ## Active focus
 

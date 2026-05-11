@@ -21,7 +21,12 @@ export interface ChatOptions {
    * Optional telemetry feature tag. When set, the hook auto-emits
    * llm_request / llm_response / llm_error events tagged with this feature.
    */
-  telemetryFeature?: "answer_thread" | "chatbot" | "tiered_hints";
+  telemetryFeature?:
+    | "answer_thread"
+    | "chatbot"
+    | "tiered_hints"
+    | "widget_explainer"
+    | "widget_question";
   /** Optional turn index for multi-turn flows (e.g. answer thread Turn 1 vs Turn 3). */
   telemetryTurn?: number;
 }

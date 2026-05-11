@@ -7,9 +7,15 @@ estimated_time: "5–45 min depending on tier"
 widgets_used:
   - AFinePipeline
   - FunctionGrapher
+  - MetricComparison
+  - RatioCollapseDemo
+  - AdapterHeatmap
+  - GeluComparison
+  - EmbeddingHeatmap
   - MultipleChoice
   - PredictThenVerify
   - GoalDrivenWrapper
+  - GoalChain
   - ClickableHotspot
   - Misconception
   - KnowledgeCheck
@@ -18,9 +24,15 @@ widgets_used:
 import { AFinePipeline } from "../components/widgets/AFinePipeline";
 import { FunctionGrapher } from "../components/widgets/FunctionGrapher";
 import { Misconception } from "../components/widgets/Misconception";
+import { MetricComparison } from "../components/widgets/MetricComparison";
+import { RatioCollapseDemo } from "../components/widgets/RatioCollapseDemo";
+import { AdapterHeatmap } from "../components/widgets/AdapterHeatmap";
+import { GeluComparison } from "../components/widgets/GeluComparison";
+import { EmbeddingHeatmap } from "../components/widgets/EmbeddingHeatmap";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalDrivenWrapper } from "../components/assessments/GoalDrivenWrapper";
+import { GoalChain } from "../components/assessments/GoalChain";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { ClickableHotspot } from "../components/assessments/ClickableHotspot";
 import { Tier } from "../components/Tier";
@@ -95,18 +107,45 @@ $$
 
 SSIM computes structural similarity over small local patches (usually 8×8 or 11×11) and averages. It captures **luminance** (the $\mu$ terms), **contrast** ($\sigma$ terms), and **structure** (the covariance $\sigma_{xy}$) separately. Better correlation with human perception than PSNR — but still pixel-domain. A re-stylised version of the same scene has low SSIM despite being recognisable as the same scene.
 
-**Hold onto the SSIM formula.** A-FINE's fidelity head uses exactly this structural-similarity-ratio shape — but in CLIP feature space rather than pixel space. The architectural lineage is direct.
+### Watching the two metrics disagree
 
-<PredictThenVerify
+The reason PSNR is a famously poor proxy for human perception is hard to *feel* from the formulas. The widget below applies four distortions to the same reference image and shows live PSNR and SSIM as you move each slider. The punchline is that **the two metrics disagree often, and frequently both disagree with what your eyes tell you**.
+
+The four-step exploration below walks you through the disagreement space. Each step has a measurable goal; reaching it unlocks the next.
+
+<GoalChain
   index={2}
-  question="A sharp photograph is shifted by 2 pixels to the right. The original and the shifted version are otherwise identical. Compared to the original, which metric drops MORE: PSNR or LPIPS?"
-  options={[
-    { id: "psnr", label: "PSNR drops more" },
-    { id: "lpips", label: "LPIPS drops more" },
-    { id: "same", label: "Both drop about the same" },
+  title="Map the PSNR/SSIM disagreement space"
+  steps={[
+    {
+      goal: "Find a distortion where PSNR collapses but SSIM holds up — drag PSNR below 25 dB while keeping SSIM above 0.85.",
+      check: (s) => s.psnr < 25 && s.ssim > 0.85,
+      explanation: "Classic PSNR failure mode. Translation is the canonical case — humans see the same image, PSNR collapses because pixel-by-pixel everything is misaligned, SSIM survives because its windowed structural comparison is partially translation-tolerant.",
+    },
+    {
+      goal: "Now find the opposite — drop SSIM below 0.85 while keeping PSNR above 30 dB.",
+      check: (s) => s.ssim < 0.85 && s.psnr > 30,
+      explanation: "Strong Gaussian blur is the textbook SSIM-sensitive case. Average pixel values are preserved (PSNR stays high), but local structure inside each 8×8 window has been smeared away (SSIM drops). This is the regime where SSIM is the better metric.",
+    },
+    {
+      goal: "Find a distortion where BOTH metrics agree — drag both PSNR below 22 dB AND SSIM below 0.75.",
+      check: (s) => s.psnr < 22 && s.ssim < 0.75,
+      explanation: "Additive Gaussian noise hits both metrics roughly proportionally. This is the regime where PSNR isn't actively misleading — zero-mean additive noise is exactly what PSNR was designed for. The two metrics align here, which is why neither was sufficient on their own to motivate the move to feature-domain metrics like A-FINE.",
+    },
+    {
+      goal: "Reset everything to zero and consider: which preset most clearly demonstrates the original lesson claim about disagreement?",
+      check: (s) =>
+        s.translation === 0 &&
+        s.blur === 0 &&
+        s.noise === 0 &&
+        s.brightness_shift === 0,
+      explanation: "The Translate 6 px preset most cleanly shows the PSNR/SSIM gap — it isolates a single distortion that the human eye is largely insensitive to but pixel-level metrics dramatically punish. This is exactly the experiment that motivated the field's move from pixel-domain to feature-domain perceptual metrics.",
+    },
   ]}
-  truth="psnr"
+  render={(onChange) => <MetricComparison onStateChange={onChange} />}
 />
+
+**Hold onto the SSIM formula.** A-FINE's fidelity head uses exactly this structural-similarity-ratio shape — but in CLIP feature space rather than pixel space. The architectural lineage is direct.
 
 ---
 
@@ -139,6 +178,10 @@ The pipeline has **five computational components**, applied in order:
 3. **Fidelity head (FR)** — applied to the *pair* of embeddings, scores their similarity using an SSIM-like ratio in CLIP feature space.
 4. **Two logistic calibrators** — map raw scores onto a calibrated quality scale.
 5. **Adapter** — fuses the three calibrated scores into the final `(0, 100)` output, weighting fidelity against naturalness adaptively.
+
+"512-d feature embedding" is easy to skim past. The heatmap below visualises a synthetic pair of CLIP-like embeddings — each cell is one of the 512 dimensions, colour-coded by sign and magnitude on a shared scale. Morph between them and watch both cosine similarity and the SSIM-style fidelity ratio respond — they don't track the same way, which previews why the fidelity head's structural-similarity ratio captures something cosine misses.
+
+<EmbeddingHeatmap />
 
 <Tier level="standard">
 
@@ -215,7 +258,31 @@ $$
 
 **Five orders of magnitude smaller than DISTS's $10^{-6}$.** This is the single most "if you skim the paper you fail the parity test" decision in the whole metric.
 
-> **Why.** CLIP's output embeddings are unit-scale (the final `LayerNorm` puts them there). A `c1` of $10^{-6}$ would still be vanishingly small relative to pixel-domain SSIM where the inputs are in $[0, 255]$, but on unit-scale CLIP features, $10^{-6}$ dominates the numerator and denominator and the ratio collapses to a near-constant. The trained calibrator parameters in the published checkpoint **expect** $10^{-10}$; substituting $10^{-6}$ silently breaks the metric without raising any error.
+> **Why.** CLIP's output embeddings are unit-norm — the final projection L2-normalises them — so the variance of a single embedding across its 512 dimensions is roughly $1/512 \approx 2 \times 10^{-3}$. A `c1` of $10^{-6}$ is small relative to that variance, but its effect on the fidelity ratio is **scale-dependent**: at the natural CLIP scale the difference between $10^{-10}$ and $10^{-6}$ is subtle but consistent, and the trained calibrator parameters in the published checkpoint were fit assuming $10^{-10}$. Substituting $10^{-6}$ shifts the ratio enough that the downstream calibrator no longer matches its training — silently. The widget below lets you sweep over feature scales and verify this empirically: at unit scale the dynamic-range loss is small; drop the feature scale to $0.2 \times$ unit and the larger `c` starts to dominate.
+
+<GoalChain
+  index={8}
+  title="Find the regime where the ratio collapse actually bites"
+  steps={[
+    {
+      goal: "At the default feature scale (1.0 × unit-norm — what CLIP outputs), how much dynamic range does c = 1e-6 lose compared to c = 1e-10? Find a feature scale where the loss is still 'negligible' (< 5%).",
+      check: (s) => s.feature_scale >= 0.9 && s.feature_scale <= 1.3 && s.gap < 0.05,
+      explanation: "At CLIP's natural scale, the two constants give essentially identical curves. The trained calibrator is what notices the subtle shift, not the visible curve shape.",
+    },
+    {
+      goal: "Now lower the feature scale until the dynamic-range loss reaches at least 50% ('severe' regime).",
+      check: (s) => s.gap >= 0.5,
+      explanation: "When the synthetic feature norm shrinks, the per-dimension variance σ² shrinks with it (σ² ∝ scale²). Once c becomes comparable to σ², the c term dominates the ratio's denominator and numerator equally — the ratio collapses to a near-constant. This is why CLIP's specific unit-scale assumption matters for picking c.",
+    },
+    {
+      goal: "Set the feature scale back to 1.0 and find a custom c that produces a curve nearly indistinguishable from c = 1e-10.",
+      check: (s) =>
+        Math.abs(s.feature_scale - 1) < 0.05 && s.log_custom_c < -7,
+      explanation: "Any c smaller than about 1e-7 at unit scale is in the 'negligible loss' regime — the absolute value of c stops mattering once it's well below σ². The 1e-10 choice was conservative; the calibrator was trained at that specific value, and substituting any neighbouring value (1e-9, 1e-11) would still break the calibration even though the curve shape barely changes.",
+    },
+  ]}
+  render={(onChange) => <RatioCollapseDemo onStateChange={onChange} />}
+/>
 
 ---
 
@@ -298,6 +365,36 @@ Read the first line carefully. **The weight on fidelity depends on how natural t
 
 This is what makes A-FINE **asymmetric** in `(distorted, reference)`: swapping the two doesn't give the same score, because $s_{\text{nat},d}$ and $s_{\text{nat},r}$ play different roles. Classical SSIM is symmetric; LPIPS is symmetric; A-FINE is intentionally not.
 
+The heatmap below shows the final score across the $(s_{\text{nat},r}, s_{\text{fid}})$ plane for fixed $k$ and $s_{\text{nat},d}$. **Click and drag anywhere on the heatmap** to move the cursor; sliders remain for precision. The solid cursor is your current point; the dashed cursor automatically tracks the swap-twin (same fidelity, x-coordinate at $s_{\text{nat},d}$), so both states stay visible without flipping back and forth. A closed form for the asymmetry falls out of the algebra: $\text{asymmetry} = k \cdot |s_{\text{nat},d} - s_{\text{nat},r}| \cdot (1 - s_{\text{fid}})$ — zero when $k = 0$, zero when fidelity is perfect, zero when the two naturalness scores agree.
+
+<GoalChain
+  index={9}
+  title="Discover the three zeros of asymmetry"
+  steps={[
+    {
+      goal: "Make the asymmetry exactly zero by changing only k. (Hint: there's exactly one value that works regardless of the other parameters.)",
+      check: (s) => s.k < 0.02 && s.asymmetry < 0.005,
+      explanation: "With k = 0, blend = 1 always — the score becomes purely fidelity regardless of s_nat,r. Naturalness drops out entirely, so the asymmetry is zero. This is the 'non-adaptive' regime: A-FINE reduces to a calibrated SSIM-in-CLIP-feature-space metric. The whole point of A-FINE's adaptiveness lives in k > 0.",
+    },
+    {
+      goal: "Restore k to 0.6, then drive asymmetry to zero by setting s_fid to its maximum value.",
+      check: (s) => s.k > 0.3 && s.s_fid > 0.98 && s.asymmetry < 0.01,
+      explanation: "Perfect fidelity zeros out the naturalness contribution: at s_fid = 1, the second term in the score is multiplied by zero (since blend = 1 when s_nat,r = 1, or close to it). For maximally faithful matches, the metric doesn't care about naturalness asymmetry. This is what 'matching a perfect reference is unambiguous' looks like algebraically.",
+    },
+    {
+      goal: "Restore s_fid to ~0.55. Now drive asymmetry to zero by making the two naturalness scores agree.",
+      check: (s) => Math.abs(s.s_nat_d - s.s_nat_r) < 0.03 && s.asymmetry < 0.02,
+      explanation: "When s_nat,d ≈ s_nat,r, swapping distorted ↔ reference exchanges two equal values and the score is unchanged. The asymmetry formula k · |s_nat,d − s_nat,r| · (1 − s_fid) has a zero exactly at this equality. Practically: a distorted image and a reference image of similar naturalness produce a symmetric A-FINE score, which is when A-FINE behaves like a classical full-reference metric.",
+    },
+    {
+      goal: "Now find the configuration that MAXIMISES asymmetry. (Maximally different naturalness, minimal fidelity, maximal k.)",
+      check: (s) => s.asymmetry > 0.55,
+      explanation: "The asymmetry formula is product-separable: k · |s_nat,d − s_nat,r| · (1 − s_fid). Maximum is at k = 1, the two naturalness scores at opposite extremes (one near 0, the other near 1), and s_fid near 0. This is the regime A-FINE was designed to handle: a low-quality reference and a higher-quality distorted output (or vice versa) — exactly the case where swapping distorted and reference produces dramatically different scores.",
+    },
+  ]}
+  render={(onChange) => <AdapterHeatmap onStateChange={onChange} />}
+/>
+
 <GoalDrivenWrapper
   index={5}
   goal="Set k so that A-FINE behaves like a non-adaptive metric — i.e., the fidelity weight is constant regardless of how natural the reference is."
@@ -333,7 +430,9 @@ Output is sigmoid-then-multiplied-by-100 to land in $(0, 100)$ for human readabi
 
 This lesson has named two implementation gotchas so far; here's the consolidated list of the silent-failure traps in the burn implementation:
 
-1. **QuickGELU vs erf-based GELU.** The CLIP backbone uses **QuickGELU** ($x \cdot \sigma(1.702 x)$), an OpenAI shortcut that approximates GELU faster on GPU. The naturalness head uses the standard erf-based `Gelu`. Substituting either for the other silently shifts every downstream activation by ~1%, which is enough to fail the parity test against PyIQA's reference scalar.
+1. **QuickGELU vs erf-based GELU.** The CLIP backbone uses **QuickGELU** ($x \cdot \sigma(1.702 x)$), an OpenAI shortcut that approximates GELU faster on GPU. The naturalness head uses the standard erf-based `Gelu`. Substituting either for the other silently shifts every downstream activation by ~1%, which is enough to fail the parity test against PyIQA's reference scalar. The two curves are visually indistinguishable; the difference plot below makes the gap concrete.
+
+<GeluComparison />
 
 2. **Fused-QKV attention layout.** The CLIP attention block uses a single `Linear(d_model, 3 * d_model)` followed by `chunk(3, -1)` to split into Q, K, V. `burn_nn`'s `MultiHeadAttention` uses separate Q, K, V linears. Loading the CLIP checkpoint into the standard burn attention would require pre-splitting the weights, and the orientation of the split is non-obvious — easy to transpose the wrong direction. The custom fused-QKV attention in this PR maps the checkpoint one-to-one.
 

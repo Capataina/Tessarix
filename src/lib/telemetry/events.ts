@@ -23,10 +23,36 @@ export type TelemetryEvent =
   | { kind: "goal_solved"; data: { index?: number; goal: string; final_state: Record<string, number> } }
   | { kind: "hint_unlock"; data: { index?: number; goal: string; level: 1 | 2 | 3 } }
 
-  // LLM
-  | { kind: "llm_request"; data: { feature: "answer_thread" | "chatbot" | "tiered_hints"; turn?: number; prompt_length: number; model?: string } }
-  | { kind: "llm_response"; data: { feature: "answer_thread" | "chatbot" | "tiered_hints"; turn?: number; response_length: number; duration_ms: number; streamed: boolean } }
-  | { kind: "llm_error"; data: { feature: "answer_thread" | "chatbot" | "tiered_hints"; turn?: number; message: string; duration_ms: number } }
+  // LLM — request/response/error. Both `prompt_messages` (full input) and
+  // `response_text` (full output) are captured by default so you can audit
+  // every exchange in the JSONL log without re-running it.
+  | {
+      kind: "llm_request";
+      data: {
+        feature: "answer_thread" | "chatbot" | "tiered_hints" | "widget_explainer" | "widget_question";
+        turn?: number;
+        prompt_length: number;
+        prompt_messages?: Array<{ role: string; content: string }>;
+        model?: string;
+      };
+    }
+  | {
+      kind: "llm_response";
+      data: {
+        feature: "answer_thread" | "chatbot" | "tiered_hints" | "widget_explainer" | "widget_question";
+        turn?: number;
+        response_length: number;
+        response_text?: string;
+        duration_ms: number;
+        streamed: boolean;
+      };
+    }
+  | { kind: "llm_error"; data: { feature: "answer_thread" | "chatbot" | "tiered_hints" | "widget_explainer" | "widget_question"; turn?: number; message: string; duration_ms: number } }
+
+  // Widget explainer / question lifecycle
+  | { kind: "widget_explain_request"; data: { widget: string; state_summary: string } }
+  | { kind: "widget_question_open"; data: { widget: string } }
+  | { kind: "widget_question_ask"; data: { widget: string; question_length: number; turn: number } }
 
   // Answer thread (per-turn lifecycle inside the AI walk-through)
   | { kind: "thread_open"; data: { widget: "mc" | "ptv" | "hotspot"; question: string; is_correct: boolean } }

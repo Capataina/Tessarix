@@ -42,6 +42,7 @@ export function useLLM() {
             feature: opts.telemetryFeature,
             turn: opts.telemetryTurn,
             prompt_length: totalPromptLength(messages),
+            prompt_messages: messages,
           },
         });
       }
@@ -60,6 +61,7 @@ export function useLLM() {
               feature: opts.telemetryFeature,
               turn: opts.telemetryTurn,
               response_length: result.length,
+              response_text: result,
               duration_ms: Math.round(performance.now() - tStart),
               streamed: false,
             },
@@ -122,6 +124,7 @@ export function useLLMStream() {
             feature: opts.telemetryFeature,
             turn: opts.telemetryTurn,
             prompt_length: totalPromptLength(messages),
+            prompt_messages: messages,
           },
         });
       }
@@ -142,6 +145,7 @@ export function useLLMStream() {
                 feature: opts.telemetryFeature,
                 turn: opts.telemetryTurn,
                 response_length: accumulated.length,
+                response_text: accumulated,
                 duration_ms: Math.round(performance.now() - tStart),
                 streamed: true,
               },
@@ -233,6 +237,7 @@ export function useLLMJson<T = unknown>() {
             feature: opts.telemetryFeature,
             turn: opts.telemetryTurn,
             prompt_length: totalPromptLength(messages),
+            prompt_messages: messages,
           },
         });
       }
@@ -246,12 +251,14 @@ export function useLLMJson<T = unknown>() {
         });
         setData(result);
         if (opts?.telemetryFeature) {
+          const serialised = JSON.stringify(result);
           emitTelemetry({
             kind: "llm_response",
             data: {
               feature: opts.telemetryFeature,
               turn: opts.telemetryTurn,
-              response_length: JSON.stringify(result).length,
+              response_length: serialised.length,
+              response_text: serialised,
               duration_ms: Math.round(performance.now() - tStart),
               streamed: false,
             },

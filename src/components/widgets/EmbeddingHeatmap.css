@@ -1,0 +1,130 @@
+.embedding-heatmap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+  padding: var(--space-5, 1.25rem);
+  background: var(--surface-1, #131321);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-md, 12px);
+  margin: var(--space-5, 1.25rem) 0;
+}
+
+.embedding-heatmap__panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.embedding-heatmap__panel {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-3, 0.75rem);
+  background: var(--surface-2, #1a1a2c);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  border-radius: var(--radius-sm, 8px);
+}
+
+.embedding-heatmap__panel figcaption {
+  font-size: 0.85rem;
+  color: var(--text-2, rgba(255, 255, 255, 0.65));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.embedding-heatmap__canvas {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-xs, 4px);
+  image-rendering: pixelated;
+}
+
+.embedding-heatmap__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3, 0.75rem);
+}
+
+.embedding-heatmap__metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-3, 0.75rem);
+  background: var(--surface-2, #1a1a2c);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  border-radius: var(--radius-sm, 8px);
+}
+
+.embedding-heatmap__metric-label {
+  font-size: 0.8rem;
+  color: var(--text-2, rgba(255, 255, 255, 0.6));
+  letter-spacing: 0.02em;
+}
+
+.embedding-heatmap__metric-value {
+  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  font-size: 1.4rem;
+  color: var(--text-1, #f0f0f5);
+}
+
+.embedding-heatmap__slider-row {
+  display: grid;
+  grid-template-columns: 14rem 1fr 3rem;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  font-size: 0.9rem;
+}
+
+.embedding-heatmap__slider-label {
+  color: var(--text-2, rgba(255, 255, 255, 0.7));
+}
+
+.embedding-heatmap__slider {
+  width: 100%;
+  appearance: none;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.embedding-heatmap__slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--text-1, #f0f0f5);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--surface-2, #1a1a2c);
+}
+
+.embedding-heatmap__slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--text-1, #f0f0f5);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--surface-2, #1a1a2c);
+}
+
+.embedding-heatmap__slider-value {
+  text-align: right;
+  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  font-size: 0.85rem;
+  color: var(--text-1, #f0f0f5);
+}
+
+.embedding-heatmap__caption {
+  margin: 0;
+  padding: var(--space-3, 0.75rem);
+  background: var(--surface-2, #1a1a2c);
+  border-left: 2px solid var(--accent, #c8a35a);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 0.92rem;
+  color: var(--text-2, rgba(255, 255, 255, 0.78));
+  line-height: 1.55;
+}

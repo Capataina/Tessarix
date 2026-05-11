@@ -148,7 +148,22 @@ Implementation: a CSS-only progress indicator driven by scroll position via a sm
 - **What about the assessment progress?** Does the TOC show "5 questions in this section, you've answered 2"? Could be a future enhancement. Out of scope for the initial TOC build.
 - **Mobile / very narrow viewports.** Drawer pattern for the TOC is standard but takes care to implement. Initial scope can ship desktop-only.
 
-## 9. Related Systems and Notes
+## 9. Direct-manipulation supplements every indirect control
+
+A discipline applied to every interactive widget: **when a widget visualises a position, the reader should be able to grab it directly, in addition to whatever indirect controls exist.** Sliders are good for precision and keyboard input; direct manipulation on the diagram itself is what readers reach for first.
+
+The trigger for this principle was the AdapterHeatmap: the original design only let the reader move the cursor by adjusting sliders. The natural first instinct on seeing a heatmap with a dot is to click and drag the dot. Slider-only forced the reader into a less natural interaction loop. The fix: the heatmap accepts pointer events; clicking sets the cursor; dragging continues to update it; sliders remain for precision.
+
+Concrete checklist when designing a new widget:
+
+- **If the widget shows a position on a 2D field**: click-drag should set that position.
+- **If the widget shows a 1D position on an axis or curve**: click-and-drag along the axis should set it.
+- **If the widget shows two states (current and a comparison)**: both should be visible simultaneously. Mode-flipping (swap, toggle) loses the reader's frame of reference — it makes them mentally remember the old state to compare. Replace with simultaneous display when feasible.
+- **If the widget has a "swap" or "mirror" or "alternative view" affordance**: prefer showing both views rather than letting the reader toggle between them.
+
+This is the broader pattern: **mode-flipping is friction; simultaneous display is clarity.** Same principle that drove `<Tier>` to always render and CSS-hide rather than conditionally render — even at the widget level, swapping state to see an alternative is worse than showing both at once.
+
+## 10. Related Systems and Notes
 
 - [`assessment-design.md`](assessment-design.md) — the complete-tier code question is one place these systems compose. Tier visibility affects which assessments show.
 - [`llm-integrations.md`](llm-integrations.md) — the AI chatbot lives on the right side; this note's layout strategy makes room for it.

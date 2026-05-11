@@ -1,0 +1,189 @@
+.widget-explainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+  margin-top: var(--space-3, 0.75rem);
+}
+
+.widget-explainer__commentary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-3, 0.75rem);
+  background: var(--surface-2, #1a1a2c);
+  border-left: 2px solid var(--accent, #c8a35a);
+  border-radius: var(--radius-sm, 8px);
+}
+
+.widget-explainer__commentary-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.widget-explainer__label {
+  font-size: 0.72rem;
+  color: var(--text-2, rgba(255, 255, 255, 0.55));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.widget-explainer__streaming {
+  font-size: 0.7rem;
+  color: var(--accent, #c8a35a);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.widget-explainer__commentary-body {
+  font-size: 0.92rem;
+  color: var(--text-1, #f0f0f5);
+  line-height: 1.55;
+  min-height: 2.4em;
+}
+
+.widget-explainer__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  background: var(--accent, #c8a35a);
+  vertical-align: text-bottom;
+  animation: widget-explainer-blink 0.9s steps(2, start) infinite;
+}
+
+@keyframes widget-explainer-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+.widget-explainer__ask-trigger {
+  align-self: flex-start;
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.18));
+  color: var(--text-1, #f0f0f5);
+  padding: 0.45rem 0.95rem;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.widget-explainer__ask-trigger:hover {
+  border-color: var(--accent, #c8a35a);
+  background: rgba(200, 163, 90, 0.08);
+}
+
+.widget-explainer__question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-3, 0.75rem);
+  background: var(--surface-2, #1a1a2c);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  border-radius: var(--radius-sm, 8px);
+}
+
+.widget-explainer__question-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.widget-explainer__close {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text-2, rgba(255, 255, 255, 0.6));
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+}
+
+.widget-explainer__close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-1, #f0f0f5);
+}
+
+.widget-explainer__thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.widget-explainer__turn {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-sm, 8px);
+}
+
+.widget-explainer__turn--user {
+  background: rgba(93, 195, 217, 0.12);
+  border-left: 2px solid #5dc3d9;
+  color: var(--text-1, #f0f0f5);
+  align-self: flex-end;
+  max-width: 88%;
+}
+
+.widget-explainer__turn--assistant {
+  background: rgba(200, 163, 90, 0.06);
+  border-left: 2px solid var(--accent, #c8a35a);
+  color: var(--text-1, #f0f0f5);
+}
+
+.widget-explainer__error {
+  font-size: 0.85rem;
+  color: #e35a76;
+  padding: 0.4rem 0;
+}
+
+.widget-explainer__input-row {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+  align-items: stretch;
+}
+
+.widget-explainer__input {
+  flex: 1;
+  resize: vertical;
+  min-height: 2.6em;
+  padding: 0.5rem 0.7rem;
+  background: var(--surface-1, #131321);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-sm, 8px);
+  color: var(--text-1, #f0f0f5);
+  font-size: 0.9rem;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.widget-explainer__input:focus {
+  outline: none;
+  border-color: var(--accent, #c8a35a);
+}
+
+.widget-explainer__send {
+  appearance: none;
+  padding: 0 1rem;
+  background: var(--accent, #c8a35a);
+  border: none;
+  color: #1a1a2c;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  min-width: 4rem;
+}
+
+.widget-explainer__send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.widget-explainer__send:hover:not(:disabled) {
+  filter: brightness(1.05);
+}

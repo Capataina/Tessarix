@@ -221,6 +221,88 @@ export type TieredHintsResponse = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Widget explainer — state-aware running commentary inside a widget
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface WidgetExplainerArgs {
+  lessonContext: string;
+  widgetName: string;
+  widgetDescription: string;
+  stateSummary: string;
+}
+
+export function buildWidgetExplainerMessages(
+  args: WidgetExplainerArgs,
+): ChatMessage[] {
+  const system = `${PERSONA}
+
+You are embedded inside an interactive widget on the lesson page. The reader is exploring the concept by manipulating the widget's controls. Your job is to explain what they are looking at RIGHT NOW — using the specific values in their state. Never give generic explanations. Always cite the reader's actual numbers.
+
+Length rule: 2 to 4 sentences. The reader is in the middle of a hands-on exploration; long answers break their flow. No markdown headings or bullet lists. Plain prose only.
+
+If the reader's current state is the initial state (nothing changed yet), invite them to move a specific control and predict what will happen — but be specific about which control and why that one.`;
+
+  const user = `LESSON CONTEXT (the section the reader is currently looking at):
+${args.lessonContext}
+
+WIDGET: ${args.widgetName}
+WIDGET PURPOSE: ${args.widgetDescription}
+
+READER'S CURRENT WIDGET STATE:
+${args.stateSummary}
+
+Explain what their current state is showing — cite their specific values, tie those values to the lesson context, and surface the insight to take away. 2-4 sentences. Plain prose.`;
+
+  return [
+    { role: "system", content: system },
+    { role: "user", content: user },
+  ];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Widget question — reader asks something scoped to the widget's state
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface WidgetQuestionArgs {
+  lessonContext: string;
+  widgetName: string;
+  widgetDescription: string;
+  stateSummary: string;
+  history: ChatMessage[];
+  question: string;
+}
+
+export function buildWidgetQuestionMessages(
+  args: WidgetQuestionArgs,
+): ChatMessage[] {
+  const system = `${PERSONA}
+
+You are answering a reader's question about a specific interactive widget they are currently using. Their widget state is part of the question whether they mention it or not — always tie your answer to their actual values when relevant.
+
+Length rule: 2 to 5 sentences for first replies; shorter for follow-ups unless the reader explicitly asks for more depth. No markdown headings or bullet lists. Plain prose only.
+
+If the question is outside the lesson's scope or the widget's domain, say so briefly and offer the closest in-scope answer.`;
+
+  const user = `LESSON CONTEXT:
+${args.lessonContext}
+
+WIDGET: ${args.widgetName}
+WIDGET PURPOSE: ${args.widgetDescription}
+READER'S CURRENT WIDGET STATE:
+${args.stateSummary}
+
+READER'S QUESTION: ${args.question}
+
+Answer in 2-5 sentences, citing their state values when relevant.`;
+
+  return [
+    { role: "system", content: system },
+    ...args.history,
+    { role: "user", content: user },
+  ];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Legacy export aliases — to be removed once all callers migrate
 // ─────────────────────────────────────────────────────────────────────────────
 
