@@ -84,6 +84,38 @@
   --t-fast: 120ms ease;
   --t-base: 180ms ease;
   --t-slow: 280ms ease;
+
+  /* ---------------------------------------------------------------
+   * Widget kit aliases
+   * Surface, text, accent, and chart tokens that every widget uses.
+   * Widgets reference these names so the whole kit reads as one
+   * family — no widget should pick its own hex codes.
+   * --------------------------------------------------------------- */
+  --widget-bg: var(--bg-surface);
+  --widget-bg-elevated: var(--bg-elevated);
+  --widget-bg-soft: rgba(255, 255, 255, 0.02);
+  --widget-border: var(--border-subtle);
+  --widget-border-strong: var(--border-strong);
+  --widget-text: var(--text-primary);
+  --widget-text-dim: var(--text-secondary);
+  --widget-text-muted: var(--text-muted);
+  --widget-accent: var(--accent-cyan);
+  --widget-accent-dim: var(--accent-cyan-dim);
+  --widget-accent-glow: var(--glow-cyan);
+  --widget-success: var(--accent-green);
+  --widget-warn: var(--accent-yellow);
+  --widget-danger: var(--accent-red);
+  /* Categorical chart palette — used across LineChart, heatmaps, bars. */
+  --widget-chart-1: var(--accent-cyan);
+  --widget-chart-2: var(--accent-magenta);
+  --widget-chart-3: var(--accent-yellow);
+  --widget-chart-4: var(--accent-green);
+  --widget-chart-5: var(--accent-violet);
+  /* Card shadow + radius shared across every widget */
+  --widget-radius: var(--radius-lg);
+  --widget-radius-sm: var(--radius-md);
+  --widget-shadow: var(--shadow-card);
+  --widget-shadow-elevated: var(--shadow-elevated);
 }
 
 /* Reset + base */

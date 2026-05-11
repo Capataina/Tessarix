@@ -62,13 +62,13 @@ export function GeluComparison() {
       id: "quick",
       label: "QuickGELU",
       ys: quickYs,
-      color: "#5dc3d9",
+      color: "var(--widget-chart-1)",
     },
     {
       id: "erf",
       label: "erf-GELU",
       ys: erfYs,
-      color: "#e8825c",
+      color: "var(--widget-chart-2)",
       dash: "5 3",
     },
   ];
@@ -78,7 +78,7 @@ export function GeluComparison() {
       id: "diff",
       label: "QuickGELU − erf-GELU",
       ys: diffYs,
-      color: "#c8a35a",
+      color: "var(--widget-chart-3)",
     },
   ];
 

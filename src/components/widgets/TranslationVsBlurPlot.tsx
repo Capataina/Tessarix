@@ -101,7 +101,7 @@ export function TranslationVsBlurPlot() {
                     id: "psnr",
                     label: "PSNR (dB)",
                     ys: curves.translation.psnrs,
-                    color: "#5dc3d9",
+                    color: "var(--widget-chart-1)",
                   },
                 ]}
                 xDomain={[0, 16]}
@@ -120,7 +120,7 @@ export function TranslationVsBlurPlot() {
                     id: "ssim",
                     label: "SSIM",
                     ys: curves.translation.ssims,
-                    color: "#58dab7",
+                    color: "var(--widget-success)",
                   },
                 ]}
                 xDomain={[0, 16]}
@@ -149,7 +149,7 @@ export function TranslationVsBlurPlot() {
                     id: "psnr",
                     label: "PSNR (dB)",
                     ys: curves.blur.psnrs,
-                    color: "#5dc3d9",
+                    color: "var(--widget-chart-1)",
                   },
                 ]}
                 xDomain={[0, 4]}
@@ -168,7 +168,7 @@ export function TranslationVsBlurPlot() {
                     id: "ssim",
                     label: "SSIM",
                     ys: curves.blur.ssims,
-                    color: "#58dab7",
+                    color: "var(--widget-success)",
                   },
                 ]}
                 xDomain={[0, 4]}

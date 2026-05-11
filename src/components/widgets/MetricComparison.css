@@ -1,17 +1,17 @@
 .metric-comparison {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4, 1rem);
-  padding: var(--space-5, 1.25rem);
-  background: var(--surface-1, #131321);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
-  border-radius: var(--radius-md, 12px);
-  margin: var(--space-5, 1.25rem) 0;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius);
+  margin: var(--space-5) 0;
 }
 
 .metric-comparison__title {
   font-size: 0.9rem;
-  color: var(--text-2, rgba(255, 255, 255, 0.6));
+  color: var(--widget-text-dim);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -19,23 +19,23 @@
 .metric-comparison__panels {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-4, 1rem);
+  gap: var(--space-4);
 }
 
 .metric-comparison__panel {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2, 0.5rem);
-  background: var(--surface-2, #1a1a2c);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
-  border-radius: var(--radius-sm, 8px);
-  padding: var(--space-3, 0.75rem);
+  gap: var(--space-2);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+  padding: var(--space-3);
 }
 
 .metric-comparison__panel figcaption {
   font-size: 0.85rem;
-  color: var(--text-2, rgba(255, 255, 255, 0.65));
+  color: var(--widget-text-dim);
   text-align: center;
   letter-spacing: 0.02em;
 }
@@ -45,38 +45,38 @@
   height: auto;
   display: block;
   image-rendering: pixelated;
-  border-radius: var(--radius-xs, 4px);
-  background: #000;
+  border-radius: var(--radius-sm);
+  background: var(--bg-base);
 }
 
 .metric-comparison__metrics {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-3, 0.75rem);
+  gap: var(--space-3);
 }
 
 .metric-comparison__metric {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 0.25rem);
-  padding: var(--space-3, 0.75rem);
-  background: var(--surface-2, #1a1a2c);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
-  border-radius: var(--radius-sm, 8px);
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
 }
 
 .metric-comparison__metric-label {
   font-size: 0.8rem;
-  color: var(--text-2, rgba(255, 255, 255, 0.6));
+  color: var(--widget-text-dim);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .metric-comparison__metric-value {
-  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  font-family: var(--font-mono);
   font-size: 1.75rem;
   font-weight: 500;
-  color: var(--text-1, #f0f0f5);
+  color: var(--widget-text);
 }
 
 .metric-comparison__metric-bar {
@@ -93,29 +93,29 @@
 }
 
 .metric-comparison__metric--psnr .metric-comparison__metric-fill {
-  background: linear-gradient(90deg, #5a8df0, #79b3ff);
+  background: linear-gradient(90deg, var(--widget-chart-1), var(--widget-chart-1));
 }
 
 .metric-comparison__metric--ssim .metric-comparison__metric-fill {
-  background: linear-gradient(90deg, #2eb699, #58dab7);
+  background: linear-gradient(90deg, var(--widget-success), var(--widget-success));
 }
 
 .metric-comparison__sliders {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2, 0.5rem);
+  gap: var(--space-2);
 }
 
 .metric-comparison__slider-row {
   display: grid;
   grid-template-columns: 7.5rem 1fr 3.5rem;
   align-items: center;
-  gap: var(--space-3, 0.75rem);
+  gap: var(--space-3);
   font-size: 0.9rem;
 }
 
 .metric-comparison__slider-label {
-  color: var(--text-2, rgba(255, 255, 255, 0.7));
+  color: var(--widget-text-dim);
 }
 
 .metric-comparison__slider {
@@ -132,58 +132,58 @@
   appearance: none;
   width: 14px;
   height: 14px;
-  background: var(--text-1, #f0f0f5);
+  background: var(--widget-text);
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid var(--surface-2, #1a1a2c);
+  border: 2px solid var(--widget-bg-elevated);
 }
 
 .metric-comparison__slider::-moz-range-thumb {
   width: 14px;
   height: 14px;
-  background: var(--text-1, #f0f0f5);
+  background: var(--widget-text);
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid var(--surface-2, #1a1a2c);
+  border: 2px solid var(--widget-bg-elevated);
 }
 
 .metric-comparison__slider-value {
   text-align: right;
-  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
-  color: var(--text-1, #f0f0f5);
+  color: var(--widget-text);
 }
 
 .metric-comparison__presets {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2, 0.5rem);
+  gap: var(--space-2);
 }
 
 .metric-comparison__preset {
   appearance: none;
   background: transparent;
-  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.18));
-  color: var(--text-1, #f0f0f5);
+  border: 1px solid var(--widget-border-strong);
+  color: var(--widget-text);
   padding: 0.45rem 0.85rem;
   font-size: 0.85rem;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--widget-radius-sm);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .metric-comparison__preset:hover {
-  border-color: var(--accent, #c8a35a);
-  background: rgba(200, 163, 90, 0.08);
+  border-color: var(--widget-accent);
+  background: rgba(0, 212, 255, 0.08);
 }
 
 .metric-comparison__caption {
   margin: 0;
-  padding: var(--space-3, 0.75rem);
-  background: var(--surface-2, #1a1a2c);
-  border-left: 2px solid var(--accent, #c8a35a);
-  border-radius: var(--radius-sm, 8px);
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border-left: 2px solid var(--widget-accent);
+  border-radius: var(--widget-radius-sm);
   font-size: 0.92rem;
-  color: var(--text-2, rgba(255, 255, 255, 0.78));
+  color: var(--widget-text-dim);
   line-height: 1.55;
 }

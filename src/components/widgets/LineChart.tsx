@@ -241,13 +241,15 @@ export function LineChart({
           stroke="rgba(255,255,255,0.2)"
         />
 
-        {/* Series paths */}
+        {/* Series paths. Note: `stroke` and `fill` are passed via `style` so
+            CSS custom properties (e.g. var(--widget-chart-1)) resolve;
+            SVG attributes don't expand `var(...)` directly. */}
         {paths.map((p) => (
           <path
             key={p.id}
             d={p.d}
             fill="none"
-            stroke={p.color}
+            style={{ stroke: p.color }}
             strokeWidth={p.width ?? 2}
             strokeDasharray={p.dash}
             strokeLinecap="round"
@@ -272,7 +274,7 @@ export function LineChart({
                 cx={sx(xs[hoverIdx])}
                 cy={sy(s.ys[hoverIdx])}
                 r={3.5}
-                fill={s.color}
+                style={{ fill: s.color }}
                 stroke="#0c0c18"
                 strokeWidth={1.5}
               />
