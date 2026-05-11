@@ -1,35 +1,131 @@
-import { useEffect } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { MDXProvider } from "@mdx-js/react";
 import { Layout } from "./components/Layout";
+import { Catalog } from "./components/Catalog";
 import { mdxComponents } from "./components/MDXComponents";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { TierProvider } from "./state/TierContext";
 import { SettingsProvider } from "./state/SettingsContext";
-import { initTelemetry } from "./lib/telemetry";
+import { initTelemetry, emit as emitTelemetry } from "./lib/telemetry";
 import { prewarmLLM } from "./lib/llm/prewarm";
-import AfineLesson, { frontmatter } from "./lessons/afine.mdx";
+import { findLesson, type LessonFrontmatter } from "./lessons/registry";
 import "./App.css";
 
-interface LessonFrontmatter {
-  title?: string;
-  tag?: string;
-  last_updated?: string;
-  tags?: string[];
-  widgets_used?: string[];
-  prerequisites?: string[];
-  estimated_time?: string;
+type Route =
+  | { kind: "catalog" }
+  | { kind: "lesson"; slug: string };
+
+function parseHash(): Route {
+  const raw = (window.location.hash || "").replace(/^#\/?/, "");
+  if (raw.startsWith("lesson/")) {
+    const slug = raw.slice("lesson/".length);
+    if (slug) return { kind: "lesson", slug };
+  }
+  return { kind: "catalog" };
 }
 
 function App() {
-  const fm = (frontmatter ?? {}) as LessonFrontmatter;
+  const [route, setRoute] = useState<Route>(() => parseHash());
+  const [fm, setFm] = useState<LessonFrontmatter | null>(null);
 
   useEffect(() => {
     initTelemetry();
-    // Pre-warm the local LLM so the first WidgetExplainer doesn't pay the
-    // cold-start cost. Fire-and-forget; failure is silent because the real
-    // widget calls will surface any actual outage.
     void prewarmLLM();
   }, []);
+
+  // Sync from hash → state and the reverse.
+  useEffect(() => {
+    const onHash = () => setRoute(parseHash());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
+  useEffect(() => {
+    const target =
+      route.kind === "lesson" ? `#/lesson/${route.slug}` : "#/catalog";
+    if (window.location.hash !== target) {
+      window.location.hash = target;
+    }
+    emitTelemetry({
+      kind: "click",
+      data: {
+        widget: "router",
+        target_role: "route",
+        target_label: route.kind === "lesson" ? `lesson/${route.slug}` : "catalog",
+      },
+    });
+  }, [route]);
+
+  // Resolve frontmatter for the active lesson.
+  useEffect(() => {
+    if (route.kind !== "lesson") {
+      setFm(null);
+      return;
+    }
+    const entry = findLesson(route.slug);
+    if (!entry) {
+      setFm(null);
+      return;
+    }
+    let cancelled = false;
+    entry.frontmatter.then((f) => {
+      if (!cancelled) setFm(f);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [route]);
+
+  const handleSelect = useCallback((slug: string) => {
+    setRoute({ kind: "lesson", slug });
+  }, []);
+
+  const handleHome = useCallback(() => {
+    setRoute({ kind: "catalog" });
+  }, []);
+
+  if (route.kind === "catalog") {
+    return (
+      <ErrorBoundary>
+        <SettingsProvider>
+          <TierProvider defaultTier="standard">
+            <Layout
+              lessonTitle="Library"
+              lessonTag="Catalog"
+              activePillar="teach"
+              onBrandClick={handleHome}
+              hideSidebars
+            >
+              <Catalog onSelect={handleSelect} />
+            </Layout>
+          </TierProvider>
+        </SettingsProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  const entry = findLesson(route.slug);
+  if (!entry) {
+    // Unknown slug → bounce to catalog.
+    return (
+      <ErrorBoundary>
+        <SettingsProvider>
+          <TierProvider defaultTier="standard">
+            <Layout
+              lessonTitle="Lesson not found"
+              lessonTag="404"
+              onBrandClick={handleHome}
+              hideSidebars
+            >
+              <Catalog onSelect={handleSelect} />
+            </Layout>
+          </TierProvider>
+        </SettingsProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  const LessonComponent = entry.Component;
 
   return (
     <ErrorBoundary>
@@ -37,11 +133,14 @@ function App() {
         <TierProvider defaultTier="standard">
           <MDXProvider components={mdxComponents}>
             <Layout
-              lessonTitle={fm.title ?? "Untitled lesson"}
-              lessonTag={fm.tag ?? "Lesson"}
+              lessonTitle={fm?.title ?? "Loading…"}
+              lessonTag={fm?.tag ?? "Lesson"}
               activePillar="teach"
+              onBrandClick={handleHome}
             >
-              <AfineLesson />
+              <Suspense fallback={<div className="lesson-loading">Loading…</div>}>
+                <LessonComponent />
+              </Suspense>
             </Layout>
           </MDXProvider>
         </TierProvider>

@@ -11,6 +11,11 @@ interface LayoutProps {
   lessonTitle?: string;
   lessonTag?: string;
   activePillar?: "teach" | "quiz" | "interview";
+  /** When set, the topbar brand becomes a button that calls this on click. */
+  onBrandClick?: () => void;
+  /** Render the lesson body full-width with no TOC / chat sidebars. Used for
+      catalog and other non-lesson views. */
+  hideSidebars?: boolean;
 }
 
 /**
@@ -27,6 +32,8 @@ export function Layout({
   lessonTitle,
   lessonTag,
   activePillar = "teach",
+  onBrandClick,
+  hideSidebars,
 }: LayoutProps) {
   const [tocOpen, setTocOpen] = useState(true);
   const [chatOpen, setChatOpen] = useState(true);
@@ -107,10 +114,22 @@ export function Layout({
       data-chat-open={chatOpen ? "true" : "false"}
     >
       <header className="app-topbar">
-        <div className="app-topbar__brand">
-          <span className="app-topbar__brand-mark" aria-hidden />
-          <span className="app-topbar__brand-text">Tessarix</span>
-        </div>
+        {onBrandClick ? (
+          <button
+            type="button"
+            className="app-topbar__brand app-topbar__brand--button"
+            onClick={onBrandClick}
+            title="Back to library"
+          >
+            <span className="app-topbar__brand-mark" aria-hidden />
+            <span className="app-topbar__brand-text">Tessarix</span>
+          </button>
+        ) : (
+          <div className="app-topbar__brand">
+            <span className="app-topbar__brand-mark" aria-hidden />
+            <span className="app-topbar__brand-text">Tessarix</span>
+          </div>
+        )}
 
         {lessonTitle && (
           <div className="app-topbar__lesson">
@@ -140,42 +159,49 @@ export function Layout({
         </div>
       </header>
 
-      <ReadingProgress />
+      {!hideSidebars && <ReadingProgress />}
 
-      <main className="app-main" ref={mainRef}>
-        <aside className="app-sidebar app-sidebar--left">
-          <button
-            type="button"
-            className="app-sidebar__toggle app-sidebar__toggle--left"
-            onClick={toggleToc}
-            aria-pressed={tocOpen}
-            aria-label={tocOpen ? "Hide table of contents" : "Show table of contents"}
-            title={tocOpen ? "Hide table of contents" : "Show table of contents"}
-          >
-            {tocOpen ? "‹" : "›"}
-          </button>
-          <div className="app-sidebar__content">
-            <LessonTOC />
-          </div>
-        </aside>
+      <main
+        className={`app-main ${hideSidebars ? "app-main--full" : ""}`}
+        ref={mainRef}
+      >
+        {!hideSidebars && (
+          <aside className="app-sidebar app-sidebar--left">
+            <button
+              type="button"
+              className="app-sidebar__toggle app-sidebar__toggle--left"
+              onClick={toggleToc}
+              aria-pressed={tocOpen}
+              aria-label={tocOpen ? "Hide table of contents" : "Show table of contents"}
+              title={tocOpen ? "Hide table of contents" : "Show table of contents"}
+            >
+              {tocOpen ? "‹" : "›"}
+            </button>
+            <div className="app-sidebar__content">
+              <LessonTOC />
+            </div>
+          </aside>
+        )}
 
         <article className="lesson">{children}</article>
 
-        <aside className="app-sidebar app-sidebar--right">
-          <button
-            type="button"
-            className="app-sidebar__toggle app-sidebar__toggle--right"
-            onClick={toggleChat}
-            aria-pressed={chatOpen}
-            aria-label={chatOpen ? "Hide chat" : "Show chat"}
-            title={chatOpen ? "Hide chat" : "Show chat"}
-          >
-            {chatOpen ? "›" : "‹"}
-          </button>
-          <div className="app-sidebar__content">
-            <AskAboutLesson />
-          </div>
-        </aside>
+        {!hideSidebars && (
+          <aside className="app-sidebar app-sidebar--right">
+            <button
+              type="button"
+              className="app-sidebar__toggle app-sidebar__toggle--right"
+              onClick={toggleChat}
+              aria-pressed={chatOpen}
+              aria-label={chatOpen ? "Hide chat" : "Show chat"}
+              title={chatOpen ? "Hide chat" : "Show chat"}
+            >
+              {chatOpen ? "›" : "‹"}
+            </button>
+            <div className="app-sidebar__content">
+              <AskAboutLesson />
+            </div>
+          </aside>
+        )}
       </main>
     </div>
   );

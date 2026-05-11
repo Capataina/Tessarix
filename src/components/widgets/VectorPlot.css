@@ -1,0 +1,90 @@
+.vec-plot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius);
+  margin: var(--space-5) 0;
+}
+
+.vec-plot__chart-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.vec-plot__canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.vec-plot__hint {
+  position: absolute;
+  left: 50%;
+  bottom: -1.6rem;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  color: var(--widget-text-muted);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.vec-plot__readouts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+  margin-top: 1.5rem;
+}
+
+.vec-plot__readout {
+  display: grid;
+  grid-template-columns: 18px 7rem 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.88rem;
+  color: var(--widget-text-dim);
+}
+
+.vec-plot__readout-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.vec-plot__readout-label {
+  color: var(--widget-text);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.vec-plot__readout-values {
+  display: flex;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--widget-text);
+}
+
+.vec-plot__readout-aux {
+  color: var(--widget-text-dim);
+}
+
+.vec-plot__readout--sum {
+  margin-top: 0.2rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--widget-border);
+}

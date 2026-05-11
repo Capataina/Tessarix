@@ -1,0 +1,348 @@
+---
+title: "Linear Algebra Primer — Scalars, Vectors, Matrices"
+tag: "Mathematics"
+last_updated: "2026-05-11"
+tags: ["MATHEMATICS", "LINEAR ALGEBRA", "FOUNDATIONS"]
+estimated_time: "20–60 min depending on tier"
+widgets_used:
+  - VectorPlot
+  - MatrixTransform
+  - MultipleChoice
+  - PredictThenVerify
+  - GoalChain
+  - Misconception
+  - KnowledgeCheck
+---
+
+import { VectorPlot } from "../components/widgets/VectorPlot";
+import { MatrixTransform } from "../components/widgets/MatrixTransform";
+import { MultipleChoice } from "../components/assessments/MultipleChoice";
+import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
+import { GoalChain } from "../components/assessments/GoalChain";
+import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
+import { Misconception } from "../components/widgets/Misconception";
+import { Tier } from "../components/Tier";
+import { LessonMeta } from "../components/MDXComponents";
+
+# Linear Algebra Primer — Scalars, Vectors, Matrices
+
+<LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "FOUNDATIONS", "20–60 MIN"]} />
+
+Linear algebra is the language for talking about quantities that have **multiple components** and the **transformations** that act on them. Most of modern computational mathematics — machine learning, computer graphics, physics simulation, signal processing — runs on three primitive objects: scalars, vectors, and matrices. This lesson builds them up in order, with each one earning its keep by *doing* something the previous one couldn't.
+
+<Tier level="standard">
+
+The goal isn't to memorise definitions. It's to develop the **geometric intuition** that lets you predict what a vector or matrix will do before you compute it — and that intuition only forms by *manipulating* the objects, not by reading about them. Every section below has a widget; touch the widgets.
+
+</Tier>
+
+<PredictThenVerify
+  question="Two vectors point in the same direction; one has length 3, the other has length 5. Their sum has length…"
+  options={[
+    { id: "a", label: "8 (the lengths add)" },
+    { id: "b", label: "approximately 5.83 (the Pythagorean theorem)" },
+    { id: "c", label: "between 2 and 8 depending on the exact directions" },
+  ]}
+  truth="a"
+/>
+
+---
+
+## Scalars — a single number, with units
+
+A **scalar** is a single real number. Temperature, mass, speed, voltage — anything whose state is fully captured by *one* number. Mathematically we'll just write scalars as lowercase letters in normal italic: $a, b, c, \alpha, \lambda$.
+
+The two operations that matter are familiar:
+
+- **Addition**: $a + b$. Closed (sum of two scalars is a scalar), commutative, associative.
+- **Multiplication**: $a \cdot b$. Closed, commutative, associative, distributive over addition.
+
+What makes a scalar a *scalar*, rather than just "a number," is that we use it to **scale** something else — multiply a vector by it, multiply a matrix by it. The scalar's job in linear algebra is to act on other objects.
+
+<Tier level="standard">
+
+> **Why insist on scalars vs vectors?** Because the operations differ. *Adding* two velocities is **not** scalar addition: velocity has a direction. Speed (the magnitude of velocity) is a scalar — but a 30 km/h east wind plus a 30 km/h west wind doesn't give 60 km/h; it gives zero net velocity. The "direction" has been lost when you collapse to a scalar. This is the slip the next section is built to fix.
+
+</Tier>
+
+<MultipleChoice
+  index={1}
+  question="Which of these is a scalar quantity (single number) rather than a vector?"
+  options={[
+    { id: "a", label: "Force applied to a box (10 N pushing east)" },
+    { id: "b", label: "Velocity of a car (60 km/h north)" },
+    { id: "c", label: "Mass of an apple (200 g)" },
+    { id: "d", label: "Displacement from your house to the shop (3 km southeast)" },
+  ]}
+  correctId="c"
+/>
+
+---
+
+## Vectors — a list of components, geometrically an arrow
+
+A **vector** in $\mathbb{R}^2$ is an ordered pair of scalars: $\mathbf{v} = (v_1, v_2)$. In $\mathbb{R}^n$ it's an ordered $n$-tuple. We'll work in $\mathbb{R}^2$ throughout this lesson because it's the smallest dimension where geometric intuition fully applies — but everything generalises.
+
+Two equivalent ways to *read* a vector:
+
+1. **Components**: $\mathbf{v} = (3, 2)$ means "three units along the first axis, two along the second." This is what you compute with.
+2. **Geometric**: an arrow from the origin to the point $(3, 2)$. Has a **magnitude** (its length, $|\mathbf{v}| = \sqrt{v_1^2 + v_2^2}$) and a **direction** (the angle it makes with the positive $x$-axis, $\theta = \arctan(v_2 / v_1)$). This is what you reason geometrically about.
+
+Pick up a vector in the widget below and drag its tip. Watch the components, magnitude, and angle update together. They describe the same object from two angles.
+
+<VectorPlot
+  initial={[{ id: "v", v: { x: 3, y: 2 }, label: "v" }]}
+  widgetName="Single vector: components vs magnitude vs angle"
+  widgetDescription="One vector in R^2 anchored at the origin. The reader drags its tip; the readout shows the components (x, y), magnitude (length), and direction (angle from the positive x-axis). Lets the reader feel the equivalence between the algebraic form (a, b) and the geometric form (magnitude, angle)."
+/>
+
+### Vector addition — head to tail
+
+Vectors add **component-wise**: $\mathbf{a} + \mathbf{b} = (a_1 + b_1, a_2 + b_2)$. That's the algebraic definition. The geometric definition is more illuminating: to add $\mathbf{a} + \mathbf{b}$, place $\mathbf{b}$'s tail at $\mathbf{a}$'s tip. The sum is the arrow from $\mathbf{a}$'s tail to $\mathbf{b}$'s new tip. This is the **head-to-tail** rule, and the two definitions are guaranteed to give the same answer.
+
+The widget below shows this directly. Two vectors $\mathbf{a}$ and $\mathbf{b}$ chain head-to-tail; the green resultant from the origin to the chain's end is $\mathbf{a} + \mathbf{b}$.
+
+<GoalChain
+  index={2}
+  title="Build intuition for vector addition"
+  steps={[
+    {
+      goal: "Make the sum vector point straight up (positive y-direction). Hint: the sum's x-component must be zero, so a's x and b's x must cancel.",
+      check: (s) => Math.abs(s.sum_x) < 0.15 && s.sum_y > 0.5,
+      explanation: "When a's x-component and b's x-component are equal in magnitude but opposite in sign, they cancel in the sum. The y-components then determine the resultant's direction.",
+    },
+    {
+      goal: "Make a and b parallel — pointing in the same direction — so the sum's magnitude equals |a| + |b|.",
+      check: (s) =>
+        Math.abs(s.sum_mag - (s.v_mag + s.b_mag)) < 0.1 && s.v_mag > 0.3 && s.b_mag > 0.3,
+      explanation: "Parallel same-direction vectors give a sum whose length is the literal sum of the lengths. This is exactly the special case the lesson-opening prediction question pointed at.",
+    },
+    {
+      goal: "Make a and b anti-parallel (point in opposite directions) so the sum's magnitude is small — under 0.3.",
+      check: (s) => s.sum_mag < 0.3,
+      explanation: "Anti-parallel vectors partially or fully cancel. When they're exactly opposite and the same length, the sum is the zero vector — they completely undo each other. This is why two equal-magnitude opposing forces produce zero net force.",
+    },
+  ]}
+  render={(onChange) => (
+    <VectorPlot
+      initial={[
+        { id: "v", v: { x: 2, y: 1 }, label: "a" },
+        { id: "b", v: { x: 1, y: 2 }, label: "b" },
+      ]}
+      showSum
+      onStateChange={onChange}
+      widgetName="Vector addition — head to tail"
+      widgetDescription="Two vectors a and b drawn head-to-tail. The green vector from the origin to the end of the chain is their sum a + b. Reader drags either vector's tip to manipulate the sum."
+    />
+  )}
+/>
+
+<Misconception belief="The sum of two vectors of length 3 and length 5 always has length 8.">
+
+Only if they point in **exactly the same direction**. The lesson-opening question made this point. In general, $|\mathbf{a} + \mathbf{b}|$ depends on the angle between $\mathbf{a}$ and $\mathbf{b}$: equal-length opposing vectors sum to zero; perpendicular vectors give a Pythagorean sum; same-direction vectors give an additive sum. The **triangle inequality** $|\mathbf{a} + \mathbf{b}| \leq |\mathbf{a}| + |\mathbf{b}|$ holds always, with equality only in the same-direction case.
+
+</Misconception>
+
+### Scalar multiplication
+
+Multiplying a vector by a scalar $k$ scales each component: $k \mathbf{v} = (k v_1, k v_2)$. Geometrically:
+
+- $k > 1$ stretches the vector while keeping its direction.
+- $0 < k < 1$ shrinks the vector while keeping its direction.
+- $k = 0$ collapses it to the origin (the zero vector).
+- $k < 0$ flips it through the origin (reverses direction).
+- $|k| = 1$ preserves length; combined with $k = -1$ it gives a pure direction-flip.
+
+The magnitude rescales: $|k \mathbf{v}| = |k| \cdot |\mathbf{v}|$.
+
+<Tier level="complete">
+
+### The dot product — a way to multiply two vectors into a scalar
+
+There's no "vector multiplication" in $\mathbb{R}^2$ in the way scalars multiply. There are several *products of two vectors*, and the most fundamental is the **dot product**, which collapses two vectors to a scalar:
+
+$$
+\mathbf{a} \cdot \mathbf{b} = a_1 b_1 + a_2 b_2
+$$
+
+This algebraic form has a geometric equivalent:
+
+$$
+\mathbf{a} \cdot \mathbf{b} = |\mathbf{a}| \, |\mathbf{b}| \cos\theta
+$$
+
+where $\theta$ is the angle between the two vectors. Reading the geometric form:
+
+- If the vectors are **parallel** ($\theta = 0$), $\cos\theta = 1$, so the dot product is the product of the magnitudes.
+- If the vectors are **perpendicular** ($\theta = 90°$), $\cos\theta = 0$, so the dot product is zero.
+- If the vectors are **anti-parallel** ($\theta = 180°$), $\cos\theta = -1$, so the dot product is the *negative* of the magnitude product.
+
+The dot product is **the** test for orthogonality: $\mathbf{a} \perp \mathbf{b}$ if and only if $\mathbf{a} \cdot \mathbf{b} = 0$.
+
+</Tier>
+
+---
+
+## Matrices — a transformation of vectors
+
+A **matrix** is a rectangular grid of scalars. A $2 \times 2$ matrix has 4 entries:
+
+$$
+A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}
+$$
+
+Algebraically, a matrix and a vector multiply like this:
+
+$$
+A \mathbf{v} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} ax + by \\ cx + dy \end{pmatrix}
+$$
+
+That's the calculation. But the *meaning* is geometric: a $2 \times 2$ matrix is a **linear transformation of the plane**. Every point in $\mathbb{R}^2$ gets mapped to a new point. Lines stay lines (curves never appear). The origin stays at the origin (the zero vector is always fixed). Parallel lines stay parallel.
+
+The cleanest way to *see* a matrix is to ask: **where does it send the basis vectors?** The standard basis is $\hat{\imath} = (1, 0)$ and $\hat{\jmath} = (0, 1)$. After the transformation:
+
+- $\hat{\imath} \mapsto (a, c)$ — the matrix's first column
+- $\hat{\jmath} \mapsto (b, d)$ — the matrix's second column
+
+Every other point in the plane is some combination of $\hat{\imath}$ and $\hat{\jmath}$, so once you know where the basis vectors go, the rest of the plane follows by linearity. **A $2 \times 2$ matrix is fully specified by where it sends $\hat{\imath}$ and $\hat{\jmath}$.**
+
+<MatrixTransform
+  widgetName="2×2 matrix transformation — basis vectors and the unit square"
+  widgetDescription="2x2 matrix transformation. Dashed grey outline is the original unit square; filled parallelogram is its image under A. î maps to the cyan basis vector (matrix column 1); ĵ maps to the yellow basis vector (matrix column 2). Determinant shown numerically with orientation indicator."
+/>
+
+### Determinants — the area-scaling factor
+
+The **determinant** of a $2 \times 2$ matrix tells you how the matrix scales **areas**:
+
+$$
+\det A = ad - bc
+$$
+
+Geometrically: the unit square has area 1; after the transformation it becomes a parallelogram whose (signed) area is exactly $\det A$. Three special cases worth feeling:
+
+- $\det A = 1$: the transformation preserves area exactly. Rotations and reflections are like this.
+- $\det A = 0$: the transformation **collapses** the plane onto a line (or a point). The unit square's image has zero area. The matrix is called **singular** in this case — it can't be inverted, because once you've collapsed the plane, no transformation can recover the original.
+- $\det A < 0$: the transformation **flips orientation** — the unit square's image traversed in the original order goes around the parallelogram in the opposite direction. Reflections give this; pure rotations don't.
+
+<GoalChain
+  index={3}
+  title="Discover what determinants tell you"
+  steps={[
+    {
+      goal: "Set the matrix so the determinant is exactly 1 — area-preserving — but the matrix is NOT the identity.",
+      check: (s) => Math.abs(s.det - 1) < 0.05 && (Math.abs(s.a - 1) > 0.1 || Math.abs(s.b) > 0.1 || Math.abs(s.c) > 0.1 || Math.abs(s.d - 1) > 0.1),
+      explanation: "Lots of non-trivial matrices have determinant 1 — rotations, shears, area-preserving deformations. The determinant alone doesn't determine the matrix; it only tells you about area scaling.",
+    },
+    {
+      goal: "Now make the matrix singular — drive the determinant to exactly zero (within ±0.01).",
+      check: (s) => Math.abs(s.det) < 0.01,
+      explanation: "Singular matrices have linearly dependent columns: one column is a scalar multiple of the other. The unit square collapses to a line segment. This matrix has no inverse — given a point in its (degenerate) image, you can't uniquely recover the original point.",
+    },
+    {
+      goal: "Make the determinant negative — the parallelogram should flip orientation (and the fill colour changes).",
+      check: (s) => s.det < -0.3,
+      explanation: "Negative determinants mean the matrix reflects: it swaps the handedness of the plane. The simplest example is the matrix [[1,0],[0,-1]] which reflects across the x-axis. The unit square's vertices, traversed in their original order, now go around the image clockwise instead of anticlockwise.",
+    },
+    {
+      goal: "Find a matrix with det(A) = 2, using only non-zero entries.",
+      check: (s) => Math.abs(s.det - 2) < 0.05 && s.a !== 0 && s.b !== 0 && s.c !== 0 && s.d !== 0,
+      explanation: "det = 2 means areas double. The parallelogram has area 2, twice the unit square's. There are infinitely many such matrices — every preset, every shear with the right slope, every scaling combined with a shear.",
+    },
+  ]}
+  render={(onChange) => (
+    <MatrixTransform
+      onStateChange={onChange}
+      widgetName="2×2 matrix transformation — determinant exploration"
+      widgetDescription="2x2 matrix transformation with focus on the determinant. The dashed unit square has area 1; the filled parallelogram has area |det(A)|. Sign of det indicates orientation."
+    />
+  )}
+/>
+
+<Misconception belief="A matrix with determinant zero just has a really small effect.">
+
+A determinant of zero means the matrix is **singular** — the transformation collapses the entire plane onto a lower-dimensional subspace (a line, or in the $\mathbf{0}$ matrix case, a single point). All of $\mathbb{R}^2$ now lives in a 1D image. This is a fundamentally different regime from "small effect" — it's an *irreversible* operation. You can't recover the original vector from its image because infinitely many original vectors map to the same image point. Algebraically: singular matrices have no inverse.
+
+</Misconception>
+
+<Tier level="complete">
+
+### Matrix-vector multiplication — a transformation in motion
+
+The matrix-vector product $A \mathbf{v}$ is the linear transformation $A$ applied to the specific vector $\mathbf{v}$. Below, the test vector $\mathbf{v}$ is draggable; $A \mathbf{v}$ updates to show where it lands under the current matrix.
+
+<MatrixTransform
+  showTestVector
+  initial={{ a: 1.5, b: -0.5, c: 0.5, d: 1.0 }}
+  widgetName="Matrix-vector product — A·v in motion"
+  widgetDescription="2x2 matrix transformation with a draggable test vector v and its image A·v drawn live. Demonstrates that the matrix acts as a function from vectors to vectors."
+/>
+
+### Composition of transformations is matrix multiplication
+
+Applying transformation $A$ then transformation $B$ to a vector $\mathbf{v}$ gives $B(A\mathbf{v})$. The associativity of matrix multiplication means this equals $(BA)\mathbf{v}$ — there's a single matrix $BA$ that captures the combined transformation. **Matrix multiplication is exactly the algebraic encoding of composing geometric transformations.**
+
+Order matters: $AB \ne BA$ in general. Rotating first and then shearing is different from shearing first and then rotating — try it on a unit square in your head.
+
+</Tier>
+
+---
+
+<KnowledgeCheck>
+
+<MultipleChoice
+  index={4}
+  question="A matrix A has columns (3, 0) and (0, 2). What does it do to the unit square?"
+  options={[
+    { id: "a", label: "Rotates it by some angle." },
+    { id: "b", label: "Scales the x-direction by 3 and the y-direction by 2 — the unit square becomes a 3×2 rectangle." },
+    { id: "c", label: "Reflects it across the line y = x." },
+    { id: "d", label: "Collapses it to a single point." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={5}
+  question="For a 2×2 matrix A with det(A) = -1, which is TRUE?"
+  options={[
+    { id: "a", label: "A has no inverse." },
+    { id: "b", label: "A is the identity matrix." },
+    { id: "c", label: "A preserves area but flips orientation. It's a reflection, possibly combined with a rotation." },
+    { id: "d", label: "A doubles areas." },
+  ]}
+  correctId="c"
+/>
+
+<Tier level="complete">
+
+<MultipleChoice
+  index={6}
+  question="A and B are both 2×2 matrices. Which of the following is NOT necessarily true?"
+  options={[
+    { id: "a", label: "det(AB) = det(A) · det(B)" },
+    { id: "b", label: "(AB)v = A(Bv) for any vector v" },
+    { id: "c", label: "AB = BA" },
+    { id: "d", label: "If det(A) ≠ 0 and det(B) ≠ 0, then AB is invertible." },
+  ]}
+  correctId="c"
+/>
+
+</Tier>
+
+</KnowledgeCheck>
+
+---
+
+## Where to read next
+
+The objects in this lesson — scalars, vectors, matrices — are the **building blocks**. Real applications combine them in two layers:
+
+- **Higher dimensions**: everything generalises to $\mathbb{R}^n$ for any $n$. The vectors get longer, the matrices get bigger, but the geometric intuition transfers: matrices still transform space, determinants still scale (signed) volumes.
+- **Compositions and decompositions**: eigenvalues, singular value decomposition, change of basis. These are the next layer up — they explain *what kind of transformation* a given matrix represents, in a way that's invariant to coordinate choice.
+
+External references:
+
+- **[3Blue1Brown's "Essence of Linear Algebra" series](https://www.3blue1brown.com/topics/linear-algebra)** — the visual intuition track this lesson is downstream of.
+- **[Strang, "Introduction to Linear Algebra" (MIT 18.06)](https://math.mit.edu/~gs/linearalgebra/)** — the canonical rigorous treatment.
+- **[Immersive Math's interactive linear algebra textbook](http://immersivemath.com/ila/index.html)** — full interactive textbook, browser-rendered.

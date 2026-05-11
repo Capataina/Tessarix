@@ -198,6 +198,44 @@
   min-height: calc(100vh - 60px);
 }
 
+/* Catalog and other sidebarless views — single column, lesson body inherits
+   its width from the catalog content's own max-width. */
+.app-main--full {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.app-main--full .lesson {
+  max-width: none;
+  padding: 0;
+}
+
+/* Brand-as-button — used when the topbar should let the reader click back
+   to the catalog. Inherits the same look-and-feel as the static brand. */
+.app-topbar__brand--button {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.app-topbar__brand--button:hover .app-topbar__brand-text {
+  color: var(--widget-accent);
+}
+
+.app-topbar__brand--button:hover .app-topbar__brand-mark {
+  background: var(--widget-accent);
+}
+
+.lesson-loading {
+  padding: var(--space-12) var(--space-8);
+  text-align: center;
+  color: var(--widget-text-muted);
+  font-size: 0.9rem;
+}
+
 .app-sidebar {
   position: sticky;
   top: 60px;
