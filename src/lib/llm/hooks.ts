@@ -107,14 +107,24 @@ export function useLLMStream() {
   const [text, setText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const abortRef = useRef<{ aborted: boolean }>({ aborted: false });
+  // Holds the *current* stream's abort flag. Each `stream()` invocation
+  // creates a NEW local flag object and stores it here. The channel's
+  // onmessage closure captures the local — so when a later stream replaces
+  // `abortRef.current`, the old channel still sees its own flag as aborted
+  // (the bug this fixes was: replacing the ref's value un-aborted the
+  // previous stream, because the old onmessage was reading via the ref).
+  const abortRef = useRef<{ aborted: boolean } | null>(null);
 
   const stream = useCallback(
     async (messages: ChatMessage[], opts?: ChatOptions): Promise<void> => {
+      // Mark any previous stream aborted before we create a new one.
+      if (abortRef.current) abortRef.current.aborted = true;
+      const localAbort = { aborted: false };
+      abortRef.current = localAbort;
+
       setText("");
       setError(null);
       setIsStreaming(true);
-      abortRef.current = { aborted: false };
 
       const tStart = performance.now();
       if (opts?.telemetryFeature) {
@@ -132,12 +142,16 @@ export function useLLMStream() {
       let accumulated = "";
       const channel = new Channel<StreamEvent>();
       channel.onmessage = (msg) => {
-        if (abortRef.current.aborted) return;
+        // Closes over the LOCAL flag — guaranteed isolated from any later
+        // stream's flag.
+        if (localAbort.aborted) return;
         if (msg.event === "token") {
           accumulated += msg.data.content;
           setText((prev) => prev + msg.data.content);
         } else if (msg.event === "done") {
-          setIsStreaming(false);
+          if (abortRef.current === localAbort) {
+            setIsStreaming(false);
+          }
           if (opts?.telemetryFeature) {
             emitTelemetry({
               kind: "llm_response",
@@ -152,8 +166,10 @@ export function useLLMStream() {
             });
           }
         } else if (msg.event === "error") {
-          setError(msg.data.message);
-          setIsStreaming(false);
+          if (abortRef.current === localAbort) {
+            setError(msg.data.message);
+            setIsStreaming(false);
+          }
           if (opts?.telemetryFeature) {
             emitTelemetry({
               kind: "llm_error",
@@ -177,7 +193,7 @@ export function useLLMStream() {
           maxTokens: opts?.maxTokens,
         });
       } catch (e) {
-        if (!abortRef.current.aborted) {
+        if (!localAbort.aborted) {
           setError(String(e));
           if (opts?.telemetryFeature) {
             emitTelemetry({
@@ -191,21 +207,23 @@ export function useLLMStream() {
             });
           }
         }
-        setIsStreaming(false);
+        if (abortRef.current === localAbort) {
+          setIsStreaming(false);
+        }
       }
     },
     [],
   );
 
   const reset = useCallback(() => {
-    abortRef.current.aborted = true;
+    if (abortRef.current) abortRef.current.aborted = true;
     setText("");
     setError(null);
     setIsStreaming(false);
   }, []);
 
   const abort = useCallback(() => {
-    abortRef.current.aborted = true;
+    if (abortRef.current) abortRef.current.aborted = true;
     setIsStreaming(false);
   }, []);
 

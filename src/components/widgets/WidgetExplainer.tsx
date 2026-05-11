@@ -14,6 +14,7 @@ import {
 } from "../../lib/llm/prompts";
 import type { ChatMessage } from "../../lib/llm/types";
 import { emit as emitTelemetry } from "../../lib/telemetry";
+import { RichText } from "../RichText";
 import "./WidgetExplainer.css";
 
 interface WidgetExplainerProps {
@@ -80,11 +81,21 @@ export function WidgetExplainer({
   const [questionOpen, setQuestionOpen] = useState(false);
   const [questionInput, setQuestionInput] = useState("");
   const [thread, setThread] = useState<ChatTurn[]>([]);
+  // True while we've torn down the prior explanation and are waiting for the
+  // debounce timer to expire before kicking off a new stream. Drives the
+  // "Waiting for the controls to settle…" placeholder so the reader sees a
+  // distinct state from "nothing has happened yet".
+  const [pending, setPending] = useState(false);
   const explanationKeyRef = useRef<string | null>(null);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlightRef = useRef<boolean>(false);
 
-  // Debounced commentary trigger.
+  // State-change handler. Two phases:
+  //   (1) Immediately abort + clear any prior explanation. The reader should
+  //       not see stale tokens from a previous state while they're still
+  //       moving sliders.
+  //   (2) Debounce the LLM call so we don't spam Ollama mid-drag. After the
+  //       debounce expires (state has settled), fire a fresh stream.
   useEffect(() => {
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
@@ -92,6 +103,17 @@ export function WidgetExplainer({
     }
     if (explanationKeyRef.current === stateKey) return;
 
+    // Phase 1 — invalidate the existing explanation immediately. This is what
+    // makes the UX feel responsive: the moment the reader touches a slider,
+    // the stale explanation disappears.
+    if (inFlightRef.current) {
+      abortExplain();
+    }
+    resetExplain();
+    inFlightRef.current = false;
+    setPending(true);
+
+    // Phase 2 — schedule a new stream once state has settled.
     debounceTimerRef.current = setTimeout(() => {
       explanationKeyRef.current = stateKey;
       const lessonContext = extractLessonContext();
@@ -101,12 +123,8 @@ export function WidgetExplainer({
         widgetDescription,
         stateSummary,
       });
-      // Abort any in-flight commentary stream before starting a new one.
-      if (inFlightRef.current) {
-        abortExplain();
-        resetExplain();
-      }
       inFlightRef.current = true;
+      setPending(false);
       emitTelemetry({
         kind: "widget_explain_request",
         data: { widget: widgetName, state_summary: stateSummary },
@@ -215,11 +233,13 @@ export function WidgetExplainer({
   const explanationDisplay = useMemo(() => {
     if (explanation) return explanation;
     if (explaining) return "";
+    if (pending)
+      return "Waiting for the controls to settle, then generating a fresh explanation…";
     if (explainError) {
       return `Couldn't generate explanation (${explainError}). Try moving a control to retry.`;
     }
     return "Move a control to see the running explanation.";
-  }, [explanation, explaining, explainError]);
+  }, [explanation, explaining, explainError, pending]);
 
   // Latest streaming answer (if a stream is in flight). After commit, this
   // becomes empty and the thread renders the assistant turn instead.
@@ -235,7 +255,7 @@ export function WidgetExplainer({
           )}
         </div>
         <div className="widget-explainer__commentary-body" aria-live="polite">
-          {explanationDisplay}
+          <RichText text={explanationDisplay} />
           {explaining && <span className="widget-explainer__caret" />}
         </div>
       </div>
@@ -268,12 +288,12 @@ export function WidgetExplainer({
                 key={i}
                 className={`widget-explainer__turn widget-explainer__turn--${t.role}`}
               >
-                {t.content}
+                <RichText text={t.content} />
               </div>
             ))}
             {streamingAnswerVisible && (
               <div className="widget-explainer__turn widget-explainer__turn--assistant">
-                {questionAnswer}
+                <RichText text={questionAnswer} />
                 <span className="widget-explainer__caret" />
               </div>
             )}
