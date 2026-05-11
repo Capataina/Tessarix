@@ -1,0 +1,189 @@
+---
+title: "Linear Algebra — Linear Combinations and Span"
+tag: "Mathematics"
+last_updated: "2026-05-11"
+tags: ["MATHEMATICS", "LINEAR ALGEBRA", "SPAN", "LINEAR INDEPENDENCE"]
+estimated_time: "12–28 min depending on tier"
+prerequisites:
+  - linear-algebra-foundations
+widgets_used:
+  - LinearCombination
+  - MultipleChoice
+  - GoalChain
+  - Misconception
+  - KnowledgeCheck
+---
+
+import { LinearCombination } from "../components/widgets/LinearCombination";
+import { MultipleChoice } from "../components/assessments/MultipleChoice";
+import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
+import { GoalChain } from "../components/assessments/GoalChain";
+import { Misconception } from "../components/widgets/Misconception";
+import { Tier } from "../components/Tier";
+import { LessonMeta } from "../components/MDXComponents";
+
+# Linear Algebra — Linear Combinations and Span
+
+<LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "SPAN", "12–28 MIN"]} />
+
+So far in the linear-algebra track, vectors have been **specific points** — a particular arrow with a particular tip. This lesson is about *sets* of vectors and what you can reach by **mixing** them. Two new ideas live here: the **linear combination** (the act of mixing) and the **span** (the set of everything you can reach by mixing). These two together turn linear algebra from "operations on vectors" into "geometry of vector spaces" — and they're the prerequisite for almost everything that comes after (basis, rank, eigenvectors, dimension itself).
+
+<Tier level="standard">
+
+**Prerequisites:** [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations) (vector addition, scalar multiplication). The two operations on this lesson's page are exactly those two operations applied together, repeatedly.
+
+</Tier>
+
+## The linear combination
+
+Given two vectors $\mathbf{u}$ and $\mathbf{v}$, a **linear combination** of them is anything of the form:
+
+$$
+\alpha \mathbf{u} + \beta \mathbf{v}
+$$
+
+where $\alpha$ and $\beta$ are scalars. That's it. Scale each vector independently, then add. The reader has done this operation many times already, just not by name — every time scalar multiplication and vector addition were combined in the foundations lesson, that was a linear combination.
+
+The interesting question is not "how do I compute one" — that's mechanical. The interesting question is: **what *set* of points can be reached by varying $\alpha$ and $\beta$ over all real numbers?** That set is called the **span** of $\{\mathbf{u}, \mathbf{v}\}$.
+
+<LinearCombination />
+
+The faint green dots in the widget above are the span sampled at a grid of $(\alpha, \beta)$ values. Two patterns to feel by dragging:
+
+- **When $\mathbf{u}$ and $\mathbf{v}$ point in different directions**, the dots fill the plane. Every point in $\mathbb{R}^2$ can be reached by some combination. The span is *all of* $\mathbb{R}^2$.
+- **When $\mathbf{u}$ and $\mathbf{v}$ point in the same (or opposite) direction**, the dots collapse to a single line through the origin. Most of $\mathbb{R}^2$ becomes unreachable. The span is a 1-dimensional line.
+
+The widget colour-codes this: the readout panel turns green when the vectors are independent, red when dependent. The output vector $\alpha \mathbf{u} + \beta \mathbf{v}$ also recolours to red in the dependent case, signalling that the reader's free-coefficient exploration is trapped on a line.
+
+## Linear independence
+
+The distinction the widget surfaces has a name: $\mathbf{u}$ and $\mathbf{v}$ are **linearly independent** if neither one is a scalar multiple of the other — they point in genuinely different directions. They're **linearly dependent** if one IS a scalar multiple of the other — they live on the same line through the origin.
+
+The algebraic test in two dimensions: the determinant of the matrix whose columns are $\mathbf{u}$ and $\mathbf{v}$.
+
+$$
+\det \begin{pmatrix} u_1 & v_1 \\ u_2 & v_2 \end{pmatrix} = u_1 v_2 - u_2 v_1
+$$
+
+Non-zero → independent → span fills the plane. Zero → dependent → span is a line.
+
+<Tier level="standard">
+
+This is the same determinant from the matrices lesson — the *area scaling factor* of a 2×2 matrix is also the *independence test* for its columns, because if the columns are dependent, the matrix collapses the unit square to a line (area zero). The two interpretations are not separate facts; they're the same fact viewed from different sides.
+
+</Tier>
+
+<GoalChain
+  index={1}
+  title="Explore the geometry of span"
+  steps={[
+    {
+      goal: "Set u and v so their span fills the plane (linearly independent). Confirm the readout panel shows 'linearly independent' in green.",
+      check: (s) => s.dependent === 0,
+      explanation: "Any two non-parallel non-zero vectors span all of R². The determinant det[u|v] is non-zero — usually it's around the magnitudes' product times the sine of the angle between them.",
+    },
+    {
+      goal: "Now make u and v parallel (one is a scalar multiple of the other) so the span collapses to a line. The readout should turn red.",
+      check: (s) => s.dependent === 1 && Math.hypot(s.u_x, s.u_y) > 0.3 && Math.hypot(s.v_x, s.v_y) > 0.3,
+      explanation: "When v = k·u for some scalar k, det[u|v] = 0 because the two columns are scalar multiples. The faint span trail collapses onto u's line — every reachable point sits on that line through the origin. The output vector is also on that line.",
+    },
+    {
+      goal: "With u and v still parallel (linearly dependent), try to reach a point OFF u's line by adjusting α and β alone. Confirm you can't.",
+      check: (s) => s.dependent === 1 && Math.abs(s.out_x * s.u_y - s.out_y * s.u_x) < 0.05,
+      explanation: "When u and v are dependent, every linear combination α·u + β·v is also a scalar multiple of u — call it (α + βk)·u. There's only one *effective* coefficient, so the output stays on u's line no matter what α and β are. This is the geometric meaning of 'dimension': the span has dimension 1.",
+    },
+    {
+      goal: "Reset u and v to point in different directions again. Now grab the green output dot directly and drag it to the point (1.5, 1.5). Watch α and β snap to the right values automatically.",
+      check: (s) => s.dependent === 0 && Math.abs(s.out_x - 1.5) < 0.1 && Math.abs(s.out_y - 1.5) < 0.1,
+      explanation: "When u and v are independent, every point in the plane has UNIQUE coefficients (α, β) that produce it via α·u + β·v. The widget computes them by inverting the 2×2 matrix [u | v]. This is exactly how *coordinates in a basis* work — coming up in a future lesson on basis and change of basis.",
+    },
+  ]}
+  render={(onChange) => <LinearCombination onStateChange={onChange} />}
+/>
+
+<Misconception belief="Linear dependence is just about the two vectors being identical.">
+
+Dependence is broader. $\mathbf{u}$ and $\mathbf{v}$ are dependent whenever **one is any scalar multiple of the other** — including negative multiples (so $\mathbf{u}$ and $-\mathbf{u}$ are dependent), fractional multiples ($\mathbf{u}$ and $0.5\mathbf{u}$), and the zero-vector edge case ($\mathbf{u}$ and $\mathbf{0}$ are technically dependent because $\mathbf{0} = 0 \cdot \mathbf{u}$). The right phrasing isn't "identical" — it's "they live on the same line through the origin."
+
+</Misconception>
+
+<Tier level="complete">
+
+## Span beyond two vectors
+
+The widget on this page works with two vectors because we're in $\mathbb{R}^2$ and that's the maximum useful number for spanning the plane. In higher dimensions:
+
+- In $\mathbb{R}^3$, *one* vector spans a line; *two* (if independent) span a plane through the origin; *three* (if independent) span all of $\mathbb{R}^3$.
+- In $\mathbb{R}^n$, $k$ linearly independent vectors span a $k$-dimensional subspace. You can never span more than $n$ dimensions with vectors in $\mathbb{R}^n$ — that's the **dimension** of $\mathbb{R}^n$ itself.
+
+A set of $k$ vectors $\{\mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_k\}$ in $\mathbb{R}^n$ is linearly independent if the only way to write the zero vector as $c_1 \mathbf{v}_1 + c_2 \mathbf{v}_2 + \ldots + c_k \mathbf{v}_k = \mathbf{0}$ is with all $c_i = 0$. Dependence means *some* non-trivial combination of them gives zero — which is just a fancy way of saying *some* combination of all but one expresses that one. They're not contributing new directions to the span.
+
+## Span and the columns of a matrix
+
+The columns of a $2 \times 2$ matrix $A$ are two vectors in $\mathbb{R}^2$. The **column space** of $A$ is the span of its columns — the set of every vector of the form $A\mathbf{x}$ for some $\mathbf{x} \in \mathbb{R}^2$.
+
+- If $A$'s columns are independent (det $\ne 0$), the column space is all of $\mathbb{R}^2$. Every vector is reachable as $A\mathbf{x}$ for some $\mathbf{x}$. $A$ is **invertible**.
+- If $A$'s columns are dependent (det = 0), the column space is a line. Only vectors on that line are reachable as $A\mathbf{x}$. $A$ is **singular**.
+
+This connects the dependence test from this lesson to the determinant interpretation from the matrices lesson and to invertibility, which is its own forthcoming lesson. Three views of the same fact: dependence ↔ determinant zero ↔ non-invertibility ↔ collapsed column space. They're not coincidences — they're the same fact, written four ways.
+
+</Tier>
+
+---
+
+<KnowledgeCheck>
+
+<MultipleChoice
+  index={2}
+  question="The vectors (2, 1) and (4, 2) are:"
+  options={[
+    { id: "a", label: "linearly independent — they have different first components" },
+    { id: "b", label: "linearly dependent — (4, 2) is exactly 2 × (2, 1)" },
+    { id: "c", label: "perpendicular — their dot product is positive" },
+    { id: "d", label: "the standard basis" },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={3}
+  question="If u and v are linearly independent vectors in R², what is the span of {u, v}?"
+  options={[
+    { id: "a", label: "Only the points along u's direction." },
+    { id: "b", label: "Only the four points {u, v, u+v, 2u+v}." },
+    { id: "c", label: "All of R² — every point in the plane is some α·u + β·v." },
+    { id: "d", label: "The unit circle." },
+  ]}
+  correctId="c"
+/>
+
+<Tier level="complete">
+
+<MultipleChoice
+  index={4}
+  question="Suppose u and v are linearly dependent (with both non-zero). For a target point t in R² that happens to lie on u's line, how many (α, β) pairs satisfy α·u + β·v = t?"
+  options={[
+    { id: "a", label: "Exactly one — the system always has a unique solution." },
+    { id: "b", label: "Infinitely many — you can shift any α into β (or vice versa) by exploiting the dependence." },
+    { id: "c", label: "Zero — dependent vectors never reach a specific target." },
+    { id: "d", label: "Exactly two — α and −α give the same result." },
+  ]}
+  correctId="b"
+/>
+
+</Tier>
+
+</KnowledgeCheck>
+
+---
+
+## Where to read next
+
+- **Linear Algebra — Basis and Change of Basis** (forthcoming) — when two independent vectors fill $\mathbb{R}^2$, they form a *basis*. Every point has unique coordinates relative to that basis — which is exactly what the widget computed when you dragged the green output dot.
+- **Linear Algebra — Rank, Null Space, and the Four Fundamental Subspaces** (forthcoming) — generalises the column-space discussion in the complete tier; the column space is one of four fundamental subspaces every matrix has.
+- **Linear Algebra — Matrices as Transformations** ([already authored](#/lesson/linear-algebra-matrices)) — the determinant test in this lesson is the same number as the matrix's area-scaling factor; the dependence story and the singular-matrix story are the same story.
+
+External references:
+
+- **[3Blue1Brown — Linear combinations, span, and basis vectors](https://www.3blue1brown.com/lessons/span)** — visual intuition track.
+- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — Chapter 1.1 covers linear combinations and span; Chapter 2 develops independence and basis in depth.

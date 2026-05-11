@@ -1,0 +1,250 @@
+.lincomb {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius);
+  margin: var(--space-5) 0;
+}
+
+.lincomb__layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.lincomb__chart-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.lincomb__canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.lincomb__hint {
+  position: absolute;
+  left: 50%;
+  bottom: -1.4rem;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  color: var(--widget-text-muted);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.lincomb__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lincomb__dependence {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: var(--space-3);
+  border-radius: var(--widget-radius-sm);
+  border: 1px solid var(--widget-border);
+}
+
+.lincomb__dependence--indep {
+  background: rgba(62, 255, 142, 0.06);
+  border-color: var(--widget-success);
+}
+
+.lincomb__dependence--dep {
+  background: rgba(255, 90, 90, 0.06);
+  border-color: var(--widget-danger);
+}
+
+.lincomb__dependence-label {
+  font-size: 0.72rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lincomb__dependence-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--widget-text);
+}
+
+.lincomb__dependence--indep .lincomb__dependence-value {
+  color: var(--widget-success);
+}
+
+.lincomb__dependence--dep .lincomb__dependence-value {
+  color: var(--widget-danger);
+}
+
+.lincomb__dependence-note {
+  font-size: 0.82rem;
+  color: var(--widget-text-muted);
+}
+
+.lincomb__sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+}
+
+.lincomb__slider-row {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr 3rem;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lincomb__slider-label {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.lincomb__slider-label--primary {
+  color: var(--widget-chart-1);
+}
+
+.lincomb__slider-label--secondary {
+  color: var(--widget-chart-3);
+}
+
+.lincomb__slider {
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.lincomb__slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--widget-text);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--widget-bg-elevated);
+}
+
+.lincomb__slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--widget-text);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--widget-bg-elevated);
+}
+
+.lincomb__slider-value {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-align: right;
+  color: var(--widget-text);
+}
+
+.lincomb__readouts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+}
+
+.lincomb__readout-row {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.lincomb__readout-label {
+  font-family: var(--font-mono);
+  color: var(--widget-text-dim);
+}
+
+.lincomb__readout-value {
+  font-family: var(--font-mono);
+  color: var(--widget-text);
+  text-align: right;
+}
+
+.lincomb__readout-row--primary .lincomb__readout-value {
+  color: var(--widget-success);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.lincomb__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  color: var(--widget-text-dim);
+  cursor: pointer;
+  user-select: none;
+}
+
+.lincomb__toggle input[type="checkbox"] {
+  appearance: none;
+  width: 32px;
+  height: 18px;
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border-strong);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.lincomb__toggle input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--widget-text-dim);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.lincomb__toggle input[type="checkbox"]:checked {
+  background: var(--widget-accent);
+  border-color: var(--widget-accent);
+}
+
+.lincomb__toggle input[type="checkbox"]:checked::after {
+  transform: translateX(13px);
+  background: var(--bg-base);
+}
+
+@media (max-width: 880px) {
+  .lincomb__layout {
+    grid-template-columns: 1fr;
+  }
+}
