@@ -8,145 +8,108 @@ Status: open ideas. None of these have started.
 
 ## Composition + flow improvements
 
-- [ ] **Multi-step `<GoalChain>` on `<MetricComparison>`.** The widget already
-      exposes PSNR and SSIM values; the chain lets the reader walk through
-      goals like "make PSNR drop sharply while SSIM stays high" → "make them
-      agree" → "make SSIM drop sharply while PSNR stays high" → with a final
-      reflection step asking which distortions land in each regime. This is
-      the canonical demonstration of the principle the section is about, and
-      depends on the new `<GoalChain>` widget primitive (see
-      `notes/enrich-lesson-skill.md`).
+- [x] **Multi-step `<GoalChain>` on `<MetricComparison>`.** Shipped as Q2,
+      four-step disagreement-space walk (PSNR-drops, SSIM-drops, both-agree,
+      reset-and-reflect). `<GoalChain>` widget primitive built and lives at
+      `src/components/assessments/GoalChain.tsx`.
 
-- [ ] **Multi-step `<GoalChain>` on `<RatioCollapseDemo>`.** Step 1: "find a
-      feature scale where the two constants give essentially the same curve
-      (CLIP's natural scale, 1.0)." Step 2: "find a feature scale where the
-      DISTS constant collapses the ratio (below ~0.3)." Step 3: "find the
-      custom c that matches the DISTS curve at scale 0.2." Teaches the reader
-      *how* scale and c interact, not just that they do.
+- [x] **Multi-step `<GoalChain>` on `<RatioCollapseDemo>`.** Shipped as Q8,
+      three steps (default-scale negligible loss, small-scale severe
+      collapse, find the c-threshold at unit scale).
 
-- [ ] **Multi-step `<GoalChain>` on `<AdapterHeatmap>`.** Step 1: "make the
-      asymmetry exactly zero." (Three valid solutions: k=0, s_fid=1,
-      s_nat_d=s_nat_r — the reader discovers all three.) Step 2: "given
-      s_nat_d=0.3 and s_nat_r=0.9, find the k that maximises asymmetry."
-      Step 3: "explain why the maximum sits where it does." Makes the closed-
-      form formula tangible.
+- [x] **Multi-step `<GoalChain>` on `<AdapterHeatmap>`.** Shipped as Q9, four
+      steps (the three zeros: k=0, s_fid=1, s_nat,d=s_nat,r; plus the
+      asymmetry-maximising configuration).
 
-- [ ] **Replace the PSNR-vs-LPIPS PredictThenVerify (Q2) with a goal-driven
-      version on `<MetricComparison>`.** Currently the question asks "which
-      drops more under a 2-pixel shift, PSNR or LPIPS" — the widget now
-      supports the underlying calibration, so the question can become a goal
-      ("translate until PSNR drops by N dB; report what SSIM does"). Less
-      trivia, more direct experiment.
+- [x] **Replace the PSNR-vs-LPIPS PredictThenVerify (Q2) with a goal-driven
+      version on `<MetricComparison>`.** Done — the old Q2 PredictThenVerify
+      was removed; the new Q2 GoalChain on `<MetricComparison>` covers the
+      same conceptual territory experimentally.
 
-- [ ] **Composition section.** Add a short "putting it together" passage
-      after the adapter section that walks one concrete (s_nat_d, s_nat_r,
-      s_fid, k) tuple through the entire pipeline from raw embeddings to
-      final score, with each intermediate value annotated. The reader has
-      now seen each part in isolation; one end-to-end walkthrough cements
-      that the parts compose mechanically.
+- [x] **Composition section.** Shipped as the "Putting it together — one
+      concrete walkthrough" subsection after the adapter, with a
+      stage-by-stage table for one (distorted, reference) pair.
 
-- [ ] **Failure-mode side panel.** Each named implementation trap (QuickGELU
-      mix-up, fused-QKV, c1/c2, 0-D scalars, HashMap collision) currently
-      sits in a flat list. They deserve their own short subsection each,
-      each ending with a "how would you catch this" prompt. The
-      `<GeluComparison>` widget already anchors trap #1; the others want
-      similarly concrete artefacts.
+- [ ] **Failure-mode side panel.** Two of the five traps now have
+      assessments (Q10 fused-QKV, Q11 0-D scalars). The other three already
+      have widgets (`<GeluComparison>` for trap #1, `<RatioCollapseDemo>`
+      for trap #3) or are textual-only (HashMap collision). Partial — could
+      restructure each trap into its own subsection with consistent "how
+      would you catch this" closing prompts.
 
 ## New widgets that would pay off
 
-- [ ] **`<TranslationVsBlurPlot>`.** Single scalar plot: SSIM and PSNR
-      response as a function of translation magnitude, on one axis, and as a
-      function of blur sigma on a second axis. Side-by-side panels. Lets
-      the reader compare the *shape* of the metric responses, not just the
-      magnitudes at one operating point. Cheap to build given the metrics
-      library already exists.
+- [x] **`<TranslationVsBlurPlot>`.** Shipped — precomputed PSNR + SSIM
+      response curves over translation magnitude (0–16 px) and blur sigma
+      (0–4), side-by-side panels. Two LineChart pairs each. Deferred
+      compute on a 100 ms setTimeout so the lesson paints first.
 
 - [ ] **`<MetricLandscape>`.** 2D heatmap of (PSNR drop, SSIM drop) coloured
-      by distortion type. Reveals the disagreement *zones* — the regions
-      where the two metrics tell different stories. Brilliant has similar
-      visualisations on its statistics lessons. Requires running the full
-      metric pair across a parameter sweep at widget-load time (precomputed
-      offline → JSON would be cheaper than live computation).
+      by distortion type. Reveals the disagreement *zones*. **Still open.**
+      Requires precomputed JSON of (distortion type × parameter × ΔPSNR ×
+      ΔSSIM) tuples — defer until there's a clear authoring need.
 
-- [ ] **`<FidelityHeadCalculator>`.** Two 8-cell sliders (simplified from
-      512 to make the math feel grounded), live computation of μ_d, μ_r,
-      σ_d, σ_r, σ_dr, and the resulting fidelity ratio with each term
-      highlighted. Teaches the SSIM-in-feature-space formula by letting the
-      reader build it. Lower dimensionality breaks the realism but makes
-      the structure feel concrete.
+- [x] **`<FidelityHeadCalculator>`.** Shipped — 8-dim simplification with
+      a fixed f_r and 8 draggable bar-handles for f_d. Live readouts of
+      μ_d, μ_r, σ_d², σ_r², σ_dr, and each of the four bracket terms of
+      the SSIM-style ratio, then the assembled ratio. Includes Match /
+      Anticorrelate / Zero / Randomise presets.
 
-- [ ] **`<CalibratorComparison>`.** The current FunctionGrapher on the
-      calibrator shows one curve. Adding the *trained* calibrator as a
-      second fixed curve, alongside the reader's free-parameter curve,
-      makes the trained parameters' role tangible. Reader can try to *fit*
-      the trained calibrator with their parameters, which teaches "what the
-      training optimised" without any code.
+- [x] **`<CalibratorComparison>`.** Shipped — overlays a fixed "trained"
+      calibrator against the reader's free-parameter version, with live
+      RMSE between the two curves shown as the fitness indicator. Five
+      sliders for β₁..β₅.
 
-- [ ] **`<NaturalnessVsFidelityScatter>`.** Real or synthetic scatter
-      showing (s_nat,d, s_fid, final score) tuples from a dataset
-      simulation. Reveals the regions of the input space where naturalness
-      dominates vs where fidelity dominates. Probably needs precomputed
-      data — too much to compute live.
+- [ ] **`<NaturalnessVsFidelityScatter>`.** **Still open.** Needs
+      precomputed dataset of (s_nat,d, s_fid, score) tuples. Defer until
+      there's a real dataset to render rather than synthetic noise.
 
 ## Pedagogy and grounding
 
-- [ ] **A "before vs after CLIP" section.** A brief callback to the
-      classical-baselines section that revisits the PSNR/SSIM widget on a
-      *re-stylised* version of the reference image (where pixel-domain
-      metrics break completely). Then notes that this is exactly the case
-      that motivated feature-domain metrics. Closes the narrative arc.
+- [ ] **A "before vs after CLIP" section.** **Still open.** Would close
+      the narrative arc by revisiting the PSNR/SSIM widget on a re-stylised
+      image. Requires a re-stylised reference image fixture; defer to a
+      future authoring pass.
 
-- [ ] **A "what A-FINE doesn't do" section.** Negative space matters. The
-      lesson sells what A-FINE adds; it doesn't name what it leaves out
-      (perception-of-saliency, geometric distortion, motion artefacts in
-      video, etc.). One short paragraph at the end calibrates the reader's
-      mental model about the metric's scope.
+- [x] **A "what A-FINE doesn't do" section.** Shipped — covers geometric
+      distortion, saliency, temporal consistency, adversarial robustness,
+      OOD domains, and distributional comparison. Calibrates the reader's
+      mental model of A-FINE's scope.
 
-- [ ] **Cross-page hyperlinks to:** SSIM, CLIP, ViT, LPIPS, DISTS, FID,
-      NIQE, BRISQUE, GELU. None of these have lessons yet, but as the
-      project grows, each becomes a candidate destination. For now: add
-      glossary entries (per the four-tier content architecture), then
-      back-fill cross-page links when the lessons exist.
+- [x] **Glossary scaffolding for the cross-page-hyperlink targets.**
+      Shipped at `src/glossary.mdx` with stub entries for CLIP, ViT, SSIM,
+      LPIPS, DISTS, FID, GELU, QuickGELU, PyIQA, burn, ImageNet. Inline
+      cross-page links from `afine.mdx` to these entries are still **open**
+      (depend on lesson-routing being wired up; deferred).
 
-- [ ] **Implementation-trap mini-exercises.** Each trap currently asserts.
-      A short "find the trap" exercise — show a diff or a code snippet,
-      ask the reader to spot the bug — would convert assertion into
-      assessment. Especially powerful for traps #4 (0-D scalar) and #5
-      (HashMap collision) where the widget can't dramatise them.
+- [x] **Implementation-trap mini-exercises.** Shipped — Q10 (fused-QKV
+      transposed split) and Q11 (0-D scalar drop). The two remaining traps
+      already have widgets (`<GeluComparison>` for #1; `<RatioCollapseDemo>`
+      for #3); the HashMap collision is textual-only and not amenable.
 
-- [ ] **Failed-experiment sidebars.** The lesson notes implementation
-      decisions A-FINE *made*, but not decisions it considered and
-      rejected. A sidebar noting "the authors tried cosine-similarity
-      fidelity heads first and found them insufficient — that's why we got
-      the SSIM-style ratio" would deepen the reader's grasp of why the
-      design landed where it did.
+- [ ] **Failed-experiment sidebars.** **Still open.** Would deepen the
+      reader's grasp of the design rationale by showing what A-FINE
+      considered and rejected. Requires sourcing the failed-experiment
+      content; defer to a future authoring pass.
 
-- [ ] **Quiz-mode rendering.** Per `notes/three-pillar-model.md`, the same
-      lesson should be re-renderable as a quiz where every assessment
-      widget runs in `mode="quiz"` (gated reveal, score tracking). The
-      A-FINE lesson is the natural first lesson to validate this against —
-      it already has the assessment density to make a quiz-mode rendering
-      meaningful.
+- [ ] **Quiz-mode rendering.** **Still open.** Major infrastructure work
+      that touches lesson routing, assessment-widget modes, and score
+      tracking. Defer to its own session.
 
 ## Tooling and infrastructure
 
-- [ ] **Frontmatter consistency check.** The `widgets_used` array in the
-      lesson frontmatter is now manually curated. A simple script that
-      compares declared widgets against actual JSX usage would catch drift
-      automatically. Goes well with the future `enrich-lesson` skill but
-      is cheap enough to ship as a standalone script first.
+- [x] **Frontmatter consistency check.** Shipped at
+      `scripts/lint-lesson-frontmatter.ts`. Compares the `widgets_used`
+      array against actual imports and JSX usage; flags
+      declared-not-imported, imported-not-declared, and
+      imported-not-rendered. Currently runs clean across `afine.mdx`.
 
-- [ ] **Telemetry-driven evidence.** Once the lesson has been read by
-      several users, the telemetry log can tell us *which sections cause
-      reading sessions to end prematurely* and *which widgets the readers
-      engage with vs skip past*. Use that signal to prioritise this list,
-      not pure author intuition.
+- [ ] **Telemetry-driven evidence.** **Still open.** Needs accumulated
+      session data; defer until lessons have been read by real users.
 
-- [ ] **A-FINE lesson screenshot regression test.** When the widget kit
-      changes, lessons can drift visually. A simple
-      Playwright-or-equivalent test that screenshots each section and
-      diffs against a baseline would catch unintended visual regressions
-      in lessons that the author isn't actively editing.
+- [ ] **A-FINE lesson screenshot regression test.** **Still open.**
+      Requires Playwright (or similar) setup. Defer to a dedicated tooling
+      session.
 
 ## Conversational integrations (longer-horizon — flagged for future work)
 

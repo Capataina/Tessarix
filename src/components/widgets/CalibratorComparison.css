@@ -1,0 +1,101 @@
+.calibrator-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+  padding: var(--space-5, 1.25rem);
+  background: var(--surface-1, #131321);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-md, 12px);
+  margin: var(--space-5, 1.25rem) 0;
+}
+
+.calibrator-comparison__fit {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--surface-2, #1a1a2c);
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+}
+
+.calibrator-comparison__fit-label {
+  font-size: 0.85rem;
+  color: var(--text-2, rgba(255, 255, 255, 0.65));
+}
+
+.calibrator-comparison__fit-value {
+  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.calibrator-comparison__fit-value--excellent {
+  color: #58dab7;
+}
+
+.calibrator-comparison__fit-value--close {
+  color: #c8a35a;
+}
+
+.calibrator-comparison__fit-value--rough {
+  color: #e8825c;
+}
+
+.calibrator-comparison__fit-value--far {
+  color: #e35a76;
+}
+
+.calibrator-comparison__sliders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.calibrator-comparison__slider-row {
+  display: grid;
+  grid-template-columns: 13rem 1fr 3rem;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  font-size: 0.9rem;
+}
+
+.calibrator-comparison__slider-label {
+  color: var(--text-2, rgba(255, 255, 255, 0.7));
+}
+
+.calibrator-comparison__slider {
+  width: 100%;
+  appearance: none;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.calibrator-comparison__slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--text-1, #f0f0f5);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--surface-2, #1a1a2c);
+}
+
+.calibrator-comparison__slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--text-1, #f0f0f5);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--surface-2, #1a1a2c);
+}
+
+.calibrator-comparison__slider-value {
+  text-align: right;
+  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  font-size: 0.85rem;
+  color: var(--text-1, #f0f0f5);
+}

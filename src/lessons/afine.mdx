@@ -12,6 +12,9 @@ widgets_used:
   - AdapterHeatmap
   - GeluComparison
   - EmbeddingHeatmap
+  - CalibratorComparison
+  - TranslationVsBlurPlot
+  - FidelityHeadCalculator
   - MultipleChoice
   - PredictThenVerify
   - GoalDrivenWrapper
@@ -29,6 +32,9 @@ import { RatioCollapseDemo } from "../components/widgets/RatioCollapseDemo";
 import { AdapterHeatmap } from "../components/widgets/AdapterHeatmap";
 import { GeluComparison } from "../components/widgets/GeluComparison";
 import { EmbeddingHeatmap } from "../components/widgets/EmbeddingHeatmap";
+import { CalibratorComparison } from "../components/widgets/CalibratorComparison";
+import { TranslationVsBlurPlot } from "../components/widgets/TranslationVsBlurPlot";
+import { FidelityHeadCalculator } from "../components/widgets/FidelityHeadCalculator";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalDrivenWrapper } from "../components/assessments/GoalDrivenWrapper";
@@ -145,6 +151,10 @@ The four-step exploration below walks you through the disagreement space. Each s
   render={(onChange) => <MetricComparison onStateChange={onChange} />}
 />
 
+If you want to see the *shape* of each metric's response rather than spot-checking points, the side-by-side response curves below precompute PSNR and SSIM across the translation and blur parameter ranges:
+
+<TranslationVsBlurPlot />
+
 **Hold onto the SSIM formula.** A-FINE's fidelity head uses exactly this structural-similarity-ratio shape — but in CLIP feature space rather than pixel space. The architectural lineage is direct.
 
 ---
@@ -244,6 +254,10 @@ with $\mu_d, \mu_r$ the means and $\sigma_d, \sigma_r, \sigma_{dr}$ the standard
 
 Compare to the original SSIM formula at the top of the lesson. **Same shape.** The only difference: the means and variances are taken over CLIP feature dimensions rather than image patches. The structural lineage from SSIM → DISTS → A-FINE is direct.
 
+To build intuition for what each term in the formula actually contributes, the calculator below collapses to 8 dimensions (instead of 512). You can drag each component of the distorted vector and watch the means, variances, covariance, and assembled ratio update term-by-term:
+
+<FidelityHeadCalculator />
+
 <Misconception belief="The fidelity head is just cosine similarity between f_d and f_r, dressed up.">
 
 Cosine similarity collapses to one scalar per pair using only the angle between the vectors. The fidelity head's SSIM-like ratio uses **three statistics** per vector (mean, variance, and covariance between the pair), assembled into a structured ratio that separately rewards matching luminance, matching contrast, and matching structure — directly analogous to image-domain SSIM. Two embeddings can have high cosine similarity yet differ in variance distribution; the fidelity head sees that difference.
@@ -332,6 +346,10 @@ Drag the sliders to see how each parameter shapes the curve. The default values 
 />
 
 **The point of the calibrator** is to map the raw network output (which can be in any range — the network is just trained to produce *something monotone in quality*) onto a $(0, 1)$ scale that has consistent interpretation. The trained $\beta$ values absorb whatever offset and scale the raw head happens to produce; the calibrated scores are what the adapter actually combines.
+
+To make the role of the trained values concrete, the widget below overlays a fixed "trained" calibrator (the kind A-FINE actually ships) against your free-parameter version. Try to fit the trained curve by hand — the RMSE between the two updates live as you drag:
+
+<CalibratorComparison />
 
 A subtle weight-loading wrinkle: the five $\beta_i$ are stored as **0-D scalars** in the source PyTorch checkpoint but `burn`'s `Param<Tensor<B, 1>>` expects shape `(1,)`. `PytorchStore`'s auto-load silently drops 0-D parameters, leaving them at random init — which silently breaks the metric. The fix is to load them manually via `PytorchReader::with_top_level_key(...).get(name)` and unsqueeze to `(1,)`. This is the second of the lesson's "easy to miss" implementation traps.
 
@@ -422,6 +440,48 @@ Output is sigmoid-then-multiplied-by-100 to land in $(0, 100)$ for human readabi
 
 </Tier>
 
+<Tier level="standard">
+
+---
+
+## Putting it together — one concrete walkthrough
+
+A single (distorted, reference) pair, walked through the full pipeline. Use these numbers as a ground truth for the per-stage widgets above.
+
+| Stage | Computation | Value |
+|---|---|---|
+| **1. CLIP** | f_d, f_r — 512-d unit-norm embeddings | (vectors) |
+| **2. Naturalness head** — applied to f_d | Linear → GELU → Linear → GELU → Linear | q_nat,d = **0.78** |
+| **2. Naturalness head** — applied to f_r (shared weights) | same head, same weights | q_nat,r = **0.42** |
+| **3. Fidelity head** — SSIM-style ratio over (f_d, f_r) | (2μ_d μ_r + c₁)(2σ_dr + c₂) / [(μ_d² + μ_r² + c₁)(σ_d² + σ_r² + c₂)] | q_fid = **0.63** |
+| **4. Naturalness calibrator** — applied to q_nat,d | β₁(0.5 − σ(β₂(q − β₃))) + β₄ q + β₅ | s_nat,d = **0.72** |
+| **4. Naturalness calibrator** — applied to q_nat,r | same calibrator, shared weights | s_nat,r = **0.40** |
+| **4. Fidelity calibrator** — applied to q_fid | second calibrator, different β's | s_fid = **0.66** |
+| **5. Adapter — blend** | k · s_nat,r + (1 − k), with k = 0.55 | blend = **0.72** |
+| **5. Adapter — score** | blend · s_fid + (1 − blend) · s_nat,d | score = **0.68** |
+| **5. Output** | sigmoid(score · 6 − 3) · 100 — roughly | output ≈ **72** |
+
+This is what's happening *inside* every A-FINE evaluation. The reader is now in a position to predict, ahead of running it: *given* these intermediate values, the asymmetry of this pair (score with d↔r swapped) is k · |s_nat,d − s_nat,r| · (1 − s_fid) = 0.55 · 0.32 · 0.34 ≈ 0.060 — small, because s_fid is moderate-to-high. A truly low-fidelity pair (s_fid = 0.1, same other values) would produce asymmetry ≈ 0.16 — a meaningful shift the reader can verify against the adapter heatmap above.
+
+The whole pipeline is *deterministic given the weights*. Once the checkpoint is loaded correctly, everything downstream is a straightforward composition of pure functions. The five implementation traps below are the entire surface where that composition can silently break.
+
+---
+
+## What A-FINE doesn't do
+
+This lesson sells what A-FINE adds; it should also be honest about what it leaves out. A-FINE is not a universal quality metric — it has a specific scope and specific failure modes outside that scope:
+
+- **Geometric distortion.** Translation, rotation, scaling. CLIP's vision transformer is rotation-fragile and scale-fragile; a 90°-rotated version of the same image is treated as a different scene. A-FINE inherits this. For tasks involving small geometric perturbations, structural-similarity-in-pixel-space (SSIM) is more robust.
+- **Saliency-weighted perception.** Humans weight different regions of an image differently — eyes, text, faces matter more than backgrounds. A-FINE has no saliency model; it weights every CLIP feature dimension equally. Metrics like CW-SSIM or specialised face-recognition metrics handle this better.
+- **Temporal consistency.** A-FINE scores single images. For video quality, frame-by-frame A-FINE misses temporal artefacts (flicker, judder, motion blur inconsistency). VMAF and ITU-T J.144 family of metrics target this regime.
+- **Adversarial robustness.** A targeted adversarial perturbation can change CLIP features substantially while keeping the image visually identical (or vice versa). A-FINE inherits CLIP's vulnerabilities — it is not a security-grade integrity check.
+- **Out-of-distribution domains.** A-FINE was trained on natural-image distortions. Medical imaging, satellite imagery, architectural drawings, anime — the metric still produces a number, but the calibration is no longer trustworthy without re-fitting on in-domain data.
+- **Distributional comparison.** A-FINE is per-image, not per-distribution. For evaluating generative models (GANs, diffusion), FID and KID are the standard — they compare the *distribution* of generated features against real-image features.
+
+The mental model: A-FINE is a strong full-reference metric for **single-image, natural-domain, perceptual quality** assessment. Outside that envelope, reach for the appropriate specialist metric.
+
+</Tier>
+
 <Tier level="complete">
 
 ---
@@ -436,11 +496,36 @@ This lesson has named two implementation gotchas so far; here's the consolidated
 
 2. **Fused-QKV attention layout.** The CLIP attention block uses a single `Linear(d_model, 3 * d_model)` followed by `chunk(3, -1)` to split into Q, K, V. `burn_nn`'s `MultiHeadAttention` uses separate Q, K, V linears. Loading the CLIP checkpoint into the standard burn attention would require pre-splitting the weights, and the orientation of the split is non-obvious — easy to transpose the wrong direction. The custom fused-QKV attention in this PR maps the checkpoint one-to-one.
 
-3. **`c1 = c2 = 1e-10`, not `1e-6`.** Covered above. CLIP features are unit-scale; the trained calibrator parameters assume the smaller eps.
+<MultipleChoice
+  index={10}
+  question="You're loading a CLIP checkpoint with fused QKV weights (a single Linear with output dimension 3 * d_model) into burn_nn's standard MultiHeadAttention. Which of these is the silent failure path that gets caught only by the parity test, not by shape checks?"
+  options={[
+    { id: "wrong-shape", label: "The weight loader rejects the load because the shapes mismatch (3 * d_model vs d_model)." },
+    { id: "transposed", label: "The split into Q/K/V is performed along the wrong axis (transposed), producing valid shapes that scramble the projections." },
+    { id: "missing-bias", label: "The bias terms are loaded but the weight tensors fall back to random init." },
+    { id: "wrong-norm", label: "The layer norm before the attention block is mis-ordered." },
+  ]}
+  correctId="transposed"
+/>
+
+3. **`c1 = c2 = 1e-10`, not `1e-6`.** Covered above. CLIP features are unit-scale; the trained calibrator parameters assume the smaller eps. The RatioCollapseDemo widget earlier in this lesson is the diagnostic widget for this trap.
 
 Plus two weight-loader oddities the parity test caught:
 
 - **0-D scalar parameters drop silently.** The five $\beta_i$ per calibrator, plus the adapter's $k$, are stored as 0-D tensors and need manual loading.
+
+<MultipleChoice
+  index={11}
+  question="You load the A-FINE checkpoint and every shape check passes — but the metric's output is off by ~30%. Which scenario is most consistent with what the parity test catches?"
+  options={[
+    { id: "wrong-arch", label: "You implemented the naturalness head with a different number of hidden units than the published version." },
+    { id: "scalar-dropped", label: "The five β values per calibrator (stored as 0-D tensors in the source checkpoint) silently fell back to random init because the standard loader skipped 0-D shapes." },
+    { id: "gelu-mix", label: "You swapped QuickGELU and erf-GELU between the CLIP backbone and the naturalness head." },
+    { id: "wrong-c", label: "You used c₁ = c₂ = 1e-6 instead of 1e-10 in the fidelity head." },
+  ]}
+  correctId="scalar-dropped"
+/>
+
 - **CLIP checkpoint key collision.** The text-encoder's `positional_embedding` ($[77, 512]$) and the vision-encoder's `visual.positional_embedding` ($[50, 768]$) both end up renamed to `positional_embedding` after the standard remap. HashMap iteration order picks which wins. Pre-renaming the text-encoder's key first dodges the collision.
 
 These five things are why the PR's parity test (`test_afine_pretrained_parity`) is the load-bearing test of the contribution. Property tests catch shape and finiteness; the parity test catches every one of the five traps above by comparing against a captured PyIQA scalar to within $5 \times 10^{-5}$ absolute.

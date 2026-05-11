@@ -1,0 +1,98 @@
+---
+title: "Glossary"
+last_updated: "2026-05-11"
+---
+
+# Glossary
+
+Short definitional entries for concepts referenced across the Tessarix
+lessons that don't (yet) warrant their own full lesson page. Each entry
+should be 1–3 sentences, with an optional citation. Promotion to a full
+lesson is one-way: when a concept here earns a widget and an authoring
+investment, move it to `src/lessons/<slug>.mdx` and replace its glossary
+entry with a cross-page hyperlink — see
+[`context/notes/content-architecture.md`](../context/notes/content-architecture.md)
+for the discipline.
+
+This file scaffolds initial entries for terms mentioned in `afine.mdx`.
+
+## CLIP
+
+**Contrastive Language–Image Pretraining.** A vision-language model from
+OpenAI (Radford et al., 2021) trained on 400M image–text pairs with a
+contrastive objective. Its vision encoder (a ViT-B/32 in the A-FINE
+lesson) produces 512-dimensional embeddings that capture rough semantic
+content. A-FINE uses CLIP's vision encoder as its backbone.
+
+## ViT — Vision Transformer
+
+A Transformer architecture applied to images by splitting each image into
+fixed-size patches and treating the patch sequence as tokens. Originally
+proposed by Dosovitskiy et al. 2020. CLIP ViT-B/32 uses 32×32 pixel
+patches and a base-sized (12 layers, d_model=768) Transformer.
+
+## SSIM — Structural Similarity Index
+
+A pixel-domain image-quality metric proposed by Wang et al. 2004.
+Computes a structural-similarity ratio over small local patches (typically
+8×8 or 11×11, Gaussian-weighted) and averages. Captures luminance,
+contrast, and structural correlation. Better correlation with human
+perception than PSNR, but still pixel-domain — it cannot handle re-styled
+or feature-shifted reconstructions.
+
+## LPIPS — Learned Perceptual Image Patch Similarity
+
+A perceptual image-quality metric (Zhang et al. 2018) that compares
+images via the weighted L2 distance between their VGG-16 (ImageNet)
+feature maps at multiple layers. The layer-weighting is learned on a
+perceptual-similarity dataset. Member of the same "CNN-feature" family as
+DISTS and A-FINE.
+
+## DISTS — Deep Image Structure and Texture Similarity
+
+A full-reference image-quality metric (Ding et al. 2020) computing
+SSIM-style structure plus texture ratios at every VGG-16 layer and
+learnedly combining them. Directly motivated A-FINE's fidelity head —
+which uses the same SSIM-in-feature-space shape but with a CLIP backbone
+instead of VGG.
+
+## FID — Fréchet Inception Distance
+
+A *distributional* image-quality metric — compares the distribution of
+features from a set of generated images against a set of real images
+under a Gaussian assumption. Standard for evaluating generative models
+(GANs, diffusion). Per-image scoring (A-FINE, LPIPS, DISTS) and
+distributional scoring (FID, KID) are separate quadrants.
+
+## GELU — Gaussian Error Linear Unit
+
+An activation function defined as $\text{GELU}(x) = x \cdot \Phi(x)$ where
+$\Phi$ is the standard Gaussian CDF. The "true" form uses the erf-based
+CDF; **QuickGELU** is an OpenAI shortcut approximation $x \cdot \sigma(1.702 x)$
+that runs faster on GPU. A-FINE's CLIP backbone uses QuickGELU; the
+naturalness head uses the erf-based form — getting them swapped silently
+shifts every downstream activation by ~1%.
+
+## QuickGELU
+
+The OpenAI approximation $x \cdot \sigma(1.702 x)$ to the standard
+erf-based GELU. ~1% pointwise difference; faster GPU inference. Used in
+the CLIP backbone but not in the standalone naturalness head — see the
+GELU entry above.
+
+## PyIQA
+
+A PyTorch image-quality-assessment library (`chaofengc/IQA-PyTorch`) that
+implements many full-reference and no-reference metrics including A-FINE.
+The reference implementation A-FINE's burn port mirrors.
+
+## burn
+
+A Rust deep-learning framework (`tracel-ai/burn`). The A-FINE
+implementation discussed in this lesson lives in burn PR #4894.
+
+## ImageNet
+
+The standard large-scale image classification dataset (Russakovsky et al.
+2015) — 1.28M training images across 1000 classes. The pretraining target
+for VGG-16, used in LPIPS and DISTS.

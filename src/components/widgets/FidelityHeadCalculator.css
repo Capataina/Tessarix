@@ -1,0 +1,183 @@
+.fhc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+  padding: var(--space-5, 1.25rem);
+  background: var(--surface-1, #131321);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-md, 12px);
+  margin: var(--space-5, 1.25rem) 0;
+}
+
+.fhc__vectors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.fhc__vector {
+  padding: var(--space-3, 0.75rem);
+  background: var(--surface-2, #1a1a2c);
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+}
+
+.fhc__vector--dist {
+  border-left: 2px solid #5dc3d9;
+}
+
+.fhc__vector--ref {
+  border-left: 2px solid #e8825c;
+}
+
+.fhc__vector-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-2, 0.5rem);
+  font-size: 0.82rem;
+}
+
+.fhc__vector-label {
+  color: var(--text-2, rgba(255, 255, 255, 0.7));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fhc__vector-stats {
+  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  color: var(--text-1, #f0f0f5);
+}
+
+.fhc__grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.45rem;
+  height: 140px;
+}
+
+.fhc__cell {
+  position: relative;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  touch-action: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fhc__cell--editable {
+  cursor: ns-resize;
+}
+
+.fhc__cell-axis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.fhc__cell-bar {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  background: linear-gradient(180deg, #79b3ff, #5dc3d9);
+  border-radius: 2px;
+}
+
+.fhc__cell-bar--neg {
+  background: linear-gradient(180deg, #e8825c, #c8553d);
+}
+
+.fhc__cell-label {
+  position: absolute;
+  bottom: 2px;
+  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  font-size: 0.65rem;
+  color: var(--text-1, #f0f0f5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.fhc__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.fhc__preset {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.18));
+  color: var(--text-1, #f0f0f5);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.fhc__preset:hover {
+  border-color: var(--accent, #c8a35a);
+  background: rgba(200, 163, 90, 0.08);
+}
+
+.fhc__formula {
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--surface-2, #1a1a2c);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  border-radius: var(--radius-sm, 8px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.fhc__cov-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: var(--space-2, 0.5rem);
+  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  font-size: 0.88rem;
+  color: var(--text-2, rgba(255, 255, 255, 0.7));
+}
+
+.fhc__cov-value {
+  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  color: var(--text-1, #f0f0f5);
+}
+
+.fhc__assembly {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.fhc__assembly-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.85rem;
+}
+
+.fhc__assembly-label {
+  color: var(--text-2, rgba(255, 255, 255, 0.7));
+}
+
+.fhc__assembly-value {
+  font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  color: var(--text-1, #f0f0f5);
+}
+
+.fhc__assembly-line--total {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+  font-size: 0.95rem;
+}
+
+.fhc__assembly-line--total .fhc__assembly-value {
+  color: var(--accent, #c8a35a);
+  font-weight: 500;
+}
