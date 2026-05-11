@@ -1,0 +1,245 @@
+---
+title: "Linear Algebra — Matrix Operations"
+tag: "Mathematics"
+last_updated: "2026-05-11"
+tags: ["MATHEMATICS", "LINEAR ALGEBRA", "MATRICES", "OPERATIONS"]
+estimated_time: "15–35 min depending on tier"
+prerequisites:
+  - linear-algebra-foundations
+  - linear-algebra-matrices
+widgets_used:
+  - MatrixComposition
+  - MultipleChoice
+  - GoalChain
+  - Misconception
+  - KnowledgeCheck
+---
+
+import { MatrixComposition } from "../components/widgets/MatrixComposition";
+import { MultipleChoice } from "../components/assessments/MultipleChoice";
+import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
+import { GoalChain } from "../components/assessments/GoalChain";
+import { Misconception } from "../components/widgets/Misconception";
+import { Tier } from "../components/Tier";
+import { LessonMeta } from "../components/MDXComponents";
+
+# Linear Algebra — Matrix Operations
+
+<LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "OPERATIONS", "15–35 MIN"]} />
+
+The previous lesson treated a matrix as a *single transformation* — one matrix in, one warped plane out. Useful, but in practice you rarely deal with one matrix at a time. You add matrices to combine effects, you scale them to dampen or amplify, you transpose them to flip rows and columns, and — most consequentially — you *multiply* matrices to compose two transformations into one. This lesson works through the four operations on matrices in turn, with a particular focus on the last one. Matrix multiplication is the operation where the geometry gets interesting, and it's also the operation where the most surprising fact in elementary linear algebra lives: **the order of multiplication matters**, often dramatically.
+
+<Tier level="standard">
+
+**Prerequisites:** [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations) and [Linear Algebra — Matrices as Transformations](#/lesson/linear-algebra-matrices). The first gives you vectors and scalar multiplication; the second gives you the picture of a matrix transforming the plane. This lesson builds on both — particularly the basis-vector view of matrices, because that view is what makes matrix multiplication geometrically meaningful rather than purely mechanical.
+
+</Tier>
+
+## The easy three — addition, scalar multiplication, transpose
+
+The first three matrix operations are the ones you can probably guess without being told. Each is defined component-wise, each is straightforward to compute, and each has a clean geometric interpretation.
+
+**Matrix addition.** Two matrices of the same shape add component-wise:
+
+$$
+A + B = \begin{pmatrix} a_{11} + b_{11} & a_{12} + b_{12} \\ a_{21} + b_{21} & a_{22} + b_{22} \end{pmatrix}
+$$
+
+The geometric reading: if $A$ and $B$ are both transformations of the plane, then $(A + B)\mathbf{v} = A\mathbf{v} + B\mathbf{v}$ — applying the sum is the same as applying each matrix to the vector and then adding the resulting vectors. Addition of matrices distributes over vectors, and that distributivity is exactly what makes the component-wise definition the *only* reasonable one. Anything else would break linearity.
+
+**Scalar multiplication.** Multiplying a matrix by a scalar $k$ scales every entry by $k$:
+
+$$
+k A = \begin{pmatrix} k a_{11} & k a_{12} \\ k a_{21} & k a_{22} \end{pmatrix}
+$$
+
+Geometrically: $kA$ is a transformation that scales by an extra factor of $k$ on top of whatever $A$ already does. Where $A$ doubled some vector, $2A$ quadruples it; where $A$ rotated a vector through some angle, $-A$ rotates it through the same angle and then flips it. Scalar multiplication of matrices is exactly the linear-algebra analogue of scalar multiplication of vectors — one number rescaling the whole operation uniformly.
+
+**Transpose.** The transpose $A^T$ flips a matrix across its main diagonal — rows become columns and vice versa:
+
+$$
+A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}, \qquad
+A^T = \begin{pmatrix} a & c \\ b & d \end{pmatrix}
+$$
+
+The transpose doesn't have a clean visual interpretation in the way the others do — it's not "the transformation that does X." Its role is structural. Transposition shows up everywhere — in defining symmetric matrices (where $A = A^T$), in the formula for matrix-vector multiplication via dot products, in the SVD, in least-squares. Its two key algebraic properties are worth memorising: $(A^T)^T = A$ (transposing twice gets you back), and $(AB)^T = B^T A^T$ (the transpose of a product reverses the order — the same way an inverse does).
+
+<Tier level="standard">
+
+The "transpose reverses the order of products" rule looks like a quirk until you see *why* it has to be that way. $AB$ applies $B$ first and then $A$. The transpose has to be a *reflection* of that operation, and reflecting an ordered sequence reverses the order — exactly the way putting on shoes and socks reverses when you take them off. The shoes go on second, so they come off first.
+
+</Tier>
+
+## Matrix multiplication — the operation where everything happens
+
+The fourth operation is the one this lesson is really about. Matrix multiplication is **not** component-wise. There's nothing called "matrix multiplication" that means "multiply the corresponding entries together." The component-wise version of $AB$ is the **Hadamard product**, and it's used in a few contexts (mostly element-wise neural network operations), but it's not what mathematicians mean when they say "matrix product".
+
+What they mean is this. The product of two $2 \times 2$ matrices $A$ and $B$ is the matrix $AB$ whose entries are dot products between $A$'s rows and $B$'s columns:
+
+$$
+AB = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} e & f \\ g & h \end{pmatrix} = \begin{pmatrix} ae + bg & af + bh \\ ce + dg & cf + dh \end{pmatrix}
+$$
+
+Read the top-left entry: it's $ae + bg$, which is the dot product of $A$'s first row $(a, b)$ with $B$'s first column $(e, g)$. The top-right is the first row of $A$ dotted with the second column of $B$. The bottom-left, second row of $A$ with first column of $B$. Bottom-right, second row of $A$ with second column of $B$. Once you've seen the pattern — *row times column*, repeated for every entry of the output — the formula stops looking strange. It's just the inner product taken four times.
+
+**But the geometric meaning is what makes the operation worth defining.** Matrix multiplication is **composition of transformations**. If $A$ and $B$ are both transformations of the plane, then $AB$ is the single transformation that does $B$ first and then $A$. Applying $AB$ to a vector $\mathbf{v}$ gives:
+
+$$
+(AB)\mathbf{v} = A(B\mathbf{v})
+$$
+
+That's the entire reason the operation is defined the way it is. The row-times-column rule isn't arbitrary; it's the rule that makes the matrix product *behave like function composition*. If you had defined the matrix product component-wise, you'd get a perfectly cromulent operation, but it wouldn't compose transformations. You'd lose the geometric meaning. The mathematicians who defined matrix multiplication picked the row-times-column rule on purpose, and the reason is exactly that purpose.
+
+## AB is not BA — the most important non-commutativity in elementary math
+
+Here's the fact that this lesson exists to drive home. **Matrix multiplication is non-commutative.** In general, $AB \ne BA$ — and they often differ a lot.
+
+The geometric reason is obvious once you see it. $AB$ applies $B$ first and then $A$. $BA$ applies $A$ first and then $B$. Those are different operations because the *order matters*. Rotate a unit square and then shear it: the shear acts on an already-rotated square, producing one specific final shape. Shear the square first and then rotate it: the rotation acts on an already-sheared parallelogram, producing a *different* shape. The same two transformations, in opposite orders, produce different results — and matrix multiplication mirrors that exactly.
+
+The widget below makes this directly visible. Two $2 \times 2$ matrices $A$ and $B$, set independently. Two side-by-side panels — one shows $AB$ applied to the unit square, the other shows $BA$ applied to the same unit square. For most pairs of matrices, the two resulting parallelograms are visibly different. Below them, a verdict line reports the *non-commutativity* numerically: the matrix norm $||AB - BA||$, which is zero when the matrices commute and grows as they don't.
+
+<MatrixComposition />
+
+<GoalChain
+  index={1}
+  title="Find when AB equals BA — and when it doesn't"
+  steps={[
+    {
+      goal: "Use the sliders to set A and B so AB ≠ BA. Get the non-commutativity (||AB − BA||) above 0.5 — the two parallelograms should be visibly different.",
+      check: (s) => s.non_commutativity > 0.5,
+      explanation: "For most pairs of non-trivial 2×2 matrices, AB and BA differ. The shear-x + rotate-45 preset (the default) is a classic example: shearing a rotated square is geometrically different from rotating a sheared one.",
+    },
+    {
+      goal: "Now find a non-trivial case where AB = BA (within ±0.01). Hint: try the 'Two rotations' preset, or set both A and B to scalar multiples of the identity.",
+      check: (s) => s.commute === 1 && Math.abs(s.A_a) + Math.abs(s.A_b) + Math.abs(s.A_c) + Math.abs(s.A_d) > 1.5,
+      explanation: "Some pairs of matrices commute. Two rotations around the same point always commute (rotating by 30° then 45° gives the same result as 45° then 30°). Any matrix commutes with a scalar multiple of the identity. More generally: matrices that share the same eigenvectors commute — but we'll meet that fact properly when we get to eigenvalues.",
+    },
+    {
+      goal: "Now go back to a non-commuting pair and find one where det(AB) and det(BA) are the same. (Spoiler: they always are.)",
+      check: (s) => s.non_commutativity > 0.3 && Math.abs(s.det_AB - s.det_BA) < 0.01,
+      explanation: "det(AB) = det(A) · det(B), and det(BA) = det(B) · det(A) = det(A) · det(B). Multiplication of scalars commutes, so the determinants of AB and BA are always equal — even when AB and BA themselves are different matrices. This is one of the few things that DOES commute about matrix multiplication: the determinant.",
+    },
+  ]}
+  render={(onChange) => <MatrixComposition onStateChange={onChange} />}
+/>
+
+<Misconception belief="AB = BA for any matrices A and B, just like with scalars.">
+
+This is the most common mistake students bring to linear algebra from earlier mathematics. Scalar multiplication is commutative; matrix multiplication is **not**. There exist pairs of matrices that *do* commute (any matrix with itself; any matrix with the identity; any matrix with a scalar multiple of the identity; pairs of rotations around the same axis; pairs of matrices that share an eigenvector basis), but they are the *exception*. The default expectation should be $AB \ne BA$, and the burden of proof falls on whoever wants to claim commutativity in a specific case.
+
+</Misconception>
+
+<Tier level="standard">
+
+## Two facts about matrix multiplication that DO hold
+
+Two structural properties of matrix multiplication that are always true, and worth keeping in your head:
+
+**Associativity.** $(AB)C = A(BC)$ for any three matrices of compatible shapes. You can re-group, you just can't reorder. This is what makes the expression $ABC$ unambiguous — you don't need parentheses to clarify which product happens first, because both groupings give the same result.
+
+**Distributivity over addition.** $A(B + C) = AB + AC$ and $(B + C)A = BA + CA$. Same idea as the distributivity of scalar multiplication over scalar addition, except in matrix-land you have two distributivity laws (left and right) because of the non-commutativity. Both still hold.
+
+These two together mean matrix multiplication has *most* of the algebraic structure of scalar multiplication — just not commutativity. The set of $2 \times 2$ matrices with these operations forms a **non-commutative ring**, which is the standard algebraic structure for "things you can add, scale, and multiply non-commutatively". This is the structure that algebra over matrices is built on.
+
+</Tier>
+
+<Tier level="complete">
+
+## Matrix-vector multiplication, revisited
+
+Now that matrix multiplication has been defined, matrix-vector multiplication can be seen as a special case. A vector $\mathbf{v}$ in $\mathbb{R}^2$ is the same shape as a $2 \times 1$ matrix:
+
+$$
+\mathbf{v} = \begin{pmatrix} v_1 \\ v_2 \end{pmatrix}
+$$
+
+So $A\mathbf{v}$ — a $2 \times 2$ matrix times a $2 \times 1$ vector — is just the matrix product, and its entries follow the same row-times-column rule:
+
+$$
+A\mathbf{v} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} v_1 \\ v_2 \end{pmatrix} = \begin{pmatrix} a v_1 + b v_2 \\ c v_1 + d v_2 \end{pmatrix}
+$$
+
+The first entry is $A$'s first row dotted with $\mathbf{v}$. The second entry is $A$'s second row dotted with $\mathbf{v}$. **Every entry of $A\mathbf{v}$ is a dot product** — and this is the cleanest way to remember the formula: a matrix-vector product is a stack of dot products between $A$'s rows and the vector $\mathbf{v}$.
+
+This row-wise view turns out to be useful for a surprising range of practical problems. In linear regression, the "predictions" vector $A\mathbf{x}$ is exactly a stack of dot products between each row of the design matrix $A$ (one row per observation, columns are features) and the parameter vector $\mathbf{x}$. In neural networks, every linear layer's output is exactly this kind of stack-of-dot-products. Once you see matrix-vector multiplication as "compute a dot product per row", a lot of downstream machinery stops needing separate explanation.
+
+## Identity, inverse, and what comes next
+
+Two matrices deserve special mention before we leave this lesson. The **identity matrix** $I$ is the $2 \times 2$ matrix that leaves every vector unchanged under multiplication:
+
+$$
+I = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}, \qquad I\mathbf{v} = \mathbf{v}
+$$
+
+The identity is the multiplicative identity for matrices — $AI = IA = A$ for any $A$ — exactly the role $1$ plays for scalar multiplication. It's the matrix whose columns are the basis vectors $\hat{\imath}$ and $\hat{\jmath}$, which is exactly what "preserve the basis vectors" means geometrically.
+
+The **inverse** of a matrix $A$ is the matrix $A^{-1}$ that undoes whatever $A$ did:
+
+$$
+A A^{-1} = A^{-1} A = I
+$$
+
+Not every matrix has one. Inverses exist exactly when the determinant is non-zero — that is, exactly when the transformation doesn't collapse the plane onto a lower-dimensional subspace. The mechanics of computing $A^{-1}$, the conditions under which it exists, and the relationship between inversion and Gaussian elimination get their own forthcoming lesson, but the conceptual placement is here: inversion is the operation that *reverses* multiplication, and reversibility is exactly the property that distinguishes singular from non-singular matrices.
+
+</Tier>
+
+---
+
+<KnowledgeCheck>
+
+<MultipleChoice
+  index={2}
+  question="Given matrices A and B, which of the following is NOT generally true?"
+  options={[
+    { id: "a", label: "(A + B) = (B + A)" },
+    { id: "b", label: "AB = BA" },
+    { id: "c", label: "(AB)C = A(BC)" },
+    { id: "d", label: "det(AB) = det(A) · det(B)" },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={3}
+  question="A is a 2×2 matrix with det(A) = 3 and B is a 2×2 matrix with det(B) = 2. What is det(AB)?"
+  options={[
+    { id: "a", label: "5 — determinants add" },
+    { id: "b", label: "6 — determinants of a product multiply" },
+    { id: "c", label: "1.5 — determinants divide because matrix multiplication is non-commutative" },
+    { id: "d", label: "Can't be determined without knowing the entries" },
+  ]}
+  correctId="b"
+/>
+
+<Tier level="complete">
+
+<MultipleChoice
+  index={4}
+  question="Why are scalar multiples of the identity matrix (i.e. matrices of the form k·I) the matrices that commute with EVERY other 2×2 matrix?"
+  options={[
+    { id: "a", label: "Because they're diagonal — diagonal matrices always commute with everything." },
+    { id: "b", label: "Because (k·I)·A = k·A = A·(k·I), since scalar multiplication of matrices is commutative and k·I just scales." },
+    { id: "c", label: "Because they have determinant zero." },
+    { id: "d", label: "It's not true — no matrix commutes with everything." },
+  ]}
+  correctId="b"
+/>
+
+</Tier>
+
+</KnowledgeCheck>
+
+---
+
+## Where to read next
+
+This lesson sets up most of the rest of the linear algebra track. The natural next steps:
+
+- **Linear Algebra — Matrix Inverse and Gaussian Elimination** (forthcoming) — when $A^{-1}$ exists, how to compute it, and the row-reduction algorithm that does it mechanically.
+- **[Linear Algebra — Linear Combinations and Span](#/lesson/linear-algebra-span)** — the column space of a matrix is the span of its columns. The non-commutativity of $AB$ and $BA$ has a geometric explanation in terms of column spaces, but the column-space machinery has to be in place first.
+- **[Linear Algebra — The Dot Product](#/lesson/linear-algebra-dot-product)** — the row-wise view of matrix-vector multiplication is built from dot products. Worth re-reading after this lesson with the new framing in mind.
+
+External references:
+
+- **[3Blue1Brown — Matrix multiplication as composition](https://www.3blue1brown.com/lessons/matrix-multiplication)** — the visual intuition track this lesson is downstream of.
+- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — Chapters 2 and 3 develop matrix multiplication, inverses, and the rules of matrix algebra in depth.

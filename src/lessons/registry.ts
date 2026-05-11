@@ -73,6 +73,8 @@ const linAlgImport = () => import("./linear-algebra.mdx");
 const linAlgMatricesImport = () => import("./linear-algebra-matrices.mdx");
 const linAlgDotProductImport = () => import("./linear-algebra-dot-product.mdx");
 const linAlgSpanImport = () => import("./linear-algebra-span.mdx");
+const linAlgMatrixOpsImport = () =>
+  import("./linear-algebra-matrix-operations.mdx");
 
 export const LESSONS: LessonRegistryEntry[] = [
   {
@@ -114,6 +116,14 @@ export const LESSONS: LessonRegistryEntry[] = [
       "Linear combinations α·u + β·v and the SPAN they trace out. Interactive widget reveals the span as a faint dot-cloud — fills the plane when u and v are linearly independent, collapses to a line when dependent. Connects to the determinant from the matrices lesson and previews the basis / rank / column-space ideas to come.",
     Component: lazy(linAlgSpanImport),
     frontmatter: loadFrontmatter(linAlgSpanImport),
+  },
+  {
+    slug: "linear-algebra-matrix-operations",
+    domain: "Mathematics",
+    summary:
+      "Matrix addition, scalar multiplication, transpose, and the operation where everything happens — matrix multiplication. Side-by-side widget shows AB and BA applied to the same unit square, making the non-commutativity of matrix multiplication directly visible with a numerical ||AB − BA|| verdict.",
+    Component: lazy(linAlgMatrixOpsImport),
+    frontmatter: loadFrontmatter(linAlgMatrixOpsImport),
   },
 ];
 
