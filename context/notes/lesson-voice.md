@@ -150,6 +150,28 @@ When auditing a draft, watch for:
 - **The over-lyrical mode**: every section opens with quiet wonder. Becomes precious. Save discovery moments for once or twice per lesson.
 - **The over-direct mode**: "Sounds straightforward. It isn't." as a default sentence pattern. One use is sharp; three uses is a tic.
 
+## Worked example — opening of the A-FINE lesson
+
+### Before (encyclopedic, robotic register)
+
+> A-FINE is a **full-reference image quality metric**: it takes a distorted image and a reference image, runs both through a CLIP vision transformer, and produces a single number in `(0, 100)` that correlates with how a human would rate the distorted image's quality. The "adaptive" part — and the reason it was worth adding to `burn` next to LPIPS, DISTS, and FID — is that A-FINE doesn't assume the reference is itself a high-quality natural image.
+
+Three problems with this version. First, it's all definition and no scenario — there's nothing for the reader to picture. Second, the prose is fact-statement after fact-statement; no register shifts, no breathing room. Third, the "adaptive" framing is buried in a subordinate clause; the lesson's central point is delivered as a side remark.
+
+### After (visualisable opener + commanding-warm middle)
+
+> Imagine you've trained a model to upscale low-resolution photographs. Sometimes the model produces something gorgeous — sharper than the input, free of compression artefacts, plausible as a real high-resolution photo. Sometimes it produces something subtly wrong — sharp in the wrong places, hallucinating textures that aren't actually there. You need a number that tells you which is which, automatically, across millions of outputs. That number is the job of an **image quality metric**, and **A-FINE** is one of the better ones.
+
+> A-FINE is full-reference: it takes a distorted image and a reference image, runs both through a CLIP vision transformer, and produces a single number in $(0, 100)$ that correlates with how a human would rate the distorted image's quality. The "adaptive" part — and the reason it was worth adding to `burn` next to LPIPS, DISTS, and FID — is the move it makes when the reference itself isn't trustworthy. Most metrics assume the reference is a clean high-quality original. A-FINE doesn't. When the reference is unnatural — a synthetic render, a low-quality stock photo, a degraded older copy — A-FINE quietly drops its weight on faithful reconstruction and lets the distorted image's own naturalness carry more of the score. The metric is asymmetric on purpose, and that asymmetry is where most of its design intelligence lives.
+
+Three moves did the work:
+
+1. **Visualisable opener** — Feynman pattern §1. The reader pictures a concrete model and concrete failure modes before any technical term arrives.
+2. **Register modulation in the second paragraph** — Spivak commanding-warm backbone, with a Strang spell-it-out moment ("Most metrics assume the reference is a clean high-quality original. A-FINE doesn't.") that takes a fact and gives it weight.
+3. **The "adaptive" framing promoted** — "the metric is asymmetric on purpose, and that asymmetry is where most of its design intelligence lives" closes the section as the lesson's thesis instead of being buried in a subordinate clause.
+
+The factual content is identical between the two versions. The voice modulation is what makes the second a lesson and the first an encyclopaedia entry.
+
 ## When to revisit this note
 
 - Before authoring any new lesson's prose.

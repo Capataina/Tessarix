@@ -11,6 +11,7 @@ widgets_used:
   - MatrixComposition
   - MultipleChoice
   - GoalChain
+  - PredictThenVerify
   - Misconception
   - KnowledgeCheck
 ---
@@ -19,6 +20,7 @@ import { MatrixComposition } from "../components/widgets/MatrixComposition";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
+import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { Misconception } from "../components/widgets/Misconception";
 import { Tier } from "../components/Tier";
 import { LessonMeta } from "../components/MDXComponents";
@@ -70,6 +72,14 @@ The "transpose reverses the order of products" rule looks like a quirk until you
 
 </Tier>
 
+<Misconception belief={"(AB)^T = A^T B^T — the transpose distributes the same way scalars do."}>
+
+This one trips almost everyone the first time. The transpose of a product **reverses the order**: $(AB)^T = B^T A^T$, not $A^T B^T$. The reason is structural — transposition acts like an *anti-homomorphism* on matrix multiplication, the same way inversion does: $(AB)^{-1} = B^{-1} A^{-1}$. Both operations "undo" or "reflect" a composition, and undoing a composition always reverses its order.
+
+The acid test, if you forget which way round it goes: pick any non-square example. Let $A$ be $2 \times 3$ and $B$ be $3 \times 2$. Then $AB$ is $2 \times 2$, so $(AB)^T$ is $2 \times 2$. Now check the shape of $A^T B^T$: $A^T$ is $3 \times 2$ and $B^T$ is $2 \times 3$, so $A^T B^T$ would be $3 \times 3$ — wrong shape. $B^T A^T$ on the other hand: $2 \times 3$ times $3 \times 2$ gives $2 \times 2$ — correct shape. The shapes alone tell you which ordering can possibly be right.
+
+</Misconception>
+
 ## Matrix multiplication — the operation where everything happens
 
 The fourth operation is the one this lesson is really about. Matrix multiplication is **not** component-wise. There's nothing called "matrix multiplication" that means "multiply the corresponding entries together." The component-wise version of $AB$ is the **Hadamard product**, and it's used in a few contexts (mostly element-wise neural network operations), but it's not what mathematicians mean when they say "matrix product".
@@ -92,7 +102,20 @@ That's the entire reason the operation is defined the way it is. The row-times-c
 
 ## AB is not BA — the most important non-commutativity in elementary math
 
-Here's the fact that this lesson exists to drive home. **Matrix multiplication is non-commutative.** In general, $AB \ne BA$ — and they often differ a lot.
+Before we tell you the punchline, predict it. Imagine two transformations of the plane: $R$ is a 90° rotation counter-clockwise; $S$ is a horizontal shear that pushes the top of the unit square to the right by one unit. Apply them in opposite orders to the unit square and compare the resulting parallelograms.
+
+<PredictThenVerify
+  index={1}
+  question="Will the two parallelograms — the one from 'rotate, then shear' (SR) and the one from 'shear, then rotate' (RS) — come out the same shape, or different?"
+  options={[
+    { id: "a", label: "The same shape — rotation and shear can be applied in any order without changing the final figure." },
+    { id: "b", label: "Different shapes — the order matters." },
+    { id: "c", label: "The same area but different orientations — only the rotation part is order-sensitive." },
+  ]}
+  truth="b"
+/>
+
+Here's the fact that this lesson exists to drive home, and that the prediction above sets up. **Matrix multiplication is non-commutative.** In general, $AB \ne BA$ — and they often differ a lot.
 
 The geometric reason is obvious once you see it. $AB$ applies $B$ first and then $A$. $BA$ applies $A$ first and then $B$. Those are different operations because the *order matters*. Rotate a unit square and then shear it: the shear acts on an already-rotated square, producing one specific final shape. Shear the square first and then rotate it: the rotation acts on an already-sheared parallelogram, producing a *different* shape. The same two transformations, in opposite orders, produce different results — and matrix multiplication mirrors that exactly.
 
@@ -101,7 +124,7 @@ The widget below makes this directly visible. Two $2 \times 2$ matrices $A$ and 
 <MatrixComposition />
 
 <GoalChain
-  index={1}
+  index={2}
   title="Find when AB equals BA — and when it doesn't"
   steps={[
     {
@@ -188,7 +211,7 @@ Not every matrix has one. Inverses exist exactly when the determinant is non-zer
 <KnowledgeCheck>
 
 <MultipleChoice
-  index={2}
+  index={3}
   question="Given matrices A and B, which of the following is NOT generally true?"
   options={[
     { id: "a", label: "(A + B) = (B + A)" },
@@ -200,7 +223,7 @@ Not every matrix has one. Inverses exist exactly when the determinant is non-zer
 />
 
 <MultipleChoice
-  index={3}
+  index={4}
   question="A is a 2×2 matrix with det(A) = 3 and B is a 2×2 matrix with det(B) = 2. What is det(AB)?"
   options={[
     { id: "a", label: "5 — determinants add" },
@@ -214,7 +237,7 @@ Not every matrix has one. Inverses exist exactly when the determinant is non-zer
 <Tier level="complete">
 
 <MultipleChoice
-  index={4}
+  index={5}
   question="Why are scalar multiples of the identity matrix (i.e. matrices of the form k·I) the matrices that commute with EVERY other 2×2 matrix?"
   options={[
     { id: "a", label: "Because they're diagonal — diagonal matrices always commute with everything." },

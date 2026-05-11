@@ -56,7 +56,7 @@ These are the pedagogical-metaphor patterns Tessarix has shipped or planned. New
 When to use: when the operation is defined inductively or as an iteration. Make the iterations visible.
 
 ### 2. Projection / shadow
-**One object casts a "shadow" onto another, and the shadow's magnitude is the operation's output.** Planned for DotProductGeometry: vector **a** projected onto **b**'s direction, the shadow's signed length being **a**·**b**. Generalises to projection onto a subspace.
+**One object casts a "shadow" onto another, and the shadow's magnitude is the operation's output.** Shipped: DotProductGeometry — vector **a** projected onto **b**'s direction, the shadow's signed length times $|\mathbf{b}|$ being $\mathbf{a} \cdot \mathbf{b}$. Sign-coded green/red for positive/negative dot products. Generalises to projection onto a subspace.
 
 When to use: dot product, projection operators, oblique vs orthogonal projection, least-squares as projection onto column space.
 
@@ -71,9 +71,9 @@ When to use: any linear transformation, change of basis, deformation under stres
 When to use: any time the concept involves a point or vector that can move. Almost always pair with sliders for precision.
 
 ### 5. Dual-state simultaneous display
-**Both the current state AND its comparison shown at once, no mode-flipping.** Shipped: AdapterHeatmap's primary + ghost cursor (the swap-twin), CalibratorComparison's trained + reader curve, MetricComparison's reference + distorted panels. The principle is in `interface-affordances.md` §9: mode-flipping is friction.
+**Both the current state AND its comparison shown at once, no mode-flipping.** Shipped: AdapterHeatmap's primary + ghost cursor (the swap-twin), CalibratorComparison's trained + reader curve, MetricComparison's reference + distorted panels, MatrixComposition's side-by-side AB and BA panels (the canonical example — making the non-commutativity of matrix multiplication visible requires showing both orderings simultaneously, never one at a time). The principle is in `interface-affordances.md` §9: mode-flipping is friction.
 
-When to use: any time there's a "natural pair" — original vs transformed, before vs after, your-answer vs trained-answer, current vs swapped.
+When to use: any time there's a "natural pair" — original vs transformed, before vs after, your-answer vs trained-answer, current vs swapped, ordering-A vs ordering-B.
 
 ### 6. Particle field
 **Many particles simultaneously transformed under one operation.** Not yet shipped. Useful for showing the *global* effect of a transformation: rotate a cloud of dots and watch them swirl; apply a singular matrix and watch them collapse onto a line. The strength is showing the operation's effect on *all of space*, not just one chosen vector.
@@ -81,9 +81,9 @@ When to use: any time there's a "natural pair" — original vs transformed, befo
 When to use: linear transformations where the global effect matters more than any single point. Eigenvector visualisation (the particles that don't rotate). Stable manifolds. Phase portraits.
 
 ### 7. Composition timeline
-**Apply A, see the intermediate state, then apply B.** Planned for MatrixComposition. Differs from "apply A·B in one step" because the reader can pause between steps and see what A alone produces. Makes matrix multiplication's composition meaning visible.
+**Apply A, see the intermediate state, then apply B.** Shipped: MatrixComposition (combines this pattern with §5 — the two orderings AB and BA both shown as fully-composed transformations side-by-side, with a numeric ||AB - BA|| verdict). The pattern is most powerful when paired with §5 — showing one composition in isolation gives you the *result* but loses the "different orderings produce different results" insight.
 
-When to use: any composition of operations. Function composition. Sequential transformations. Pipeline stages (the existing AFinePipeline is a less interactive version of this).
+When to use: any composition of operations. Function composition. Sequential transformations. Pipeline stages (the existing AFinePipeline is a less interactive version of this — each stage of the pipeline is a separate transformation, but the pipeline shows them in a fixed order rather than letting the reader explore alternative orderings).
 
 ### 8. Physical metaphor
 **The visualisation uses a recognisable physical system.** Examples elsewhere in the wild: rubber band stretch (Hooke's law), spring system (linear systems), light cone (special relativity), gravity well (potential energy). Tessarix hasn't shipped one yet. The strength: the reader brings real-world physical intuition that no abstract chart can.
@@ -96,9 +96,9 @@ When to use: when the concept has a clear physical analogue, especially for foun
 When to use: any concept with named canonical regimes. Distributions, distortions, matrix types, signal-noise regimes.
 
 ### 10. Constructive build-up
-**Start with one piece, add pieces, watch the whole emerge.** Planned for LinearCombination (start with **u**, add α; then add **v**, add β; watch the parallelogram trace out the span). Generalises to building up SVD as rotation-scaling-rotation, building a matrix from outer products of vectors, etc.
+**Start with one piece, add pieces, watch the whole emerge.** Shipped: LinearCombination — two basis vectors **u** and **v** plus coefficient sliders for $\alpha, \beta$; the green output vector $\alpha\mathbf{u} + \beta\mathbf{v}$ traces a point in the plane, and a faint dot-cloud of all $(\alpha, \beta)$ values *over a grid* makes the **span** itself a visible object (filling the plane when the vectors are linearly independent, collapsing to a line when dependent). Combines with pattern §6 (particle field, in light form). Generalises to building up SVD as rotation-scaling-rotation, building a matrix from outer products of vectors, etc.
 
-When to use: when a structure has natural component pieces that compose to the whole. Most decompositions.
+When to use: when a structure has natural component pieces that compose to the whole. Most decompositions. Any "set of reachable points" or "span of generators" concept.
 
 ### 11. Convergence animation
 **A sequence that converges to a fixed point or limit, visible as the iterations accumulate.** Not yet shipped. Power iteration converging to the dominant eigenvector; Gram-Schmidt building an orthonormal basis; SGD trajectory in a loss landscape.

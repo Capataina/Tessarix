@@ -16,6 +16,29 @@ The four-tier content architecture (`context/notes/content-architecture.md`) alr
 
 **Chosen approach**: a directed acyclic prerequisite graph. Each lesson states its prerequisites. The primer is the universal root. Readers can enter via the primer and walk forward; or jump in via an applied lesson and follow back-pointers when they hit something they don't have prerequisites for. Cross-page hyperlinks in the lesson body do that "follow back" navigation.
 
+## Status — what's built
+
+As of 2026-05-11, **five lessons** in the linear-algebra track are authored, all in the canonical voice (`context/notes/lesson-voice.md`):
+
+| Slug | Title | Layer | Status |
+|---|---|---|---|
+| `linear-algebra-foundations` | Foundations | 1 | ✅ Built |
+| `linear-algebra-matrices` | Matrices as Transformations | 2 | ✅ Built |
+| `linear-algebra-dot-product` | The Dot Product | 1 | ✅ Built |
+| `linear-algebra-span` | Linear Combinations and Span | 3 | ✅ Built |
+| `linear-algebra-matrix-operations` | Matrix Operations | 2 | ✅ Built |
+
+The remaining lessons in the 12-lesson recommended track are not yet authored. The next priorities are listed in §Implementation priorities below.
+
+**Widgets shipped in support of these lessons** (cross-listed against `widget-creativity-discipline.md`'s metaphor library):
+
+- `VectorPlot` — patterns §4 (direct manipulation) + §1 (iterated operation, via the head-to-tail sum chain)
+- `ScalarMultiplier` — pattern §1 (iterated operation)
+- `MatrixTransform` — pattern §3 (deformation/morph) + §4 (direct manipulation)
+- `DotProductGeometry` — pattern §2 (projection/shadow)
+- `LinearCombination` — patterns §10 (constructive build-up) + §6 (particle-field span trail) + §4 (direct manipulation of all three vector handles)
+- `MatrixComposition` — patterns §5 (dual-state simultaneous AB-vs-BA panels) + §7 (composition timeline)
+
 ## Curriculum (6 layers, 28 lessons)
 
 Lessons marked **PRIMER** are the current `linear-algebra.mdx` content (will eventually be split out). Lessons marked **NEXT** are the immediate priority after the primer. The rest are sketches; their scope may consolidate as authoring progresses.
@@ -141,21 +164,22 @@ char-polynomial   diagonalisation              symmetric-matrices
 
 ## Implementation priorities
 
-**Priority 1 — expand the primer** (current session):
-- Add dot product section + DotProductGeometry widget.
-- Add linear combinations / span section + LinearCombination widget.
-- Add common-matrices gallery using existing MatrixTransform presets.
-- Add matrix composition section + MatrixComposition widget.
+**Priority 1 — foundations + matrices + dot-product + span + matrix-operations**. ✅ DONE.
+The current 5 lessons cover the entire foundation layer of the curriculum plus the matrices + matrix-operations entry into Layer 2.
 
-**Priority 2 — next lesson** (after primer is polished): `matrix-operations.mdx`.
-- Lesson covers: addition, scalar mul, transpose, matrix multiplication mechanics row-by-row, AB ≠ BA.
-- Widget: MatrixOperations (new — shows each operation on small matrices with row/column highlighting).
-- Reuses MatrixComposition and MatrixTransform.
-- Cross-page hyperlinks back to primer for vector concepts.
+**Priority 2 — Matrix Inverse and Gaussian Elimination**. Next up.
+Covers: when $A^{-1}$ exists, the row-reduction algorithm, the structural correspondence between solving $A\mathbf{x} = \mathbf{b}$, computing inverses, and Gaussian elimination. Cross-references back to the determinant interpretation from `linear-algebra-matrices` and the column-space discussion from `linear-algebra-span`.
 
-**Priority 3 — after that**: `matrix-inverse.mdx` and `linear-independence.mdx` (parallel — both pull from `linear-combinations-and-span` from the primer).
+Widget needs:
+- A `RowReduction` widget that animates the elimination steps on a small matrix, with row-swap and row-scaling operations as discrete moves the reader can drive. Pattern §1 (iterated operation) + §11 (convergence animation).
+- Possibly extending `MatrixTransform` with an "inverse mode" that shows A and $A^{-1}$ side-by-side, with their composed transformation collapsing back to the identity. Pattern §5 (dual-state).
 
-**Priority 4+**: Layer 3-6 lessons. Open scope — author when authoring tractability is clearer.
+**Priority 3 — Basis and Change of Basis**. After matrix inverse.
+Builds directly on linear combinations and span. A new widget — `BasisExplorer` — would let the reader set two basis vectors and then see the coordinates of an arbitrary target point in two different bases (the standard basis and the custom one). Pattern §4 (direct manipulation) + §5 (dual-state).
+
+**Priority 4 — Rank, Null Space, and the Four Fundamental Subspaces**. Substantial conceptual leap. Needs a widget for visualising the column space and null space of a matrix as geometric subspaces — likely an extension of `LinearCombination` + a new `NullSpaceVisualiser`.
+
+**Priority 5+ — Eigenvectors, Diagonalisation, SVD**. Layer 4 + 5. Each lesson needs a substantial new widget (`EigenvectorExplorer` for "vectors that don't rotate under A"; `SVDExplorer` for rotation-scaling-rotation decomposition; etc.). Author when the prerequisite layer is fully built and the next-step pedagogical needs are clearer.
 
 ## Open design questions
 
