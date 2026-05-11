@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { LessonTOC } from "./LessonTOC";
 import { ReadingProgress } from "./ReadingProgress";
 import { TierControl } from "./TierControl";
+import { SettingsButton } from "./SettingsPanel";
 import { AskAboutLesson } from "./chatbot/AskAboutLesson";
 import { emit as emitTelemetry } from "../lib/telemetry";
 
@@ -122,6 +123,7 @@ export function Layout({
 
         <div className="app-topbar__right">
           <TierControl />
+          <SettingsButton />
           <nav className="app-topbar__pillars" aria-label="Lesson view">
             <button
               className={`app-topbar__pillar ${activePillar === "teach" ? "app-topbar__pillar--active" : ""}`}

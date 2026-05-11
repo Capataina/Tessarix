@@ -101,9 +101,26 @@ body,
   padding: 0;
 }
 
+html {
+  /* Settings-driven base font size. Defaults to the previous fixed value;
+     SettingsContext rewrites this CSS variable on every preference change. */
+  font-size: var(--app-font-size, 16px);
+}
+
+/* Settings-driven reduced-motion: kills every transition + animation across
+   the app. The SettingsContext sets `data-reduced-motion="true"` on <html>
+   when the user toggles the preference. */
+html[data-reduced-motion="true"] *,
+html[data-reduced-motion="true"] *::before,
+html[data-reduced-motion="true"] *::after {
+  transition-duration: 0.001ms !important;
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+}
+
 body {
   font-family: var(--font-body);
-  font-size: var(--text-md);
+  font-size: 1rem;
   line-height: 1.65;
   color: var(--text-primary);
   background-color: var(--bg-base);
