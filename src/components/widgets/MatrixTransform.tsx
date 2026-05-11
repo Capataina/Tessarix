@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../lib/theme";
+import { computeDomain, makeFromPx, makeToPx } from "../../lib/geometry";
 import { WidgetExplainer } from "./WidgetExplainer";
 import "./MatrixTransform.css";
 
@@ -16,10 +17,6 @@ import "./MatrixTransform.css";
  */
 
 const CANVAS_SIZE = 360;
-// Half-extent of the visible plot in math units. 2.5 keeps the unit square
-// at ~40% of the half-canvas so it's clearly the focal subject; we still
-// have room to see scale-2× and rotate-45° matrices without clipping.
-const DOMAIN = 2.5;
 
 interface Matrix2 {
   a: number;
@@ -51,16 +48,6 @@ export function MatrixTransform({
   const [v, setV] = useState(initialVector);
   const draggingRef = useRef<"v" | null>(null);
 
-  const toPx = useCallback((p: { x: number; y: number }) => ({
-    x: (CANVAS_SIZE / 2) + (p.x / DOMAIN) * (CANVAS_SIZE / 2),
-    y: (CANVAS_SIZE / 2) - (p.y / DOMAIN) * (CANVAS_SIZE / 2),
-  }), []);
-
-  const fromPx = useCallback((px: { x: number; y: number }) => ({
-    x: ((px.x - CANVAS_SIZE / 2) / (CANVAS_SIZE / 2)) * DOMAIN,
-    y: -((px.y - CANVAS_SIZE / 2) / (CANVAS_SIZE / 2)) * DOMAIN,
-  }), []);
-
   const applyM = useCallback(
     (p: { x: number; y: number }) => ({
       x: m.a * p.x + m.b * p.y,
@@ -70,6 +57,33 @@ export function MatrixTransform({
   );
 
   const det = useMemo(() => m.a * m.d - m.b * m.c, [m]);
+
+  // Compute viewport half-extent dynamically so the plot zooms with the
+  // matrix's actual content. Includes the unit square, transformed basis
+  // vectors, and (when shown) the test vector + its image. Padding leaves
+  // visual breathing room; floor=1 keeps the unit square fully visible
+  // even for matrices whose image fits inside it; ceiling caps extreme
+  // states so visuals don't disappear into a pixel.
+  const domain = useMemo(() => {
+    const iHat = { x: m.a, y: m.c };
+    const jHat = { x: m.b, y: m.d };
+    const iPlusJ = { x: m.a + m.b, y: m.c + m.d };
+    const points = [
+      { x: 1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      iHat,
+      jHat,
+      iPlusJ,
+    ];
+    if (showTestVector) {
+      points.push(v, { x: m.a * v.x + m.b * v.y, y: m.c * v.x + m.d * v.y });
+    }
+    return computeDomain(points, { padding: 1.3, floor: 1.2, ceiling: 6 });
+  }, [m, v, showTestVector]);
+
+  const toPx = useMemo(() => makeToPx(CANVAS_SIZE, domain), [domain]);
+  const fromPx = useMemo(() => makeFromPx(CANVAS_SIZE, domain), [domain]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -93,10 +107,10 @@ export function MatrixTransform({
 
     // Grid lines — one line per math unit. Bumped opacity so the grid is
     // legibly present without dominating.
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.09)";
     ctx.lineWidth = 1;
-    const pxPerUnit = W / (2 * DOMAIN);
-    const unitsPerHalf = Math.ceil(DOMAIN);
+    const pxPerUnit = W / (2 * domain);
+    const unitsPerHalf = Math.ceil(domain);
     for (let u = -unitsPerHalf; u <= unitsPerHalf; u++) {
       const xPx = W / 2 + u * pxPerUnit;
       const yPx = H / 2 - u * pxPerUnit;
@@ -114,8 +128,8 @@ export function MatrixTransform({
       }
     }
 
-    // Axes.
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.32)";
+    // Axes — bumped to make x=0 and y=0 unmistakable.
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(0, H / 2);
@@ -124,8 +138,14 @@ export function MatrixTransform({
     ctx.lineTo(W / 2, H);
     ctx.stroke();
 
+    // Origin marker so the reader can locate (0,0) at a glance.
+    ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
+    ctx.beginPath();
+    ctx.arc(W / 2, H / 2, 3, 0, Math.PI * 2);
+    ctx.fill();
+
     // Original unit square (dashed outline).
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
     ctx.lineWidth = 1.5;
     ctx.setLineDash([5, 4]);
     const o = toPx({ x: 0, y: 0 });

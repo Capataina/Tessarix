@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../lib/theme";
+import { computeDomain, makeFromPx, makeToPx } from "../../lib/geometry";
 import { WidgetExplainer } from "./WidgetExplainer";
 import "./ScalarMultiplier.css";
 
@@ -22,7 +23,6 @@ import "./ScalarMultiplier.css";
  */
 
 const CANVAS_SIZE = 360;
-const DOMAIN = 4.5;
 
 interface Vector2 {
   x: number;
@@ -46,15 +46,15 @@ export function ScalarMultiplier({
   const [k, setK] = useState(initialK);
   const [mode, setMode] = useState<"stretch" | "stacking">("stacking");
 
-  const toPx = useCallback((p: Vector2) => ({
-    x: CANVAS_SIZE / 2 + (p.x / DOMAIN) * (CANVAS_SIZE / 2),
-    y: CANVAS_SIZE / 2 - (p.y / DOMAIN) * (CANVAS_SIZE / 2),
-  }), []);
+  // Dynamic viewport — fits both v and the cumulative kv endpoint regardless
+  // of mode (stacking puts the final point at k·v just like stretch does).
+  const domain = useMemo(() => {
+    const points: Vector2[] = [v, { x: k * v.x, y: k * v.y }];
+    return computeDomain(points, { padding: 1.35, floor: 1.8, ceiling: 9 });
+  }, [v, k]);
 
-  const fromPx = useCallback((px: { x: number; y: number }) => ({
-    x: ((px.x - CANVAS_SIZE / 2) / (CANVAS_SIZE / 2)) * DOMAIN,
-    y: -((px.y - CANVAS_SIZE / 2) / (CANVAS_SIZE / 2)) * DOMAIN,
-  }), []);
+  const toPx = useMemo(() => makeToPx(CANVAS_SIZE, domain), [domain]);
+  const fromPx = useMemo(() => makeFromPx(CANVAS_SIZE, domain), [domain]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -74,8 +74,8 @@ export function ScalarMultiplier({
     // Grid.
     ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
     ctx.lineWidth = 1;
-    const pxPerUnit = W / (2 * DOMAIN);
-    const unitsPerHalf = Math.ceil(DOMAIN);
+    const pxPerUnit = W / (2 * domain);
+    const unitsPerHalf = Math.ceil(domain);
     for (let u = -unitsPerHalf; u <= unitsPerHalf; u++) {
       const xPx = W / 2 + u * pxPerUnit;
       const yPx = H / 2 - u * pxPerUnit;

@@ -81,10 +81,10 @@ export const LESSONS: LessonRegistryEntry[] = [
     frontmatter: loadFrontmatter(afineImport),
   },
   {
-    slug: "linear-algebra",
+    slug: "linear-algebra-foundations",
     domain: "Mathematics",
     summary:
-      "An elementary linear-algebra primer covering scalars, vectors, and 2×2 matrices, anchored on interactive plots: drag-able vectors, vector addition by head-to-tail composition, and matrices as transformations of the plane.",
+      "Elementary linear algebra anchored on interactive plots: scalars, vectors as drag-able arrows, vector addition by head-to-tail composition, scalar multiplication as stacked copies, and 2×2 matrices as transformations of the plane.",
     Component: lazy(linAlgImport),
     frontmatter: loadFrontmatter(linAlgImport),
   },

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor } from "../../lib/theme";
+import { computeDomain, makeFromPx, makeToPx } from "../../lib/geometry";
 import { WidgetExplainer } from "./WidgetExplainer";
 import "./VectorPlot.css";
 
@@ -13,7 +14,6 @@ import "./VectorPlot.css";
  */
 
 const CANVAS_SIZE = 320;
-const DOMAIN = 5;
 
 interface Vector2 {
   x: number;
@@ -57,20 +57,24 @@ export function VectorPlot({
   );
   const draggingRef = useRef<number | null>(null);
 
-  // Convert plot coordinates ↔ canvas pixels.
-  const toPx = useCallback((p: Vector2) => {
-    return {
-      x: (CANVAS_SIZE / 2) + (p.x / DOMAIN) * (CANVAS_SIZE / 2),
-      y: (CANVAS_SIZE / 2) - (p.y / DOMAIN) * (CANVAS_SIZE / 2),
-    };
-  }, []);
+  // Dynamic viewport. Includes every vector (and the running sum when
+  // showSum is on) so the plot zooms with the content.
+  const domain = useMemo(() => {
+    const points: Vector2[] = vectors.map((v) => v.v);
+    if (showSum) {
+      let sx = 0;
+      let sy = 0;
+      for (const v of vectors) {
+        sx += v.v.x;
+        sy += v.v.y;
+        points.push({ x: sx, y: sy });
+      }
+    }
+    return computeDomain(points, { padding: 1.3, floor: 1.5, ceiling: 8 });
+  }, [vectors, showSum]);
 
-  const fromPx = useCallback((px: { x: number; y: number }): Vector2 => {
-    return {
-      x: ((px.x - CANVAS_SIZE / 2) / (CANVAS_SIZE / 2)) * DOMAIN,
-      y: -((px.y - CANVAS_SIZE / 2) / (CANVAS_SIZE / 2)) * DOMAIN,
-    };
-  }, []);
+  const toPx = useMemo(() => makeToPx(CANVAS_SIZE, domain), [domain]);
+  const fromPx = useMemo(() => makeFromPx(CANVAS_SIZE, domain), [domain]);
 
   // Redraw on every state change. Pure rendering; no animation.
   useEffect(() => {
@@ -82,19 +86,26 @@ export function VectorPlot({
     const H = CANVAS_SIZE;
     ctx.clearRect(0, 0, W, H);
 
-    // Grid.
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+    // Grid — one line per math unit, sized to the current dynamic domain.
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.07)";
     ctx.lineWidth = 1;
-    const step = W / (2 * DOMAIN);
-    for (let i = 0; i <= 2 * DOMAIN; i++) {
-      ctx.beginPath();
-      ctx.moveTo(i * step, 0);
-      ctx.lineTo(i * step, H);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(0, i * step);
-      ctx.lineTo(W, i * step);
-      ctx.stroke();
+    const pxPerUnit = W / (2 * domain);
+    const unitsPerHalf = Math.ceil(domain);
+    for (let u = -unitsPerHalf; u <= unitsPerHalf; u++) {
+      const xPx = W / 2 + u * pxPerUnit;
+      const yPx = H / 2 - u * pxPerUnit;
+      if (xPx >= 0 && xPx <= W) {
+        ctx.beginPath();
+        ctx.moveTo(xPx, 0);
+        ctx.lineTo(xPx, H);
+        ctx.stroke();
+      }
+      if (yPx >= 0 && yPx <= H) {
+        ctx.beginPath();
+        ctx.moveTo(0, yPx);
+        ctx.lineTo(W, yPx);
+        ctx.stroke();
+      }
     }
 
     // Axes.
