@@ -1,116 +1,551 @@
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+@import "./theme.css";
+@import "katex/dist/katex.min.css";
+
+/* ===========================================================================
+ * App shell + layout
+ * =========================================================================== */
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 60px 1fr;
 }
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafb);
+.app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(
+    180deg,
+    rgba(12, 16, 25, 0.95),
+    rgba(7, 9, 14, 0.85)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+.app-topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
 }
 
-.container {
-  margin: 0;
-  padding-top: 10vh;
+.app-topbar__brand-mark {
+  width: 22px;
+  height: 22px;
+  position: relative;
+}
+
+.app-topbar__brand-mark::before,
+.app-topbar__brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--accent-cyan);
+  transform: rotate(45deg);
+}
+.app-topbar__brand-mark::after {
+  inset: 4px;
+  border-color: var(--accent-magenta);
+  opacity: 0.7;
+}
+
+.app-topbar__brand-text {
+  background: linear-gradient(
+    90deg,
+    var(--text-primary) 0%,
+    var(--accent-cyan) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.app-topbar__lesson {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.app-topbar__lesson-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 10px;
+  border: 1px solid var(--border-accent);
+  background: rgba(0, 212, 255, 0.06);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+}
+
+.app-topbar__lesson-tag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--accent-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.app-topbar__pillars {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.app-topbar__pillar {
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.app-topbar__pillar:hover:not(:disabled) {
+  color: var(--text-secondary);
+}
+
+.app-topbar__pillar--active {
+  background: rgba(0, 212, 255, 0.12);
+  color: var(--accent-cyan);
+}
+
+.app-topbar__pillar:disabled {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/* Main column */
+
+/* ===========================================================================
+ * Three-column persistent layout
+ *
+ *   [ TOC sidebar (toggleable) | Lesson column | Chat sidebar (toggleable) ]
+ *
+ * Each sidebar collapses to a thin 40px strip when toggled off. The lesson
+ * column takes whatever remains. CSS variables drive the column widths so the
+ * transition is smooth and the layout reacts to data-toc-open / data-chat-open
+ * attributes on the .app-shell root.
+ * =========================================================================== */
+
+.app-shell {
+  --toc-open-w: 240px;
+  --toc-closed-w: 40px;
+  --chat-open-w: 400px;
+  --chat-closed-w: 40px;
+  --toc-w: var(--toc-open-w);
+  --chat-w: var(--chat-open-w);
+}
+
+.app-shell[data-toc-open="false"] {
+  --toc-w: var(--toc-closed-w);
+}
+.app-shell[data-chat-open="false"] {
+  --chat-w: var(--chat-closed-w);
+}
+
+.app-main {
+  display: grid;
+  grid-template-columns: var(--toc-w) minmax(0, 1fr) var(--chat-w);
+  align-items: stretch;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  transition: grid-template-columns 220ms cubic-bezier(0.3, 0.7, 0.4, 1);
+  min-height: calc(100vh - 60px);
+}
+
+.app-sidebar {
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  text-align: center;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  overflow: hidden;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
+.app-sidebar--right {
+  border-right: none;
+  border-left: 1px solid var(--border-subtle);
 }
 
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
+.app-sidebar__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-4);
+  transition: opacity 180ms ease;
 }
 
-.row {
+/* When the sidebar is closed (parent has data-*-open=false), hide content */
+.app-shell[data-toc-open="false"] .app-sidebar--left .app-sidebar__content,
+.app-shell[data-chat-open="false"] .app-sidebar--right .app-sidebar__content {
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.app-sidebar__toggle {
+  position: absolute;
+  top: var(--space-3);
+  width: 28px;
+  height: 28px;
   display: flex;
+  align-items: center;
   justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all var(--t-fast);
+  z-index: 2;
 }
 
-button:hover {
-  border-color: #396cd8;
-}
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
+.app-sidebar__toggle:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
 }
 
-input,
-button {
-  outline: none;
+.app-sidebar__toggle--left {
+  right: 6px;
 }
 
-#greet-input {
-  margin-right: 5px;
+.app-sidebar__toggle--right {
+  left: 6px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
+/* Custom scrollbar inside sidebars */
+.app-sidebar__content::-webkit-scrollbar {
+  width: 6px;
+}
+.app-sidebar__content::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+
+/* Lesson column padding (separated from grid to keep the body width consistent
+   regardless of sidebar state) */
+.lesson {
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--space-12) var(--space-8) var(--space-20);
+}
+
+/* Narrow viewports: collapse one or both sidebars by default — user can re-open */
+@media (max-width: 1280px) {
+  .app-shell {
+    --chat-open-w: 360px;
   }
+}
 
-  a:hover {
-    color: #24c8db;
+@media (max-width: 1024px) {
+  .app-shell {
+    --toc-open-w: 200px;
+    --chat-open-w: 320px;
   }
+  .lesson {
+    padding: var(--space-8) var(--space-5) var(--space-16);
+  }
+}
 
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
+@media (max-width: 768px) {
+  .app-main {
+    grid-template-columns: minmax(0, 1fr);
   }
-  button:active {
-    background-color: #0f0f0f69;
+  .app-sidebar {
+    display: none;
   }
+}
+
+.lesson {
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+@media (max-width: 900px) {
+  .app-topbar__right .tier-control__label {
+    display: none;
+  }
+}
+
+/* Removed: legacy "Ask" topbar toggle. Chat now lives in the right sidebar
+   and is toggled via the sidebar's own collapse button. */
+
+/* ===========================================================================
+ * Typography in lesson content
+ * =========================================================================== */
+
+.lesson h1 {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-4);
+  background: linear-gradient(
+    100deg,
+    var(--text-primary) 0%,
+    var(--accent-cyan) 60%,
+    var(--accent-magenta) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.lesson h2 {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: var(--space-12) 0 var(--space-4);
+  color: var(--text-primary);
+  position: relative;
+  padding-left: var(--space-4);
+}
+
+.lesson h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    var(--accent-cyan),
+    var(--accent-magenta)
+  );
+  border-radius: 2px;
+}
+
+.lesson h3 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: 1.3;
+  margin: var(--space-8) 0 var(--space-3);
+  color: var(--text-primary);
+}
+
+.lesson h4 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.4;
+  margin: var(--space-6) 0 var(--space-2);
+  color: var(--text-secondary);
+}
+
+.lesson p {
+  margin: 0 0 var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--text-md);
+  line-height: 1.7;
+}
+
+.lesson p strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.lesson a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+  transition: border-color var(--t-fast), color var(--t-fast);
+}
+
+.lesson a:hover {
+  border-bottom-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.lesson ul,
+.lesson ol {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-6);
+  color: var(--text-secondary);
+}
+
+.lesson li {
+  margin-bottom: var(--space-2);
+  line-height: 1.7;
+}
+
+.lesson li::marker {
+  color: var(--accent-cyan);
+}
+
+.lesson hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-strong),
+    transparent
+  );
+  margin: var(--space-12) 0;
+}
+
+.lesson blockquote {
+  margin: var(--space-6) 0;
+  padding: var(--space-4) var(--space-5);
+  border-left: 3px solid var(--accent-magenta);
+  background: rgba(255, 68, 170, 0.04);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.lesson blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Inline code + code blocks */
+
+.lesson code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--accent-cyan);
+}
+
+.lesson pre {
+  margin: var(--space-5) 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.lesson pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+  font-size: inherit;
+}
+
+/* KaTeX overrides for dark theme */
+
+.lesson .katex {
+  color: var(--text-primary);
+  font-size: 1.05em;
+}
+
+.lesson .katex-display {
+  margin: var(--space-5) 0;
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+.lesson table {
+  width: 100%;
+  margin: var(--space-5) 0;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.lesson th,
+.lesson td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.lesson th {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.lesson td {
+  color: var(--text-secondary);
+}
+
+/* Lesson lead — first paragraph after h1 */
+
+.lesson > h1 + p {
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  line-height: 1.55;
+  margin-bottom: var(--space-8);
+}
+
+.lesson .lesson-meta {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lesson .lesson-meta__chip {
+  padding: 4px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+
+.lesson .lesson-meta__chip--accent {
+  border-color: var(--border-accent);
+  color: var(--accent-cyan);
+  background: rgba(0, 212, 255, 0.06);
 }

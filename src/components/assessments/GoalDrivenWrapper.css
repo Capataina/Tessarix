@@ -1,0 +1,213 @@
+.gdw {
+  margin: var(--space-6) 0;
+  padding: var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+}
+
+.gdw--solved {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 1px var(--accent-green), 0 0 20px -8px var(--glow-green),
+    var(--shadow-card);
+}
+
+.gdw__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.gdw__index {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  color: var(--accent-cyan);
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid var(--border-accent);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.gdw__goal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.gdw__goal-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-magenta);
+}
+
+.gdw__goal-icon {
+  font-size: 10px;
+  color: var(--accent-magenta);
+}
+
+.gdw__goal-text {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.gdw__status {
+  align-self: center;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  transition: all var(--t-base);
+}
+
+.gdw__status--solved {
+  color: var(--accent-green);
+  border-color: var(--accent-green);
+  background: rgba(62, 255, 142, 0.08);
+}
+
+.gdw__widget {
+  /* Tighten the widget's own margins inside the wrapper */
+}
+.gdw__widget > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.gdw__hint-wrapper {
+  margin-top: var(--space-4);
+}
+
+.gdw__hint-btn {
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.gdw__hint-btn:hover:not(:disabled) {
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+}
+
+.gdw__hint-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tiered LLM hints — three levels with progressive intensity */
+
+.gdw__hints {
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gdw__hint {
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-elevated);
+  border-left: 3px solid var(--accent-cyan);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin: 0;
+}
+
+/* Level 1 — subtle, cyan */
+.gdw__hint--level-1 {
+  background: rgba(0, 212, 255, 0.04);
+  border-left-color: var(--accent-cyan);
+}
+.gdw__hint--level-1 .gdw__hint-level {
+  color: var(--accent-cyan);
+}
+
+/* Level 2 — more direct, yellow */
+.gdw__hint--level-2 {
+  background: rgba(255, 214, 51, 0.05);
+  border-left-color: var(--accent-yellow);
+}
+.gdw__hint--level-2 .gdw__hint-level {
+  color: var(--accent-yellow);
+}
+
+/* Level 3 — practically the answer, magenta */
+.gdw__hint--level-3 {
+  background: rgba(255, 68, 170, 0.06);
+  border-left-color: var(--accent-magenta);
+}
+.gdw__hint--level-3 .gdw__hint-level {
+  color: var(--accent-magenta);
+}
+
+/* Static fallback hint (only used when no llmContext provided) */
+.gdw__hint--static {
+  background: rgba(255, 214, 51, 0.04);
+  border-left-color: var(--accent-yellow);
+}
+.gdw__hint--static .gdw__hint-level {
+  color: var(--accent-yellow);
+}
+
+.gdw__hint-level {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+
+.gdw__hint p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.gdw__hint-error {
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-2);
+  background: rgba(255, 90, 90, 0.05);
+  border-left: 3px solid var(--accent-red);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: var(--text-xs);
+  color: var(--accent-red);
+  font-family: var(--font-mono);
+}
+
+.gdw__hint-foot {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}

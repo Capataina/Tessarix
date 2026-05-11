@@ -1,0 +1,79 @@
+.toc {
+  /* Sticky positioning lives on .app-sidebar-left now; the TOC just fills it. */
+  width: 100%;
+  padding: var(--space-4) 0;
+  font-family: var(--font-body);
+}
+
+.toc__header {
+  padding: 0 var(--space-3) var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-3);
+}
+
+.toc__header-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc__item {
+  position: relative;
+  margin: 0;
+}
+
+.toc__item a {
+  display: block;
+  padding: 6px var(--space-3);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: color var(--t-fast), border-color var(--t-fast),
+    background var(--t-fast);
+}
+
+.toc__item a:hover {
+  color: var(--text-secondary);
+}
+
+.toc__item--level-2 a {
+  font-weight: 500;
+  padding-left: var(--space-3);
+}
+.toc__item--level-3 a {
+  padding-left: var(--space-6);
+  font-size: 13px;
+}
+.toc__item--level-4 a {
+  padding-left: var(--space-10);
+  font-size: 12px;
+}
+
+.toc__item--active a {
+  color: var(--accent-cyan);
+  border-left-color: var(--accent-cyan);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 212, 255, 0.05),
+    transparent 60%
+  );
+}
+
+/* Scrollbar tweaks for the sidebar wrapper (sticky + scrollable) */
+.app-sidebar-left::-webkit-scrollbar {
+  width: 4px;
+}
+.app-sidebar-left::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border: 0;
+}

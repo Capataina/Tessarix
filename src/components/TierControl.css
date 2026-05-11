@@ -1,0 +1,59 @@
+.tier-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.tier-control__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tier-control__buttons {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.tier-control__btn {
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.tier-control__btn:hover:not(.tier-control__btn--active) {
+  color: var(--text-secondary);
+}
+
+.tier-control__btn--active.tier-control__btn--essential {
+  background: rgba(0, 212, 255, 0.12);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 0 1px rgba(0, 212, 255, 0.3);
+}
+
+.tier-control__btn--active.tier-control__btn--standard {
+  background: rgba(179, 102, 255, 0.12);
+  color: var(--accent-violet);
+  box-shadow: 0 0 0 1px rgba(179, 102, 255, 0.3);
+}
+
+.tier-control__btn--active.tier-control__btn--complete {
+  background: rgba(255, 214, 51, 0.12);
+  color: var(--accent-yellow);
+  box-shadow: 0 0 0 1px rgba(255, 214, 51, 0.3);
+}

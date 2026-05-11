@@ -1,0 +1,225 @@
+.afine-pipeline {
+  margin: var(--space-8) 0;
+  padding: var(--space-6);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.afine-pipeline__title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.afine-pipeline__track {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.afine-pipeline__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--t-fast), background var(--t-fast),
+    transform var(--t-fast);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.afine-pipeline__stage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-cyan);
+  opacity: 0;
+  transition: opacity var(--t-fast);
+}
+
+.afine-pipeline__stage--cyan::before { background: var(--accent-cyan); }
+.afine-pipeline__stage--magenta::before { background: var(--accent-magenta); }
+.afine-pipeline__stage--yellow::before { background: var(--accent-yellow); }
+.afine-pipeline__stage--green::before { background: var(--accent-green); }
+.afine-pipeline__stage--violet::before { background: var(--accent-violet); }
+
+.afine-pipeline__stage:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.afine-pipeline__stage:hover::before {
+  opacity: 0.5;
+}
+
+.afine-pipeline__stage--active::before {
+  opacity: 1;
+}
+
+.afine-pipeline__stage--active.afine-pipeline__stage--cyan {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 212, 255, 0.06);
+  box-shadow: 0 0 0 1px var(--accent-cyan), 0 0 16px -4px var(--glow-cyan);
+}
+.afine-pipeline__stage--active.afine-pipeline__stage--magenta {
+  border-color: var(--accent-magenta);
+  background: rgba(255, 68, 170, 0.06);
+  box-shadow: 0 0 0 1px var(--accent-magenta), 0 0 16px -4px var(--glow-magenta);
+}
+.afine-pipeline__stage--active.afine-pipeline__stage--yellow {
+  border-color: var(--accent-yellow);
+  background: rgba(255, 214, 51, 0.06);
+  box-shadow: 0 0 0 1px var(--accent-yellow), 0 0 16px -4px var(--glow-yellow);
+}
+.afine-pipeline__stage--active.afine-pipeline__stage--green {
+  border-color: var(--accent-green);
+  background: rgba(62, 255, 142, 0.06);
+  box-shadow: 0 0 0 1px var(--accent-green), 0 0 16px -4px var(--glow-green);
+}
+.afine-pipeline__stage--active.afine-pipeline__stage--violet {
+  border-color: var(--accent-violet);
+  background: rgba(179, 102, 255, 0.06);
+  box-shadow: 0 0 0 1px var(--accent-violet), 0 0 16px -4px rgba(179, 102, 255, 0.35);
+}
+
+.afine-pipeline__stage-index {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.afine-pipeline__stage-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.afine-pipeline__stage-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.afine-pipeline__detail {
+  padding: var(--space-5);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  border-left-width: 3px;
+}
+
+.afine-pipeline__detail--cyan { border-left-color: var(--accent-cyan); }
+.afine-pipeline__detail--magenta { border-left-color: var(--accent-magenta); }
+.afine-pipeline__detail--yellow { border-left-color: var(--accent-yellow); }
+.afine-pipeline__detail--green { border-left-color: var(--accent-green); }
+.afine-pipeline__detail--violet { border-left-color: var(--accent-violet); }
+
+.afine-pipeline__detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.afine-pipeline__detail-marker {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.afine-pipeline__detail--magenta .afine-pipeline__detail-marker {
+  background: var(--accent-magenta);
+  box-shadow: 0 0 8px var(--accent-magenta);
+}
+.afine-pipeline__detail--yellow .afine-pipeline__detail-marker {
+  background: var(--accent-yellow);
+  box-shadow: 0 0 8px var(--accent-yellow);
+}
+.afine-pipeline__detail--green .afine-pipeline__detail-marker {
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+}
+.afine-pipeline__detail--violet .afine-pipeline__detail-marker {
+  background: var(--accent-violet);
+  box-shadow: 0 0 8px var(--accent-violet);
+}
+
+.afine-pipeline__detail-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.afine-pipeline__detail-text {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+.afine-pipeline__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-4);
+}
+
+.afine-pipeline__nav-btn {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color var(--t-fast), color var(--t-fast),
+    background var(--t-fast);
+}
+
+.afine-pipeline__nav-btn:hover:not(:disabled) {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(0, 212, 255, 0.06);
+}
+
+.afine-pipeline__nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.afine-pipeline__nav-counter {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 768px) {
+  .afine-pipeline__track {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
