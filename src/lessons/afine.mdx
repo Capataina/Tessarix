@@ -48,11 +48,13 @@ import { LessonMeta } from "../components/MDXComponents";
 
 <LessonMeta tags={["IMAGE QUALITY", "CLIP", "BURN PR #4894", "5–45 MIN"]} />
 
-A-FINE is a **full-reference image quality metric**: it takes a distorted image and a reference image, runs both through a CLIP vision transformer, and produces a single number in `(0, 100)` that correlates with how a human would rate the distorted image's quality. The "adaptive" part — and the reason it was worth adding to `burn` next to LPIPS, DISTS, and FID — is that A-FINE doesn't assume the reference is itself a high-quality natural image. When the reference is unnatural (a synthetic render, a low-quality original), the metric de-emphasises faithful reconstruction and weights the distorted image's own naturalness more heavily.
+Imagine you've trained a model to upscale low-resolution photographs. Sometimes the model produces something gorgeous — sharper than the input, free of compression artefacts, plausible as a real high-resolution photo. Sometimes it produces something subtly wrong — sharp in the wrong places, hallucinating textures that aren't actually there. You need a number that tells you which is which, automatically, across millions of outputs. That number is the job of an **image quality metric**, and **A-FINE** is one of the better ones.
+
+A-FINE is full-reference: it takes a distorted image and a reference image, runs both through a CLIP vision transformer, and produces a single number in $(0, 100)$ that correlates with how a human would rate the distorted image's quality. The "adaptive" part — and the reason it was worth adding to `burn` next to LPIPS, DISTS, and FID — is the move it makes when the reference itself isn't trustworthy. Most metrics assume the reference is a clean high-quality original. A-FINE doesn't. When the reference is unnatural — a synthetic render, a low-quality stock photo, a degraded older copy — A-FINE quietly drops its weight on faithful reconstruction and lets the distorted image's own naturalness carry more of the score. The metric is asymmetric on purpose, and that asymmetry is where most of its design intelligence lives.
 
 <Tier level="standard">
 
-This lesson teaches A-FINE from the prerequisites up: what image quality assessment is, where the classical and CNN-feature metrics fall short, and exactly what each of A-FINE's five components does. You shipped 1,864 lines of A-FINE into `burn` in [PR #4894](https://github.com/tracel-ai/burn/pull/4894); this is the conceptual layer that should sit underneath that code.
+This lesson builds A-FINE from the prerequisites up. We start with the image-quality assessment problem itself, see why the classical baselines fall short, walk through the CNN-feature family that preceded A-FINE, and then unpack each of A-FINE's five computational components in depth. You shipped 1,864 lines of A-FINE into `burn` in [PR #4894](https://github.com/tracel-ai/burn/pull/4894); this is the conceptual layer that should sit underneath that code.
 
 </Tier>
 
@@ -70,14 +72,17 @@ This lesson teaches A-FINE from the prerequisites up: what image quality assessm
 
 ## The image-quality assessment problem
 
-The goal of an **image quality metric** is to produce a number, given an image (or pair of images), that **correlates with what a human observer would say about the image's quality**. Sounds simple. It is not.
+Suppose I show you a photograph and ask, "how good is this?" You'd answer effortlessly — your brain has been doing exactly this calibration since you were old enough to look at pictures. Now I want a *number*. A formula. Some procedure that takes the pixels and produces a score. **That's the image quality assessment problem**, and it sounds simpler than it is.
 
-Two questions decide which metric family applies:
+The trouble is that "quality" looks like one concept but it's actually three. There's *fidelity* (how close is this to some ideal version?), *naturalness* (does it look like a real photograph on its own?), and *structural integrity* (do the shapes still hold together?). A single number has to compress all three, and the way it compresses them defines the metric. Most of the acronyms in this lesson are different compression choices.
 
-- **Do you have a clean reference image to compare against?** If yes, you're in the **full-reference (FR)** world: SSIM, PSNR, LPIPS, DISTS, A-FINE. If no, you're in **no-reference (NR)** territory: BRISQUE, NIQE, MANIQA, the standalone naturalness head of A-FINE.
-- **Are you scoring a single image, or a distribution of images?** Per-image scoring is everything we've discussed so far. Distributional scoring is FID — it compares the *distribution* of features from a set of generated images against a set of real images, and is the standard for evaluating generative models like GANs and diffusion.
+Two questions split the field into recognisable families.
 
-A-FINE lives squarely in the **full-reference, per-image** quadrant.
+**First:** do you have a clean reference image to compare against? If yes, you're in the **full-reference (FR)** world: SSIM, PSNR, LPIPS, DISTS, A-FINE. The metric measures how far the candidate strays from the reference. If no, you're in **no-reference (NR)** territory: BRISQUE, NIQE, MANIQA, and the standalone naturalness head of A-FINE. These are not the same question. They are different problems wearing similar-looking clothes — a metric trained for one will not transfer to the other without re-fitting.
+
+**Second:** are you scoring a single image, or a distribution of images? People conflate these constantly. Per-image scoring is what every metric we've named so far does. Distributional scoring — comparing the statistical shape of one set of images to another set — is what **FID** does, and it's the standard for evaluating generative models like GANs and diffusion. It's a fundamentally different operation. The FID of a single image doesn't really exist, and the per-image score of a generative model doesn't tell you what FID tells you.
+
+Two questions, four quadrants. A-FINE lives in just one: full-reference, per-image. Every move we make in this lesson assumes those two answers.
 
 <MultipleChoice
   index={1}
@@ -103,7 +108,7 @@ $$
 \text{PSNR}(x, y) = 10 \cdot \log_{10}\!\left(\frac{\text{MAX}^2}{\text{MSE}(x, y)}\right)
 $$
 
-PSNR is a monotone transform of pixel-space mean-squared error. It is fast, mathematically clean, and **correlates poorly with human perception**. A slightly translated sharp image gets a low PSNR even though humans see it as identical; a heavily blurred image with the same average pixel values gets a high PSNR even though humans see it as obviously degraded.
+PSNR is a monotone transform of pixel-space mean-squared error. It's fast, mathematically clean, and famous for correlating poorly with how humans actually judge images. Shift a sharp photograph one pixel to the right and the PSNR collapses, even though your eyes cannot tell anything has changed. Blur a photograph until it's obviously degraded but keep the average pixel values stable, and the PSNR barely moves. The metric is doing exactly what its formula says — it just turns out the formula doesn't say what we wanted.
 
 ### SSIM — Structural Similarity Index
 
@@ -111,13 +116,13 @@ $$
 \text{SSIM}(x, y) = \frac{(2\mu_x \mu_y + c_1)(2\sigma_{xy} + c_2)}{(\mu_x^2 + \mu_y^2 + c_1)(\sigma_x^2 + \sigma_y^2 + c_2)}
 $$
 
-SSIM computes structural similarity over small local patches (usually 8×8 or 11×11) and averages. It captures **luminance** (the $\mu$ terms), **contrast** ($\sigma$ terms), and **structure** (the covariance $\sigma_{xy}$) separately. Better correlation with human perception than PSNR — but still pixel-domain. A re-stylised version of the same scene has low SSIM despite being recognisable as the same scene.
+SSIM is the next step up. It computes structural similarity over small local patches — usually 8×8 or 11×11 — and averages. The formula separates three things: **luminance** (the $\mu$ terms, how bright the patch is on average), **contrast** ($\sigma$ terms, how much variation it has), and **structure** (the covariance $\sigma_{xy}$, how the variations co-occur). That separation buys SSIM significantly better correlation with human judgement than PSNR. It still has the pixel-domain ceiling, though: a re-stylised version of the same scene — same content, different artistic treatment — gets a low SSIM despite being recognisable as the same scene. SSIM cares about local pixel patterns; humans care about *what's in the picture*, and those are different things.
 
 ### Watching the two metrics disagree
 
-The reason PSNR is a famously poor proxy for human perception is hard to *feel* from the formulas. The widget below applies four distortions to the same reference image and shows live PSNR and SSIM as you move each slider. The punchline is that **the two metrics disagree often, and frequently both disagree with what your eyes tell you**.
+The formulas above don't quite capture how badly PSNR misbehaves. You have to *see* it. The widget below applies four distortions — translation, blur, noise, brightness — to the same reference image and shows live PSNR and SSIM as you move each slider. Watch the two metrics drift apart from each other, and watch both of them drift away from what your eyes are telling you. The disagreement isn't subtle once you go looking for it.
 
-The four-step exploration below walks you through the disagreement space. Each step has a measurable goal; reaching it unlocks the next.
+The four-step exploration walks you through the regions of disagreement. Each step has a measurable goal; reaching one unlocks the next.
 
 <GoalChain
   index={2}
@@ -151,7 +156,7 @@ The four-step exploration below walks you through the disagreement space. Each s
   render={(onChange) => <MetricComparison onStateChange={onChange} />}
 />
 
-If you want to see the *shape* of each metric's response rather than spot-checking points, the side-by-side response curves below precompute PSNR and SSIM across the translation and blur parameter ranges:
+Spot-checking individual distortions gives you anecdotes. To see the *shape* of each metric's response curve, the precomputed plot below sweeps PSNR and SSIM across the translation and blur parameter ranges. The two response shapes — not just their values at any one point — are what reveal where each metric breaks down.
 
 <TranslationVsBlurPlot />
 
@@ -161,7 +166,7 @@ If you want to see the *shape* of each metric's response rather than spot-checki
 
 ## The CNN-feature family
 
-The breakthrough idea, around 2018: **stop comparing pixels; compare features extracted by a CNN trained on ImageNet**. The argument is that humans don't compare raw pixels — we compare semantic content, and ImageNet-pretrained CNN features encode rough semantics for free.
+Here's the breakthrough that reshaped image-quality assessment around 2018: stop comparing pixels, and start comparing **features**. Specifically, features extracted by a CNN that's already been trained on ImageNet. The argument is straightforward once stated — humans don't compare raw pixel grids when they look at two photographs; we compare what's *in* them. And a CNN that's spent millions of training iterations learning to recognise objects has already encoded a rough sense of semantic content in its intermediate layers. So just take those layers and use the distance between them as a quality signal.
 
 | Metric | Backbone | What it computes |
 |---|---|---|
@@ -169,7 +174,7 @@ The breakthrough idea, around 2018: **stop comparing pixels; compare features ex
 | **DISTS** | VGG-16 (ImageNet) | SSIM-style structure + texture ratios computed at every VGG layer, then learnedly combined. |
 | **A-FINE** | **CLIP ViT-B/32** (400M image-text pairs) | The next step on the same evolutionary tree: a broader backbone, plus an explicit naturalness head, plus an adaptive fusion. |
 
-The structural similarity Tessarix needs you to see: **A-FINE is not a different family from DISTS — it's an extension along three axes simultaneously.** Better backbone (CLIP > VGG), explicit naturalness modelling (DISTS only models fidelity), and adaptive fusion (DISTS assumes the reference is good; A-FINE doesn't).
+Here's the move worth feeling: **A-FINE is not a different family from DISTS — it's the same family, extended along three independent axes at once.** A better backbone (CLIP, trained on 400M image-text pairs, against DISTS's VGG-16 trained on 1.28M labelled images). An explicit naturalness model (DISTS only models fidelity to the reference; it has no concept of "does this image look natural on its own?"). And an adaptive fusion that drops DISTS's hardcoded assumption that the reference is itself a high-quality photograph. Each axis is a small change; together they're A-FINE.
 
 </Tier>
 
@@ -177,7 +182,7 @@ The structural similarity Tessarix needs you to see: **A-FINE is not a different
 
 ## Enter A-FINE — the architecture
 
-Click through each stage of the pipeline to see what it computes and why it exists.
+Time to look at the pipeline itself. Click through each stage in the widget below to see what it computes and why it earns its place.
 
 <AFinePipeline />
 
@@ -187,9 +192,9 @@ The pipeline has **five computational components**, applied in order:
 2. **Naturalness head (NR)** — applied to each image's embedding independently, scores how natural the image looks.
 3. **Fidelity head (FR)** — applied to the *pair* of embeddings, scores their similarity using an SSIM-like ratio in CLIP feature space.
 4. **Two logistic calibrators** — map raw scores onto a calibrated quality scale.
-5. **Adapter** — fuses the three calibrated scores into the final `(0, 100)` output, weighting fidelity against naturalness adaptively.
+5. **Adapter** — fuses the three calibrated scores into the final $(0, 100)$ output, weighting fidelity against naturalness adaptively.
 
-"512-d feature embedding" is easy to skim past. The heatmap below visualises a synthetic pair of CLIP-like embeddings — each cell is one of the 512 dimensions, colour-coded by sign and magnitude on a shared scale. Morph between them and watch both cosine similarity and the SSIM-style fidelity ratio respond — they don't track the same way, which previews why the fidelity head's structural-similarity ratio captures something cosine misses.
+"512-d feature embedding" is easy to skim past as a phrase. The heatmap below makes it concrete: each cell is one of the 512 dimensions of a CLIP embedding, coloured by sign and magnitude on a shared scale. Two embeddings drawn side-by-side. Morph between them and watch two different similarity measures respond — cosine similarity (the angular alignment) and the SSIM-style fidelity ratio (the structural-similarity score A-FINE actually uses). They don't track the same way. The gap between them is a small preview of why A-FINE's fidelity head doesn't just use cosine.
 
 <EmbeddingHeatmap />
 
@@ -210,13 +215,13 @@ The pipeline has **five computational components**, applied in order:
   ]}
 />
 
-The next four sections walk through components 2–5 in depth. The CLIP backbone is essentially a black box for this lesson — it's a vision transformer that produces feature embeddings; the structure of that transformer is a separate story.
+The next four sections walk through components 2 through 5 in depth. The CLIP backbone itself we'll treat as a black box for the rest of this lesson — it's a vision transformer that consumes an image and produces a 512-dimensional embedding, and the structure of that transformer is a separate story worth its own lesson. What matters here is that the same backbone is applied to *both* images in the pair, so $f_d$ and $f_r$ are embeddings in the same space, comparable via the operations downstream.
 
 ---
 
 ## The naturalness head
 
-The NR head asks: *given this single image's CLIP embedding, how natural does this image look on its own?*
+The naturalness head asks a question that doesn't involve the reference image at all: *given this image's CLIP embedding, how natural does it look on its own?* The architecture is small — a three-layer MLP — and the simplicity matters. Naturalness is the kind of judgement that should ride mostly on the CLIP features themselves; the head's job is just to compress those features down to a scalar.
 
 ```
 Input:  f ∈ ℝ^512  (CLIP feature embedding for one image)
@@ -226,11 +231,13 @@ Linear(128 → 64)  → GELU → Dropout
 Linear(64 → 1)    → scalar q_nat
 ```
 
-Three things worth holding onto:
+Three things worth holding onto.
 
-1. **The same head is applied to both images.** Once to `f_d` to produce `q_nat_d`, once to `f_r` to produce `q_nat_r`. Weights shared. This is the mechanically correct read: naturalness is a property of one image; the head doesn't care which of the pair it's looking at.
-2. **The activation is the erf-based `Gelu`, not QuickGELU.** The CLIP *backbone* uses QuickGELU; the naturalness head uses standard GELU. PyIQA's reference implementation is explicit about this distinction and getting it wrong is a silent error.
-3. **The final-layer bias is frozen at zero in the published checkpoint.** Any constant offset in the NR head's output would be absorbed by the logistic calibrator that comes next, so the bias is not separately learnable.
+First, **the same head is applied to both images in the pair**. Once to $f_d$ to produce $q_{nat,d}$, once to $f_r$ to produce $q_{nat,r}$. Same weights. This is the mechanically correct way to read the architecture: naturalness is a property of *one* image — its own naturalness, independent of any comparison — and the head doesn't care which member of the pair it's looking at. Two heads with different weights would double the parameter count for no gain, which is exactly the reason the published checkpoint ships a single one.
+
+Second, **the activation is the erf-based `Gelu`, not QuickGELU**. The CLIP backbone uses QuickGELU (a 1.702-coefficient approximation OpenAI shipped for speed); the naturalness head uses standard GELU. PyIQA's reference implementation is explicit about this distinction. Get it wrong — substitute either activation for the other — and every downstream activation shifts by about 1%. The metric still runs. The metric just gives the wrong number.
+
+Third, **the final-layer bias is frozen at zero in the published checkpoint**. Any constant offset in the head's output would be absorbed by the logistic calibrator that comes next, so the bias is structurally redundant — the published values reflect that.
 
 <Misconception belief="There are two separate naturalness heads — one for the distorted image and one for the reference.">
 
@@ -242,19 +249,19 @@ There is **one** naturalness head with shared weights, applied twice. Naturalnes
 
 ## The fidelity head — SSIM, but in feature space
 
-The fidelity head asks: *given two embeddings `f_d` and `f_r`, how faithful is `f_d` to `f_r`?*
+The fidelity head answers a different question: *given the two embeddings $f_d$ and $f_r$, how faithful is $f_d$ to $f_r$?* The answer is the part of the design where A-FINE differentiates itself from every prior CLIP-based attempt at perceptual quality.
 
-It is **not** cosine similarity, **not** L2 distance, **not** a learned MLP on `[f_d; f_r]`. It is an SSIM-style structural-similarity ratio computed across the 512 feature dimensions:
+What it's *not*: it's not cosine similarity (the obvious move — and the wrong one, for reasons we'll see in a moment). It's not L2 distance. It's not a learned MLP on the concatenation $[f_d; f_r]$. It's a structural-similarity ratio computed across the 512 feature dimensions of the two embeddings:
 
 $$
 q_{\text{fid}} = \frac{(2\mu_d \mu_r + c_1)(2\sigma_{dr} + c_2)}{(\mu_d^2 + \mu_r^2 + c_1)(\sigma_d^2 + \sigma_r^2 + c_2)}
 $$
 
-with $\mu_d, \mu_r$ the means and $\sigma_d, \sigma_r, \sigma_{dr}$ the standard deviations and covariance, all taken **across the feature dimensions** of `f_d` and `f_r`.
+The means $\mu_d, \mu_r$, the standard deviations $\sigma_d, \sigma_r$, and the cross-covariance $\sigma_{dr}$ are all taken **across the feature dimensions** of $f_d$ and $f_r$ — across the 512 components of each embedding, not across image pixels.
 
-Compare to the original SSIM formula at the top of the lesson. **Same shape.** The only difference: the means and variances are taken over CLIP feature dimensions rather than image patches. The structural lineage from SSIM → DISTS → A-FINE is direct.
+Look back at the SSIM formula at the top of the lesson. **Same shape, exactly.** The only thing that's changed is *what we're computing statistics over*. SSIM computes its statistics over small pixel patches; A-FINE's fidelity head computes its statistics over CLIP feature dimensions. The arithmetic is identical; the substrate is different. The lineage SSIM → DISTS → A-FINE is a single design idea, applied to better and better feature spaces.
 
-To build intuition for what each term in the formula actually contributes, the calculator below collapses to 8 dimensions (instead of 512). You can drag each component of the distorted vector and watch the means, variances, covariance, and assembled ratio update term-by-term:
+To feel what each term in the formula is actually contributing, the calculator below collapses to 8 dimensions instead of 512. Drag any component of the distorted vector; watch the means, variances, and cross-covariance update, then watch the four bracket terms of the SSIM ratio assemble into the final fidelity score.
 
 <FidelityHeadCalculator />
 
@@ -264,15 +271,15 @@ Cosine similarity collapses to one scalar per pair using only the angle between 
 
 </Misconception>
 
-The constants `c1` and `c2` are stabilising terms preventing division-by-zero when means or variances approach zero. A-FINE sets:
+The constants $c_1$ and $c_2$ are stabilising terms — they keep the ratio well-defined when means or variances approach zero. A-FINE sets them to:
 
 $$
 c_1 = c_2 = 10^{-10}
 $$
 
-**Five orders of magnitude smaller than DISTS's $10^{-6}$.** This is the single most "if you skim the paper you fail the parity test" decision in the whole metric.
+**Five orders of magnitude smaller than DISTS's $10^{-6}$.** If you skim the A-FINE paper and miss exactly this line, you will fail the parity test. The choice isn't an aesthetic preference; it's a calibration-tied decision that propagates through every downstream step.
 
-> **Why.** CLIP's output embeddings are unit-norm — the final projection L2-normalises them — so the variance of a single embedding across its 512 dimensions is roughly $1/512 \approx 2 \times 10^{-3}$. A `c1` of $10^{-6}$ is small relative to that variance, but its effect on the fidelity ratio is **scale-dependent**: at the natural CLIP scale the difference between $10^{-10}$ and $10^{-6}$ is subtle but consistent, and the trained calibrator parameters in the published checkpoint were fit assuming $10^{-10}$. Substituting $10^{-6}$ shifts the ratio enough that the downstream calibrator no longer matches its training — silently. The widget below lets you sweep over feature scales and verify this empirically: at unit scale the dynamic-range loss is small; drop the feature scale to $0.2 \times$ unit and the larger `c` starts to dominate.
+> **Why this matters.** CLIP's output embeddings are unit-norm (the final projection L2-normalises them), so the variance across a single embedding's 512 dimensions is roughly $1/512 \approx 2 \times 10^{-3}$. A $c_1$ of $10^{-6}$ is small relative to that variance, but the effect on the fidelity ratio is **scale-dependent**. At the natural CLIP scale the difference between $10^{-10}$ and $10^{-6}$ is subtle but consistent, and the trained calibrator parameters in the published checkpoint were fit assuming $10^{-10}$. Substituting $10^{-6}$ shifts the ratio just enough that the downstream calibrator no longer matches its training. The output looks plausible; it's just wrong. The widget below lets you verify this empirically — sweep over feature scales and watch the dynamic-range loss between the two constants. At unit scale (what CLIP actually produces), the gap is negligible; drop the scale to $0.2 \times$ unit and the larger $c$ starts to dominate.
 
 <GoalChain
   index={4}
@@ -302,13 +309,15 @@ $$
 
 ## The logistic calibrators
 
-Each raw quality score (`q_nat_d`, `q_nat_r`, `q_fid`) is passed through a 5-parameter logistic curve before being handed to the adapter:
+Three raw scores come out of the heads — $q_{nat,d}$, $q_{nat,r}$, and $q_{fid}$ — and they're not yet on a comparable scale. The naturalness head produces something monotone in naturalness, but in arbitrary units; the fidelity head produces an SSIM-style ratio in its own arbitrary units; nothing forces these to be commensurable. The calibrator's job is to put them all on the same $(0, 1)$ scale, with consistent interpretation, so the adapter can combine them meaningfully.
+
+Each raw score passes through a five-parameter logistic curve:
 
 $$
 s = \beta_1 \left( 0.5 - \frac{1}{1 + e^{\beta_2 (q - \beta_3)}} \right) + \beta_4 \cdot q + \beta_5
 $$
 
-This is the standard logistic-calibrator shape from the IQA literature (LPIPS uses the same form). The five $\beta_i$ are fitted on a quality-labelled dataset and shipped frozen as part of the pretrained checkpoint. Two calibrators: one shared by the naturalness scores, one for fidelity.
+This is the standard logistic-calibrator shape from the IQA literature — LPIPS uses the same form. The five $\beta_i$ values are fit on a quality-labelled dataset (humans rate images, you fit $\beta$ to match those ratings) and shipped frozen in the pretrained checkpoint. There are two calibrators in A-FINE: one shared by both naturalness scores, one for fidelity.
 
 </Tier>
 
@@ -316,7 +325,7 @@ This is the standard logistic-calibrator shape from the IQA literature (LPIPS us
 
 ### Goal-driven exploration — five-parameter logistic calibrator
 
-Drag the sliders to see how each parameter shapes the curve. The default values approximate the naturalness-head calibrator from the published checkpoint.
+The formula has five parameters, and each of them shapes the curve in a specific way. The exploration below lets you drag each one. The default values approximate the naturalness-head calibrator from the published checkpoint, so what you see before touching anything is roughly the curve A-FINE actually uses on the naturalness scores.
 
 <GoalDrivenWrapper
   index={5}
@@ -345,13 +354,13 @@ Drag the sliders to see how each parameter shapes the curve. The default values 
   )}
 />
 
-**The point of the calibrator** is to map the raw network output (which can be in any range — the network is just trained to produce *something monotone in quality*) onto a $(0, 1)$ scale that has consistent interpretation. The trained $\beta$ values absorb whatever offset and scale the raw head happens to produce; the calibrated scores are what the adapter actually combines.
+**The point of the calibrator** is exactly the mapping problem we opened this section with. The network is trained to produce *something monotone in quality* — meaning the raw output goes up as quality goes up, but in arbitrary units, with whatever offset and scale the training happened to converge on. The calibrator absorbs all of that. The trained $\beta$ values are doing the per-head normalisation; the calibrated scores are what the adapter actually consumes.
 
-To make the role of the trained values concrete, the widget below overlays a fixed "trained" calibrator (the kind A-FINE actually ships) against your free-parameter version. Try to fit the trained curve by hand — the RMSE between the two updates live as you drag:
+To make this concrete, the widget below shows you a fixed "trained" calibrator (the kind A-FINE ships in its checkpoint) and lets you fit it by hand. Move the five sliders until your curve matches the trained one. The RMSE between your curve and the target updates live. The harder it is to match — the more carefully you have to set each parameter — the more you can feel what the training process was doing on your behalf.
 
 <CalibratorComparison />
 
-A subtle weight-loading wrinkle: the five $\beta_i$ are stored as **0-D scalars** in the source PyTorch checkpoint but `burn`'s `Param<Tensor<B, 1>>` expects shape `(1,)`. `PytorchStore`'s auto-load silently drops 0-D parameters, leaving them at random init — which silently breaks the metric. The fix is to load them manually via `PytorchReader::with_top_level_key(...).get(name)` and unsqueeze to `(1,)`. This is the second of the lesson's "easy to miss" implementation traps.
+One implementation trap worth flagging here, because it bites exactly at the calibrator. The five $\beta_i$ are stored as **0-D scalars** in the source PyTorch checkpoint, but `burn`'s `Param<Tensor<B, 1>>` expects shape `(1,)`. `PytorchStore`'s standard auto-loader silently drops 0-D parameters — they fall back to random initialisation, the network keeps running, the metric output is wrong. The fix is to load each $\beta$ manually via `PytorchReader::with_top_level_key(...).get(name)` and unsqueeze to `(1,)`. This is the second of the lesson's silent-failure traps; the consolidated list at the bottom collects them all.
 
 </Tier>
 
@@ -361,13 +370,13 @@ A subtle weight-loading wrinkle: the five $\beta_i$ are stored as **0-D scalars*
 
 ## The adapter — where "adaptive" lives
 
-The adapter takes three calibrated scores and produces the final output:
+Here's where the metric's name earns itself. The adapter takes the three calibrated scores from the previous stage and produces A-FINE's final output:
 
 - $s_{\text{nat},d}$ — calibrated naturalness of the distorted image
 - $s_{\text{nat},r}$ — calibrated naturalness of the reference image
 - $s_{\text{fid}}$ — calibrated fidelity between the two
 
-It is **not** an MLP. It is a deliberately simple parametric fusion:
+It is **not** an MLP, which is the first thing worth noticing. Every recent paper on image-quality assessment uses a learned non-linear fusion of intermediate scores. A-FINE deliberately doesn't. Instead, it uses a parametric fusion with a single learned scalar:
 
 $$
 \text{blend} = k \cdot s_{\text{nat},r} + (1 - k)
@@ -379,11 +388,11 @@ $$
 
 where $k \in (0, 1)$ is a single learned scalar.
 
-Read the first line carefully. **The weight on fidelity depends on how natural the reference itself is.** If $s_{\text{nat},r} = 1$ (reference is maximally natural), blend $= k + (1-k) = 1$, so the score is purely fidelity. If $s_{\text{nat},r} = 0$ (reference is fully unnatural), blend $= 1 - k$, so fidelity is down-weighted and the distorted image's own naturalness picks up the slack.
+Look at the first line carefully. **The weight on fidelity isn't fixed — it depends on how natural the reference itself is.** If the reference is maximally natural ($s_{nat,r} = 1$), the blend equals $k + (1-k) = 1$, and the final score is pure fidelity to a trusted reference. If the reference is fully unnatural ($s_{nat,r} = 0$), the blend drops to $1 - k$; fidelity gets discounted, and the distorted image's own naturalness picks up the slack. The reference moves from "ideal to match" to "approximation to discount," continuously, based on how trustworthy it looks.
 
-This is what makes A-FINE **asymmetric** in `(distorted, reference)`: swapping the two doesn't give the same score, because $s_{\text{nat},d}$ and $s_{\text{nat},r}$ play different roles. Classical SSIM is symmetric; LPIPS is symmetric; A-FINE is intentionally not.
+This is the design choice that makes A-FINE **asymmetric** in $(distorted, reference)$. Swap the two images and the score changes, because $s_{nat,d}$ and $s_{nat,r}$ play different roles in the adapter — one of them gets multiplied by $(1 - \text{blend})$, the other by $\text{blend} \cdot s_{fid}$. Classical SSIM is symmetric. LPIPS is symmetric. A-FINE is intentionally not. The asymmetry isn't a bug to hide; it's the exact property that lets the metric handle the case where the reference itself is the problem.
 
-The heatmap below shows the final score across the $(s_{\text{nat},r}, s_{\text{fid}})$ plane for fixed $k$ and $s_{\text{nat},d}$. **Click and drag anywhere on the heatmap** to move the cursor; sliders remain for precision. The solid cursor is your current point; the dashed cursor automatically tracks the swap-twin (same fidelity, x-coordinate at $s_{\text{nat},d}$), so both states stay visible without flipping back and forth. A closed form for the asymmetry falls out of the algebra: $\text{asymmetry} = k \cdot |s_{\text{nat},d} - s_{\text{nat},r}| \cdot (1 - s_{\text{fid}})$ — zero when $k = 0$, zero when fidelity is perfect, zero when the two naturalness scores agree.
+The heatmap below visualises the final score across the $(s_{nat,r}, s_{fid})$ plane, with $k$ and $s_{nat,d}$ as the controllable parameters. Click and drag anywhere on the heatmap to move the cursor; the sliders remain available for precision. The solid cursor is your current point; the dashed cursor tracks the swap-twin (same fidelity, x-coordinate at $s_{nat,d}$ instead of $s_{nat,r}$), so you can read both states at once without flipping a toggle. A clean closed form for the asymmetry falls out of the algebra: $\text{asymmetry} = k \cdot |s_{nat,d} - s_{nat,r}| \cdot (1 - s_{fid})$. Three independent zeros — set $k = 0$, set $s_{fid} = 1$, or make the two naturalness scores equal — and any of them collapses the asymmetry to zero.
 
 <GoalChain
   index={6}
@@ -434,9 +443,9 @@ The heatmap below shows the final score across the $(s_{\text{nat},r}, s_{\text{
   )}
 />
 
-The structural reasoning: matching a synthetic-looking reference too faithfully is rewarding the wrong thing. If you're scoring an image-restoration output and the "reference" is a low-quality stock photo, A-FINE will partially fall back to "does the restoration look natural on its own?" rather than "does the restoration match the bad reference exactly?". For matched, high-quality reference pairs, the adapter is essentially a no-op and the metric behaves like a CLIP-backed structural-similarity score.
+The structural reasoning behind all of this: matching a synthetic-looking or low-quality reference too faithfully is rewarding the wrong thing. Picture the case where you're scoring a model that restores old degraded photographs. Your "reference" is the degraded original — that's all you have. A symmetric metric would punish your restoration for *not matching the noise and artefacts* in the reference. A-FINE notices the reference is unnatural, drops its weight on fidelity, and asks "does the restoration look natural on its own?" instead. For matched high-quality reference pairs — the typical full-reference benchmark — the adapter is essentially a no-op and A-FINE behaves like a CLIP-backed structural-similarity score. The adaptation only kicks in when it earns itself.
 
-Output is sigmoid-then-multiplied-by-100 to land in $(0, 100)$ for human readability.
+One last cosmetic step: the output is passed through a sigmoid and multiplied by 100, just to land the final number in $(0, 100)$ for human readability. Nothing semantic; just a scale for the people who'll read the score.
 
 </Tier>
 
@@ -446,39 +455,39 @@ Output is sigmoid-then-multiplied-by-100 to land in $(0, 100)$ for human readabi
 
 ## Putting it together — one concrete walkthrough
 
-A single (distorted, reference) pair, walked through the full pipeline. Use these numbers as a ground truth for the per-stage widgets above.
+The pipeline has five stages, and each one is small. To see them compose, here is a single concrete (distorted, reference) pair walked through the whole thing. The intermediate values are realistic — use them as a ground truth when you go back and play with the per-stage widgets above.
 
 | Stage | Computation | Value |
 |---|---|---|
-| **1. CLIP** | f_d, f_r — 512-d unit-norm embeddings | (vectors) |
-| **2. Naturalness head** — applied to f_d | Linear → GELU → Linear → GELU → Linear | q_nat,d = **0.78** |
-| **2. Naturalness head** — applied to f_r (shared weights) | same head, same weights | q_nat,r = **0.42** |
-| **3. Fidelity head** — SSIM-style ratio over (f_d, f_r) | (2μ_d μ_r + c₁)(2σ_dr + c₂) / [(μ_d² + μ_r² + c₁)(σ_d² + σ_r² + c₂)] | q_fid = **0.63** |
-| **4. Naturalness calibrator** — applied to q_nat,d | β₁(0.5 − σ(β₂(q − β₃))) + β₄ q + β₅ | s_nat,d = **0.72** |
-| **4. Naturalness calibrator** — applied to q_nat,r | same calibrator, shared weights | s_nat,r = **0.40** |
-| **4. Fidelity calibrator** — applied to q_fid | second calibrator, different β's | s_fid = **0.66** |
-| **5. Adapter — blend** | k · s_nat,r + (1 − k), with k = 0.55 | blend = **0.72** |
-| **5. Adapter — score** | blend · s_fid + (1 − blend) · s_nat,d | score = **0.68** |
-| **5. Output** | sigmoid(score · 6 − 3) · 100 — roughly | output ≈ **72** |
+| **1. CLIP** | $f_d, f_r$ — 512-d unit-norm embeddings | (vectors) |
+| **2. Naturalness head** — applied to $f_d$ | Linear → GELU → Linear → GELU → Linear | $q_{nat,d}$ = **0.78** |
+| **2. Naturalness head** — applied to $f_r$ (shared weights) | same head, same weights | $q_{nat,r}$ = **0.42** |
+| **3. Fidelity head** — SSIM-style ratio over $(f_d, f_r)$ | $(2\mu_d \mu_r + c_1)(2\sigma_{dr} + c_2) / [(\mu_d^2 + \mu_r^2 + c_1)(\sigma_d^2 + \sigma_r^2 + c_2)]$ | $q_{fid}$ = **0.63** |
+| **4. Naturalness calibrator** — applied to $q_{nat,d}$ | $\beta_1(0.5 - \sigma(\beta_2(q - \beta_3))) + \beta_4 q + \beta_5$ | $s_{nat,d}$ = **0.72** |
+| **4. Naturalness calibrator** — applied to $q_{nat,r}$ | same calibrator, shared weights | $s_{nat,r}$ = **0.40** |
+| **4. Fidelity calibrator** — applied to $q_{fid}$ | second calibrator, different $\beta$'s | $s_{fid}$ = **0.66** |
+| **5. Adapter — blend** | $k \cdot s_{nat,r} + (1 - k)$, with $k = 0.55$ | blend = **0.72** |
+| **5. Adapter — score** | $\text{blend} \cdot s_{fid} + (1 - \text{blend}) \cdot s_{nat,d}$ | score = **0.68** |
+| **5. Output** | $\sigma(\text{score} \cdot 6 - 3) \cdot 100$ — roughly | output ≈ **72** |
 
-This is what's happening *inside* every A-FINE evaluation. The reader is now in a position to predict, ahead of running it: *given* these intermediate values, the asymmetry of this pair (score with d↔r swapped) is k · |s_nat,d − s_nat,r| · (1 − s_fid) = 0.55 · 0.32 · 0.34 ≈ 0.060 — small, because s_fid is moderate-to-high. A truly low-fidelity pair (s_fid = 0.1, same other values) would produce asymmetry ≈ 0.16 — a meaningful shift the reader can verify against the adapter heatmap above.
+This is what's happening inside every A-FINE evaluation. With those intermediate values in hand, you can now predict the asymmetry of this specific pair without re-running the model: $k \cdot |s_{nat,d} - s_{nat,r}| \cdot (1 - s_{fid}) = 0.55 \cdot 0.32 \cdot 0.34 \approx 0.060$. A small asymmetry, because $s_{fid}$ is moderate-to-high. A truly low-fidelity pair — same other values, but $s_{fid} = 0.1$ instead — would produce asymmetry $\approx 0.16$. Three times larger. You can verify the prediction against the adapter heatmap above.
 
-The whole pipeline is *deterministic given the weights*. Once the checkpoint is loaded correctly, everything downstream is a straightforward composition of pure functions. The five implementation traps below are the entire surface where that composition can silently break.
+The whole pipeline is *deterministic given the weights*. Once the checkpoint is loaded correctly, everything downstream is a straightforward composition of pure functions. There's no learned non-linearity anywhere past the calibrators, no stochastic step, no failure mode that depends on input statistics in an opaque way. The five implementation traps below are the *entire surface* where the composition can silently break — which means once you've audited those five, you've audited everything.
 
 ---
 
 ## What A-FINE doesn't do
 
-This lesson sells what A-FINE adds; it should also be honest about what it leaves out. A-FINE is not a universal quality metric — it has a specific scope and specific failure modes outside that scope:
+Every section of this lesson so far has been an argument for A-FINE — what it does, why it does it well, where its design choices earn themselves. The lesson also owes you the opposite: a sober list of what A-FINE *doesn't* do. Every metric has a scope, and the most common failure mode of practitioners is applying a metric outside the scope its authors had in mind. Here's where A-FINE breaks down.
 
 - **Geometric distortion.** Translation, rotation, scaling. CLIP's vision transformer is rotation-fragile and scale-fragile; a 90°-rotated version of the same image is treated as a different scene. A-FINE inherits this. For tasks involving small geometric perturbations, structural-similarity-in-pixel-space (SSIM) is more robust.
 - **Saliency-weighted perception.** Humans weight different regions of an image differently — eyes, text, faces matter more than backgrounds. A-FINE has no saliency model; it weights every CLIP feature dimension equally. Metrics like CW-SSIM or specialised face-recognition metrics handle this better.
-- **Temporal consistency.** A-FINE scores single images. For video quality, frame-by-frame A-FINE misses temporal artefacts (flicker, judder, motion blur inconsistency). VMAF and ITU-T J.144 family of metrics target this regime.
+- **Temporal consistency.** A-FINE scores single images. For video quality, frame-by-frame A-FINE misses temporal artefacts — flicker, judder, motion blur inconsistency. VMAF and the ITU-T J.144 family of metrics target this regime instead.
 - **Adversarial robustness.** A targeted adversarial perturbation can change CLIP features substantially while keeping the image visually identical (or vice versa). A-FINE inherits CLIP's vulnerabilities — it is not a security-grade integrity check.
 - **Out-of-distribution domains.** A-FINE was trained on natural-image distortions. Medical imaging, satellite imagery, architectural drawings, anime — the metric still produces a number, but the calibration is no longer trustworthy without re-fitting on in-domain data.
-- **Distributional comparison.** A-FINE is per-image, not per-distribution. For evaluating generative models (GANs, diffusion), FID and KID are the standard — they compare the *distribution* of generated features against real-image features.
+- **Distributional comparison.** A-FINE is per-image, not per-distribution. For evaluating generative models (GANs, diffusion), FID and KID are the standard — they compare the *distribution* of generated features against real-image features, which is a fundamentally different operation.
 
-The mental model: A-FINE is a strong full-reference metric for **single-image, natural-domain, perceptual quality** assessment. Outside that envelope, reach for the appropriate specialist metric.
+The clean mental model: A-FINE is a strong full-reference metric for **single-image, natural-domain, perceptual quality** assessment, and it's competitive or better than alternatives inside that envelope. Outside the envelope, A-FINE still produces a number, but the number isn't trustworthy without re-validation. For each of the regimes above there's a specialist metric that handles the case A-FINE doesn't. Use those.
 
 </Tier>
 
@@ -488,13 +497,13 @@ The mental model: A-FINE is a strong full-reference metric for **single-image, n
 
 ## Three implementation traps (the ones that catch parity tests)
 
-This lesson has named two implementation gotchas so far; here's the consolidated list of the silent-failure traps in the burn implementation:
+The lesson has flagged two implementation gotchas in passing. Here's the consolidated list — five silent-failure traps in the burn implementation, all caught only by the parity test against PyIQA's reference scalar. Each one passes every shape check, every property test, every "does the network run?" sanity sweep. They only show up when you compare your numerical output against a known-correct reference, and only the parity test does that.
 
-1. **QuickGELU vs erf-based GELU.** The CLIP backbone uses **QuickGELU** ($x \cdot \sigma(1.702 x)$), an OpenAI shortcut that approximates GELU faster on GPU. The naturalness head uses the standard erf-based `Gelu`. Substituting either for the other silently shifts every downstream activation by ~1%, which is enough to fail the parity test against PyIQA's reference scalar. The two curves are visually indistinguishable; the difference plot below makes the gap concrete.
+1. **QuickGELU vs erf-based GELU.** The CLIP backbone uses **QuickGELU** ($x \cdot \sigma(1.702 x)$), an OpenAI shortcut that approximates the true GELU faster on GPU. The naturalness head — different sub-component, different conventions — uses the standard erf-based `Gelu`. The two activations are visually indistinguishable across the plotted range; if you eyeballed them you'd say they're the same function. They aren't. They differ by about 1% in the regime where both are active, and that 1% propagates through the entire forward pass. The plot below shows the gap directly.
 
 <GeluComparison />
 
-2. **Fused-QKV attention layout.** The CLIP attention block uses a single `Linear(d_model, 3 * d_model)` followed by `chunk(3, -1)` to split into Q, K, V. `burn_nn`'s `MultiHeadAttention` uses separate Q, K, V linears. Loading the CLIP checkpoint into the standard burn attention would require pre-splitting the weights, and the orientation of the split is non-obvious — easy to transpose the wrong direction. The custom fused-QKV attention in this PR maps the checkpoint one-to-one.
+2. **Fused-QKV attention layout.** The CLIP attention block uses a single `Linear(d_model, 3 * d_model)` followed by `chunk(3, -1)` to split into Q, K, V. `burn_nn`'s `MultiHeadAttention` uses three separate Q, K, V linears. The shapes are compatible (the fused layer has $3 \cdot d_{model}$ output features, which is exactly what three separate $d_{model}$-output layers contain), but the orientation of the split is non-obvious. Get it transposed — split along the wrong axis — and your projections come out scrambled. Valid shapes, plausibly-distributed outputs, completely wrong attention. The custom fused-QKV attention in this PR maps the checkpoint one-to-one to dodge the issue entirely.
 
 <MultipleChoice
   index={8}
@@ -508,11 +517,11 @@ This lesson has named two implementation gotchas so far; here's the consolidated
   correctId="transposed"
 />
 
-3. **`c1 = c2 = 1e-10`, not `1e-6`.** Covered above. CLIP features are unit-scale; the trained calibrator parameters assume the smaller eps. The RatioCollapseDemo widget earlier in this lesson is the diagnostic widget for this trap.
+3. **$c_1 = c_2 = 10^{-10}$, not $10^{-6}$.** Covered in detail in the fidelity-head section. CLIP features are unit-norm and the trained calibrator parameters assume the smaller eps; substituting DISTS's $10^{-6}$ shifts the ratio enough to silently break the calibration. The RatioCollapseDemo widget earlier in the lesson is the diagnostic surface for this exact trap.
 
-Plus two weight-loader oddities the parity test caught:
+Plus two weight-loader oddities specific to the burn / PyTorch handoff:
 
-- **0-D scalar parameters drop silently.** The five $\beta_i$ per calibrator, plus the adapter's $k$, are stored as 0-D tensors and need manual loading.
+4. **0-D scalar parameters drop silently.** The five $\beta_i$ per calibrator, plus the adapter's $k$, are stored as 0-D tensors in the source checkpoint. burn's `Param<Tensor<B, 1>>` expects shape `(1,)`. The standard `PytorchStore` auto-loader, when it encounters a shape mismatch on a parameter, doesn't error — it just leaves the parameter at random initialisation and moves on. The network still runs. The metric still produces numbers. The numbers are nonsense. Manual loading via `PytorchReader::with_top_level_key(...).get(name).unsqueeze()` dodges it.
 
 <MultipleChoice
   index={9}
@@ -526,9 +535,9 @@ Plus two weight-loader oddities the parity test caught:
   correctId="scalar-dropped"
 />
 
-- **CLIP checkpoint key collision.** The text-encoder's `positional_embedding` ($[77, 512]$) and the vision-encoder's `visual.positional_embedding` ($[50, 768]$) both end up renamed to `positional_embedding` after the standard remap. HashMap iteration order picks which wins. Pre-renaming the text-encoder's key first dodges the collision.
+5. **CLIP checkpoint key collision.** The text-encoder's `positional_embedding` parameter has shape $[77, 512]$. The vision-encoder's `visual.positional_embedding` parameter has shape $[50, 768]$. After the standard remap step in the loader, both keys end up renamed to `positional_embedding`. They now collide in the HashMap, and HashMap iteration order — which is non-deterministic — picks which one wins. Sometimes you get the text encoder's weights in the vision encoder's slot. Sometimes you get the opposite. Either way, the resulting network is wrong, and the parity test is the only mechanism that catches it. Pre-renaming the text-encoder's key before the remap dodges the collision.
 
-These five things are why the PR's parity test (`test_afine_pretrained_parity`) is the load-bearing test of the contribution. Property tests catch shape and finiteness; the parity test catches every one of the five traps above by comparing against a captured PyIQA scalar to within $5 \times 10^{-5}$ absolute.
+Those five traps together are why the PR's parity test (`test_afine_pretrained_parity`) is the load-bearing test of the entire contribution. Property tests catch shape mismatches, NaN propagation, finiteness. They don't catch *semantic* wrongness — a network that runs, produces well-shaped outputs, and quietly returns the wrong scalar. The parity test catches every one of the five traps above by comparing the burn implementation's scalar output against a captured PyIQA reference, to within $5 \times 10^{-5}$ absolute. If the parity test passes, the implementation is correct in every way that matters. If it fails, one of these five is the culprit, and the lesson above is the debugging map.
 
 </Tier>
 
@@ -570,7 +579,7 @@ These five things are why the PR's parity test (`test_afine_pretrained_parity`) 
 
 ## Where to read next
 
-The conceptual layer ends here. To go deeper into the implementation reality:
+That closes the conceptual layer. The rest is implementation reality — the actual Rust code, the source paper, the PyTorch reference the burn port mirrors.
 
 - **[burn PR #4894](https://github.com/tracel-ai/burn/pull/4894)** — the actual Rust implementation, 1,864 LOC across 8 files.
 - **[Liao et al. 2024, "A-FINE"](https://arxiv.org/abs/2503.11221)** — the source paper.
