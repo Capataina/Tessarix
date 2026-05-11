@@ -26,11 +26,13 @@ import { LessonMeta } from "../components/MDXComponents";
 
 <LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "SPAN", "12–28 MIN"]} />
 
-So far in the linear-algebra track, vectors have been **specific points** — a particular arrow with a particular tip. This lesson is about *sets* of vectors and what you can reach by **mixing** them. Two new ideas live here: the **linear combination** (the act of mixing) and the **span** (the set of everything you can reach by mixing). These two together turn linear algebra from "operations on vectors" into "geometry of vector spaces" — and they're the prerequisite for almost everything that comes after (basis, rank, eigenvectors, dimension itself).
+Up to this point, every vector you've worked with has been a *specific* point — one arrow with one tip at one location. Useful, but limiting. The interesting questions in linear algebra rarely have the form "where is this one vector?" They have the form "given a *set* of vectors, what can I build with them?" That's the question this lesson is built around.
+
+Two ideas live here, and they're inseparable. The first is the **linear combination** — the act of taking a few vectors and mixing them together with scalar coefficients. The second is the **span** — the *set* of every point you can reach by varying those coefficients freely. The first is an operation; the second is the result of running that operation across all possible inputs and collecting the results. Together they turn linear algebra from "operations on individual vectors" into the **geometry of vector spaces**. From this lesson onward, almost every concept — basis, rank, dimension, column space, eigenvectors — is built on top of span. It's the foundational object, and the widget on this page is designed to make it visible.
 
 <Tier level="standard">
 
-**Prerequisites:** [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations) (vector addition, scalar multiplication). The two operations on this lesson's page are exactly those two operations applied together, repeatedly.
+**Prerequisites:** [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations) (vector addition, scalar multiplication). The two operations on this page are nothing more than those two operations applied together, repeatedly, over varying scalar choices. If the foundations don't feel concrete yet, start there.
 
 </Tier>
 
@@ -42,34 +44,34 @@ $$
 \alpha \mathbf{u} + \beta \mathbf{v}
 $$
 
-where $\alpha$ and $\beta$ are scalars. That's it. Scale each vector independently, then add. The reader has done this operation many times already, just not by name — every time scalar multiplication and vector addition were combined in the foundations lesson, that was a linear combination.
+where $\alpha$ and $\beta$ are scalars. That's the whole definition. Scale each vector independently, then add the results. You've actually been doing this for a while — every time scalar multiplication and vector addition combined in the foundations lesson, that was a linear combination, just not by name.
 
-The interesting question is not "how do I compute one" — that's mechanical. The interesting question is: **what *set* of points can be reached by varying $\alpha$ and $\beta$ over all real numbers?** That set is called the **span** of $\{\mathbf{u}, \mathbf{v}\}$.
+The interesting question is not "how do I compute one" — that's mechanical. The interesting question is the one you can only ask once you've named the *operation*: **what *set* of points can you reach by varying $\alpha$ and $\beta$ over all real numbers?** That set has a name. It's called the **span** of $\{\mathbf{u}, \mathbf{v}\}$, and the widget below makes it directly visible.
 
 <LinearCombination />
 
-The faint green dots in the widget above are the span sampled at a grid of $(\alpha, \beta)$ values. Two patterns to feel by dragging:
+The faint green dots in the widget are the span, sampled at a grid of $(\alpha, \beta)$ values from $-2$ to $2$ along each axis. The pattern they trace out is what you want to watch. Two situations to feel by dragging $\mathbf{u}$ and $\mathbf{v}$:
 
-- **When $\mathbf{u}$ and $\mathbf{v}$ point in different directions**, the dots fill the plane. Every point in $\mathbb{R}^2$ can be reached by some combination. The span is *all of* $\mathbb{R}^2$.
-- **When $\mathbf{u}$ and $\mathbf{v}$ point in the same (or opposite) direction**, the dots collapse to a single line through the origin. Most of $\mathbb{R}^2$ becomes unreachable. The span is a 1-dimensional line.
+- **When $\mathbf{u}$ and $\mathbf{v}$ point in genuinely different directions**, the dots fill the whole plane. Every point in $\mathbb{R}^2$ is reachable as some $\alpha\mathbf{u} + \beta\mathbf{v}$. The span is *all of* $\mathbb{R}^2$.
+- **When $\mathbf{u}$ and $\mathbf{v}$ point in the same (or opposite) direction**, the dots collapse onto a single line through the origin. Most of the plane is suddenly unreachable. The span is a one-dimensional line.
 
-The widget colour-codes this: the readout panel turns green when the vectors are independent, red when dependent. The output vector $\alpha \mathbf{u} + \beta \mathbf{v}$ also recolours to red in the dependent case, signalling that the reader's free-coefficient exploration is trapped on a line.
+The widget colour-codes this distinction: the readout panel turns green when the vectors are independent, red when dependent. The output vector $\alpha\mathbf{u} + \beta\mathbf{v}$ also turns red in the dependent case — a signal that your free-coefficient exploration has been trapped on a line through the origin, and no matter what $\alpha$ and $\beta$ you pick, you can't escape it.
 
 ## Linear independence
 
-The distinction the widget surfaces has a name: $\mathbf{u}$ and $\mathbf{v}$ are **linearly independent** if neither one is a scalar multiple of the other — they point in genuinely different directions. They're **linearly dependent** if one IS a scalar multiple of the other — they live on the same line through the origin.
+The distinction the widget keeps surfacing has a name. Two vectors $\mathbf{u}$ and $\mathbf{v}$ are **linearly independent** when neither is a scalar multiple of the other — they point in genuinely different directions and together they reach more of the plane than either could alone. They are **linearly dependent** when one *is* a scalar multiple of the other — they live on the same line through the origin, and the second one adds no new reachable direction to the span.
 
-The algebraic test in two dimensions: the determinant of the matrix whose columns are $\mathbf{u}$ and $\mathbf{v}$.
+The algebraic test in two dimensions is short, and it's a number you already know. Take the determinant of the matrix whose columns are $\mathbf{u}$ and $\mathbf{v}$:
 
 $$
 \det \begin{pmatrix} u_1 & v_1 \\ u_2 & v_2 \end{pmatrix} = u_1 v_2 - u_2 v_1
 $$
 
-Non-zero → independent → span fills the plane. Zero → dependent → span is a line.
+A non-zero determinant means the vectors are independent and the span fills the plane. A zero determinant means they're dependent and the span is a line.
 
 <Tier level="standard">
 
-This is the same determinant from the matrices lesson — the *area scaling factor* of a 2×2 matrix is also the *independence test* for its columns, because if the columns are dependent, the matrix collapses the unit square to a line (area zero). The two interpretations are not separate facts; they're the same fact viewed from different sides.
+Here's where the lesson on matrices and this lesson connect. **The determinant from the matrices lesson is the same number as the independence test here.** When you compute $\det A$, you can read the number two ways: as the area scaling factor of the transformation $A$, or as the linear-dependence test for $A$'s columns. The two interpretations are not coincidences — they're the same fact. If the columns of $A$ are linearly dependent (one is a scalar multiple of the other), then $A$ collapses the unit square onto the line they share, so the parallelogram has zero area, so the determinant is zero. Three ways of saying one thing.
 
 </Tier>
 
@@ -111,21 +113,27 @@ Dependence is broader. $\mathbf{u}$ and $\mathbf{v}$ are dependent whenever **on
 
 ## Span beyond two vectors
 
-The widget on this page works with two vectors because we're in $\mathbb{R}^2$ and that's the maximum useful number for spanning the plane. In higher dimensions:
+The widget on this page is limited to two vectors because we're in $\mathbb{R}^2$ and that's the maximum useful number for spanning the plane. The pattern generalises in the obvious way, and the geometric pictures keep working in higher dimensions:
 
-- In $\mathbb{R}^3$, *one* vector spans a line; *two* (if independent) span a plane through the origin; *three* (if independent) span all of $\mathbb{R}^3$.
-- In $\mathbb{R}^n$, $k$ linearly independent vectors span a $k$-dimensional subspace. You can never span more than $n$ dimensions with vectors in $\mathbb{R}^n$ — that's the **dimension** of $\mathbb{R}^n$ itself.
+- In $\mathbb{R}^3$: *one* vector spans a line through the origin; *two* (independent) vectors span a plane through the origin; *three* (independent) vectors span all of $\mathbb{R}^3$.
+- In $\mathbb{R}^n$: $k$ linearly independent vectors span a $k$-dimensional subspace. You can never span more than $n$ dimensions with vectors in $\mathbb{R}^n$ — and the maximum $n$ is what we mean by "the dimension of $\mathbb{R}^n$".
 
-A set of $k$ vectors $\{\mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_k\}$ in $\mathbb{R}^n$ is linearly independent if the only way to write the zero vector as $c_1 \mathbf{v}_1 + c_2 \mathbf{v}_2 + \ldots + c_k \mathbf{v}_k = \mathbf{0}$ is with all $c_i = 0$. Dependence means *some* non-trivial combination of them gives zero — which is just a fancy way of saying *some* combination of all but one expresses that one. They're not contributing new directions to the span.
+The formal definition of linear independence for more than two vectors is worth writing out, because it's the form you'll see in textbooks from here on. A set of $k$ vectors $\{\mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_k\}$ in $\mathbb{R}^n$ is **linearly independent** if the only way to write the zero vector as a linear combination
+
+$$
+c_1 \mathbf{v}_1 + c_2 \mathbf{v}_2 + \ldots + c_k \mathbf{v}_k = \mathbf{0}
+$$
+
+is with all $c_i = 0$. Dependence means *some* non-trivial choice of $c_i$'s makes the combination zero — which is just a fancy way of saying *some* combination of all-but-one of the vectors expresses the remaining one. In plain language: at least one of the vectors is redundant, contributing no new direction the others can't already build.
 
 ## Span and the columns of a matrix
 
-The columns of a $2 \times 2$ matrix $A$ are two vectors in $\mathbb{R}^2$. The **column space** of $A$ is the span of its columns — the set of every vector of the form $A\mathbf{x}$ for some $\mathbf{x} \in \mathbb{R}^2$.
+The columns of a $2 \times 2$ matrix $A$ are two vectors in $\mathbb{R}^2$. The set of every vector you can write as $A\mathbf{x}$ for some $\mathbf{x}$ is called the **column space** of $A$ — and the column space is exactly the *span* of $A$'s columns. The connection between this lesson and the matrices lesson is now mechanical:
 
-- If $A$'s columns are independent (det $\ne 0$), the column space is all of $\mathbb{R}^2$. Every vector is reachable as $A\mathbf{x}$ for some $\mathbf{x}$. $A$ is **invertible**.
-- If $A$'s columns are dependent (det = 0), the column space is a line. Only vectors on that line are reachable as $A\mathbf{x}$. $A$ is **singular**.
+- If $A$'s columns are linearly independent ($\det A \ne 0$), the column space is all of $\mathbb{R}^2$. Every vector in the plane is reachable as $A\mathbf{x}$ for some $\mathbf{x}$. The matrix $A$ is **invertible** — you can go backwards from any output to its unique input.
+- If $A$'s columns are linearly dependent ($\det A = 0$), the column space is a line. Only vectors on that line are reachable as $A\mathbf{x}$ at all. The matrix $A$ is **singular** — given a target vector not on that line, there's no input that produces it; given a target on the line, there are infinitely many inputs that produce it. Either way, you can't invert.
 
-This connects the dependence test from this lesson to the determinant interpretation from the matrices lesson and to invertibility, which is its own forthcoming lesson. Three views of the same fact: dependence ↔ determinant zero ↔ non-invertibility ↔ collapsed column space. They're not coincidences — they're the same fact, written four ways.
+Three different vocabularies for the same single fact: linear dependence of columns, zero determinant, non-invertibility. They're not three separate properties that happen to co-occur — they're three vocabularies for one structural property of the matrix.
 
 </Tier>
 
@@ -179,11 +187,11 @@ This connects the dependence test from this lesson to the determinant interpreta
 
 ## Where to read next
 
-- **Linear Algebra — Basis and Change of Basis** (forthcoming) — when two independent vectors fill $\mathbb{R}^2$, they form a *basis*. Every point has unique coordinates relative to that basis — which is exactly what the widget computed when you dragged the green output dot.
-- **Linear Algebra — Rank, Null Space, and the Four Fundamental Subspaces** (forthcoming) — generalises the column-space discussion in the complete tier; the column space is one of four fundamental subspaces every matrix has.
-- **Linear Algebra — Matrices as Transformations** ([already authored](#/lesson/linear-algebra-matrices)) — the determinant test in this lesson is the same number as the matrix's area-scaling factor; the dependence story and the singular-matrix story are the same story.
+- **Linear Algebra — Basis and Change of Basis** (forthcoming) — when two independent vectors fill $\mathbb{R}^2$, they form a *basis*. Every point in the plane has unique coordinates relative to that basis — which is exactly what the widget computed for you when you dragged the green output dot to a target.
+- **Linear Algebra — Rank, Null Space, and the Four Fundamental Subspaces** (forthcoming) — generalises the column-space discussion in the complete tier. Column space is one of four fundamental subspaces every matrix has; this lesson's machinery is the entry point into all of them.
+- **[Linear Algebra — Matrices as Transformations](#/lesson/linear-algebra-matrices)** — the determinant test in this lesson is the same number as the matrix's area-scaling factor. Linear-dependence-of-columns, zero-determinant, and singular-matrix are the same fact in three vocabularies.
 
 External references:
 
-- **[3Blue1Brown — Linear combinations, span, and basis vectors](https://www.3blue1brown.com/lessons/span)** — visual intuition track.
-- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — Chapter 1.1 covers linear combinations and span; Chapter 2 develops independence and basis in depth.
+- **[3Blue1Brown — Linear combinations, span, and basis vectors](https://www.3blue1brown.com/lessons/span)** — the visual intuition track this lesson is downstream of.
+- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — Chapter 1.1 covers linear combinations and span; Chapter 2 develops linear independence and basis in depth.

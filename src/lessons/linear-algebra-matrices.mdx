@@ -26,34 +26,40 @@ import { LessonMeta } from "../components/MDXComponents";
 
 <LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "MATRICES", "15–35 MIN"]} />
 
-A **matrix** is a rectangular grid of scalars — but that algebraic description undersells what a matrix actually does. A $2 \times 2$ matrix is a **linear transformation of the plane**: it eats every point in $\mathbb{R}^2$ and spits out a new point, in a way that preserves three things — the origin stays at the origin, lines stay lines (no curves), and parallel lines stay parallel. This lesson builds the geometric intuition for matrices through one widget you'll touch over and over.
+Imagine you're holding a flat sheet of paper printed with a grid of dots. You can pinch one edge and pull it sideways — the dots shear into a diamond pattern. You can grab opposite corners and stretch the sheet — the dots spread apart. You can spin the sheet around a pin through its centre — the dots rotate. Every one of those moves is a **transformation of the plane**: it takes the original arrangement of points and produces a new one, in a way that preserves certain things (the dots stay flat, they stay on a uniform grid, no curves appear) and changes others (their positions, their orientations, their separations). Matrices are the mathematical language for describing exactly those transformations.
+
+A **matrix** is, on its surface, just a rectangular grid of scalars. But that description radically undersells what a matrix *does*. A $2 \times 2$ matrix is a linear transformation of the plane — it consumes every point in $\mathbb{R}^2$ and produces a new point, preserving three properties along the way: the origin stays at the origin, lines stay lines (no curves ever appear), and parallel lines stay parallel. This lesson builds the geometric intuition for matrices through one widget you'll touch over and over until "matrix" stops meaning "grid of numbers" in your head and starts meaning "way of warping space".
 
 <Tier level="standard">
 
-**Prerequisites:** this lesson assumes you've already worked through *Linear Algebra — Scalars, Vectors, Matrices* (the foundations lesson). If "vector" and "scalar multiplication" don't feel concrete yet, start there first.
+**Prerequisites:** this lesson assumes you've already worked through [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations). If "vector", "scalar multiplication", or "the geometric interpretation of an arrow" don't feel concrete yet, start there first. Matrices act on vectors, so the vector picture has to be in place before the matrix picture can land.
 
 </Tier>
 
 ## The 2×2 matrix
 
-A $2 \times 2$ matrix has 4 entries:
+A $2 \times 2$ matrix has four entries, arranged in a square:
 
 $$
 A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}
 $$
 
-Algebraically, a matrix and a vector multiply like this:
+Algebraically, a matrix and a vector multiply by the following rule — the calculation is mechanical and you've probably seen it before:
 
 $$
 A \mathbf{v} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} ax + by \\ cx + dy \end{pmatrix}
 $$
 
-That's the calculation. The geometric meaning is more revealing: a $2 \times 2$ matrix is fully specified by **where it sends the basis vectors**. The standard basis is $\hat{\imath} = (1, 0)$ and $\hat{\jmath} = (0, 1)$. After the transformation:
+That's the calculation. The geometric meaning is much more revealing, and once you internalise it, you'll never need to do the arithmetic step-by-step again to predict what a matrix is going to do.
 
-- $\hat{\imath} \mapsto (a, c)$ — the matrix's first column
-- $\hat{\jmath} \mapsto (b, d)$ — the matrix's second column
+Here's the move worth feeling: **a $2 \times 2$ matrix is completely specified by where it sends the basis vectors**. The standard basis in $\mathbb{R}^2$ is $\hat{\imath} = (1, 0)$ (the unit vector along the x-axis) and $\hat{\jmath} = (0, 1)$ (the unit vector along the y-axis). After the transformation:
 
-Every other point in the plane is some combination of $\hat{\imath}$ and $\hat{\jmath}$, so once you know where the basis vectors go, the rest of the plane follows by linearity. **A $2 \times 2$ matrix is fully specified by where it sends $\hat{\imath}$ and $\hat{\jmath}$.**
+- $\hat{\imath} \mapsto (a, c)$ — the matrix's first column.
+- $\hat{\jmath} \mapsto (b, d)$ — the matrix's second column.
+
+Every other point in the plane is some specific combination of $\hat{\imath}$ and $\hat{\jmath}$ — that's literally what coordinates *are*. So once you know where the basis vectors go, the rest of the plane follows automatically by linearity. **A $2 \times 2$ matrix is fully specified by where it sends $\hat{\imath}$ and $\hat{\jmath}$, and those two destinations are sitting right there as the matrix's columns.** Read the columns; you've read the transformation.
+
+The widget below is the working version of that statement. The dashed grey outline is the original unit square (the square with corners at $\hat{0}, \hat{\imath}, \hat{\jmath}, \hat{\imath}+\hat{\jmath}$). The filled parallelogram is its image under $A$. The cyan arrow is the transformed $\hat{\imath}$; the yellow arrow is the transformed $\hat{\jmath}$. Move the sliders, watch the columns drag the basis vectors around, watch the whole parallelogram follow.
 
 <MatrixTransform
   widgetName="2×2 matrix transformation — basis vectors and the unit square"
@@ -62,17 +68,19 @@ Every other point in the plane is some combination of $\hat{\imath}$ and $\hat{\
 
 ## Determinants — the area-scaling factor
 
-The **determinant** of a $2 \times 2$ matrix tells you how the matrix scales **areas**:
+There's a single number you can compute from a $2 \times 2$ matrix that tells you almost everything about *what kind of transformation* the matrix is. That number is the **determinant**:
 
 $$
 \det A = ad - bc
 $$
 
-Geometrically: the unit square has area 1; after the transformation it becomes a parallelogram whose (signed) area is exactly $\det A$. Three special cases worth feeling:
+The geometric meaning is the cleanest thing in linear algebra. The unit square has area 1. After the transformation, it becomes a parallelogram. The parallelogram's signed area is *exactly* $\det A$. That's not a coincidence or an approximation — the formula $ad - bc$ is *what* the area of that parallelogram is, expressed in terms of the matrix entries.
 
-- $\det A = 1$: the transformation preserves area exactly. Rotations and reflections are like this.
-- $\det A = 0$: the transformation **collapses** the plane onto a line (or a point). The unit square's image has zero area. The matrix is called **singular** in this case — it can't be inverted, because once you've collapsed the plane, no transformation can recover the original.
-- $\det A < 0$: the transformation **flips orientation** — the unit square's image traversed in the original order goes around the parallelogram in the opposite direction. Reflections give this; pure rotations don't.
+Three special cases worth feeling in your hands.
+
+- $\det A = 1$ — the transformation preserves area exactly. The parallelogram has the same area as the unit square, even though its shape can be radically different. Rotations and shears are in this category.
+- $\det A = 0$ — the transformation **collapses** the plane onto a lower-dimensional subspace. The unit square's image has zero area, which means it has to be a line segment (or in the degenerate case where the whole matrix is zero, a single point). A matrix with zero determinant is called **singular**, and it has the property that there's no way to undo it — once you've collapsed the plane onto a line, no transformation can recover the original arrangement of points, because infinitely many original points map to each image point.
+- $\det A < 0$ — the transformation **flips orientation**. The unit square's vertices, traversed in their original order, go around the image parallelogram in the *opposite* direction (clockwise vs anticlockwise). Reflections give this; pure rotations don't. The fill colour in the widget below flips when the determinant goes negative — that visual cue is the orientation-reversal made literal.
 
 <GoalChain
   index={1}
@@ -118,7 +126,9 @@ A determinant of zero means the matrix is **singular** — the transformation co
 
 ## Matrix-vector multiplication — a transformation in motion
 
-The matrix-vector product $A \mathbf{v}$ is the linear transformation $A$ applied to the specific vector $\mathbf{v}$. Below, the test vector $\mathbf{v}$ is draggable; $A \mathbf{v}$ updates to show where it lands under the current matrix.
+So far we've watched matrices act on the unit square — but the unit square is just a visualisation aid. What a matrix actually does, mechanically, is consume one specific vector $\mathbf{v}$ and produce one specific vector $A\mathbf{v}$. Every vector in the plane gets its own destination. The unit square just packages four particularly informative destinations (the four corners) into a single picture.
+
+The widget below makes the per-vector picture concrete. There's a draggable test vector $\mathbf{v}$ in addition to the matrix controls; $A\mathbf{v}$ updates live as you move either. Drag $\mathbf{v}$ around the plane and watch its image trace out the corresponding response — the matrix is a *function* on vectors, and now you can see the function evaluated at any input you point to.
 
 <MatrixTransform
   showTestVector
@@ -129,9 +139,9 @@ The matrix-vector product $A \mathbf{v}$ is the linear transformation $A$ applie
 
 ## Composition of transformations is matrix multiplication
 
-Applying transformation $A$ then transformation $B$ to a vector $\mathbf{v}$ gives $B(A\mathbf{v})$. The associativity of matrix multiplication means this equals $(BA)\mathbf{v}$ — there's a single matrix $BA$ that captures the combined transformation. **Matrix multiplication is exactly the algebraic encoding of composing geometric transformations.**
+Apply transformation $A$ to a vector $\mathbf{v}$, then apply transformation $B$ to the result. You get $B(A\mathbf{v})$. Matrix multiplication is exactly the operation that captures this in one step: the associativity of matrix multiplication means $B(A\mathbf{v}) = (BA)\mathbf{v}$, so there's a single matrix $BA$ that does both transformations at once. **Matrix multiplication isn't a procedure invented for its own sake; it's the algebraic encoding of composing geometric transformations**, and the order in which you multiply mirrors the order in which the transformations apply.
 
-Order matters: $AB \ne BA$ in general. Rotating first and then shearing is different from shearing first and then rotating — try it on a unit square in your head. The matrix-composition lesson (forthcoming) makes this concrete with a side-by-side widget that shows $AB$ and $BA$ simultaneously.
+The order matters. $AB \ne BA$ in general. Rotate first and then shear: you get one final shape. Shear first and then rotate: you get a different final shape. Try it in your head with a unit square. Rotate it 30° anticlockwise and *then* shear it horizontally — the shear acts on a tilted square. Shear it horizontally and *then* rotate 30° — the rotation acts on a parallelogram that was already non-square. The two operations don't commute, and that non-commutativity is one of the most consequential facts in all of linear algebra. The forthcoming Matrix Operations lesson makes this concrete with a side-by-side widget that shows $AB$ and $BA$ simultaneously.
 
 </Tier>
 
@@ -185,11 +195,11 @@ Order matters: $AB \ne BA$ in general. Rotating first and then shearing is diffe
 
 ## Where to read next
 
-The next steps in the linear algebra track build on what's here:
+The next steps in the Linear Algebra track build directly on what's on this page:
 
-- **Matrix Operations** (forthcoming) — addition, scalar multiplication, transpose, and the mechanics of matrix multiplication row-by-row.
-- **The Dot Product** (forthcoming) — multiplying two vectors into a scalar; the projection geometry behind matrix-vector products is built from dot products.
-- **Linear Combinations and Span** (forthcoming) — what set of points a collection of vectors can reach by mixing.
+- **[Linear Algebra — Matrix Operations](#/lesson/linear-algebra-matrix-operations)** — addition, scalar multiplication, transpose, and the mechanics of matrix multiplication row-by-row. The non-commutativity of $AB$ and $BA$ gets its own widget there.
+- **[Linear Algebra — The Dot Product](#/lesson/linear-algebra-dot-product)** — multiplying two vectors into a scalar. The projection geometry there is what underlies matrix-vector multiplication mechanically: each entry of $A\mathbf{v}$ is a dot product between a row of $A$ and the vector $\mathbf{v}$.
+- **[Linear Algebra — Linear Combinations and Span](#/lesson/linear-algebra-span)** — what set of points a collection of vectors can reach. The column space of a matrix is exactly the span of its columns, and the determinant being zero is exactly the columns being linearly dependent.
 
 External references:
 

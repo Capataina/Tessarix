@@ -26,53 +26,61 @@ import { LessonMeta } from "../components/MDXComponents";
 
 <LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "DOT PRODUCT", "12–30 MIN"]} />
 
-There's no straightforward way to "multiply" two vectors in $\mathbb{R}^2$. You can't multiply a 2-tuple by another 2-tuple and get a 2-tuple in any way that's geometrically meaningful — the operation either has to *output something different* (a scalar) or *use a different rule entirely*. The **dot product** is the first of those choices, and it's the most fundamental: it takes two vectors and produces a single scalar that captures *how much they agree*.
+Two vectors walk into a multiplication and find out the operation doesn't quite work. You can't take a 2-tuple, multiply it by another 2-tuple, and get back a 2-tuple in any way that has consistent geometric meaning — every candidate definition runs into problems. Linear algebra has *several* operations that take two vectors as input, but each one outputs something different: a scalar, a third vector, a matrix. The most fundamental of those — the one you'll meet first and use most — is the **dot product**, and what it gives you is a single number that measures *how much two vectors agree*.
+
+That phrasing — "how much they agree" — is what this lesson is built to make precise. You'll see the dot product two ways: as an algebraic formula that's mechanical to compute, and as a geometric projection that's where all the intuition lives. The bridge between them — the fact that the same number drops out of both pictures — is the dot product's central result.
 
 <Tier level="standard">
 
-**Prerequisites:** [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations) (vectors, components, magnitude/direction, scalar multiplication).
+**Prerequisites:** [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations) (vectors, components, magnitude, direction, scalar multiplication).
 
 </Tier>
 
 ## The two faces of the dot product
 
-The dot product has two equivalent definitions — one algebraic, one geometric — and the equivalence between them is the *content* of the operation.
+The dot product has two definitions, and they're equivalent. You'll use both, often in the same conversation.
 
-**Algebraic definition:** multiply components and add.
+**Algebraic definition** — multiply components, then add:
 
 $$
 \mathbf{a} \cdot \mathbf{b} = a_1 b_1 + a_2 b_2
 $$
 
-**Geometric definition:** length times length times the cosine of the angle between them.
+**Geometric definition** — length times length times the cosine of the angle between the two vectors:
 
 $$
 \mathbf{a} \cdot \mathbf{b} = |\mathbf{a}| \, |\mathbf{b}| \cos\theta
 $$
 
-That these *two definitions describe the same number* is the dot product's main result. The algebraic version is what you compute with; the geometric version is what you *think* with.
+Take a moment to register how different these two formulas *look*. One uses component arithmetic; the other uses magnitudes and angles. They don't even seem to be about the same thing. And yet — and this is the main result — **they produce the same number for any two vectors**. The proof goes via the law of cosines applied to the triangle formed by $\mathbf{a}$, $\mathbf{b}$, and $\mathbf{a} - \mathbf{b}$, and it's worth doing once on paper if you haven't; the equivalence isn't a coincidence.
+
+You'll use the algebraic form to compute, and you'll use the geometric form to think. That division of labour is the dot product's whole pedagogical pattern.
 
 ## The shadow on the line
 
-The geometric form has a visual reading worth memorising. Draw the two vectors $\mathbf{a}$ and $\mathbf{b}$ at the same origin. Drop a perpendicular from the tip of $\mathbf{a}$ onto the line through $\mathbf{b}$. The foot of that perpendicular is at signed distance $|\mathbf{a}| \cos\theta$ from the origin along $\mathbf{b}$'s direction — this is the **shadow** of $\mathbf{a}$ on $\mathbf{b}$. The dot product is exactly that signed shadow length times $|\mathbf{b}|$:
+The geometric form has a visual reading that's worth burning into your visual memory. Draw the two vectors $\mathbf{a}$ and $\mathbf{b}$ starting at the same origin. Drop a perpendicular from the tip of $\mathbf{a}$ onto the line through $\mathbf{b}$. The foot of that perpendicular is at signed distance $|\mathbf{a}| \cos\theta$ from the origin, measured along $\mathbf{b}$'s direction. That signed distance is the **shadow** of $\mathbf{a}$ on $\mathbf{b}$.
+
+And the dot product is exactly that shadow length times $|\mathbf{b}|$:
 
 $$
 \mathbf{a} \cdot \mathbf{b} = (|\mathbf{a}| \cos\theta) \cdot |\mathbf{b}|
 $$
 
-Drag the vectors below to see the shadow, the perpendicular drop, the angle arc, and the dot product update together. The shadow segment is colour-coded: **green** when the dot product is positive (vectors agree), **red** when negative (vectors disagree).
+So when you compute a dot product, you're literally measuring "how far does the shadow of $\mathbf{a}$ stretch along $\mathbf{b}$'s direction, scaled by $\mathbf{b}$'s length". That sentence is the dot product in one phrase. Hold onto it; everything that follows is variations on it.
+
+Drag the vectors below to see the shadow, the perpendicular drop, the angle arc, and the dot product all update together. The shadow segment is colour-coded: **green** when the dot product is positive (vectors agree), **red** when negative (vectors oppose).
 
 <DotProductGeometry />
 
 <Tier level="standard">
 
-A few patterns to feel by dragging:
+A few patterns to feel as you drag:
 
-- **Vectors aligned**: shadow equals $\mathbf{a}$ (the foot of the perpendicular is at $\mathbf{a}$'s tip). $\cos\theta = 1$, dot product = $|\mathbf{a}| \cdot |\mathbf{b}|$.
-- **Vectors perpendicular**: shadow collapses to the origin. The foot of the perpendicular IS the origin. $\cos\theta = 0$, dot product = 0.
-- **Vectors anti-aligned**: shadow points in the *opposite* direction from $\mathbf{b}$. $\cos\theta = -1$, dot product is the *negative* of $|\mathbf{a}| \cdot |\mathbf{b}|$.
+- **Vectors aligned**: the shadow of $\mathbf{a}$ reaches all the way to $\mathbf{a}$'s tip (the foot of the perpendicular *is* $\mathbf{a}$). $\cos\theta = 1$, dot product = $|\mathbf{a}| \cdot |\mathbf{b}|$. Maximum possible value for the given magnitudes.
+- **Vectors perpendicular**: the shadow collapses to the origin. The foot of the perpendicular *is* the origin. $\cos\theta = 0$, dot product = 0. No agreement at all.
+- **Vectors anti-aligned**: the shadow stretches in the *opposite* direction from $\mathbf{b}$. $\cos\theta = -1$, dot product is the *negative* of the product of magnitudes. Maximum disagreement.
 
-The dot product is **the** test for orthogonality: $\mathbf{a} \perp \mathbf{b}$ exactly when $\mathbf{a} \cdot \mathbf{b} = 0$. Two perpendicular vectors have nothing to project onto each other.
+This last point — that the dot product can be **zero** for two non-zero vectors — is the dot product's most useful single property. It gives you a clean algebraic test for perpendicularity: $\mathbf{a} \perp \mathbf{b}$ exactly when $\mathbf{a} \cdot \mathbf{b} = 0$. Two perpendicular vectors are vectors whose shadows on each other are zero — they have nothing to project onto each other, no agreement, no overlap.
 
 </Tier>
 
@@ -106,13 +114,13 @@ The dot product is **the** test for orthogonality: $\mathbf{a} \perp \mathbf{b}$
 
 ## Properties worth knowing
 
-The dot product has three structural properties that make it useful as a building block:
+The dot product has three structural properties that make it usable as a building block in larger constructions. Each one has an algebraic version that's easy to verify and a geometric reading that explains *why* it has to hold.
 
-- **Commutative**: $\mathbf{a} \cdot \mathbf{b} = \mathbf{b} \cdot \mathbf{a}$. The shadow of $\mathbf{a}$ on $\mathbf{b}$ has signed length $|\mathbf{a}| \cos\theta$; the shadow of $\mathbf{b}$ on $\mathbf{a}$ has signed length $|\mathbf{b}| \cos\theta$. Multiplied by the other vector's length, you get the same scalar.
-- **Distributive over vector addition**: $\mathbf{a} \cdot (\mathbf{b} + \mathbf{c}) = \mathbf{a} \cdot \mathbf{b} + \mathbf{a} \cdot \mathbf{c}$. Algebraically immediate from the component definition; geometrically, projecting onto $\mathbf{a}$'s direction is a linear operation, and linearity respects vector addition.
-- **Compatible with scalar multiplication**: $(k\mathbf{a}) \cdot \mathbf{b} = k (\mathbf{a} \cdot \mathbf{b})$. Stretching $\mathbf{a}$ by $k$ stretches its shadow by $k$.
+- **Commutative**: $\mathbf{a} \cdot \mathbf{b} = \mathbf{b} \cdot \mathbf{a}$. Algebraically obvious (multiplication of scalars is commutative). Geometrically: the shadow of $\mathbf{a}$ on $\mathbf{b}$ has signed length $|\mathbf{a}| \cos\theta$; the shadow of $\mathbf{b}$ on $\mathbf{a}$ has signed length $|\mathbf{b}| \cos\theta$. The angle $\theta$ between them is the same either way. Multiply each shadow by the other vector's length and you get the same scalar.
+- **Distributive over vector addition**: $\mathbf{a} \cdot (\mathbf{b} + \mathbf{c}) = \mathbf{a} \cdot \mathbf{b} + \mathbf{a} \cdot \mathbf{c}$. Falls out of the component definition immediately. Geometrically: projecting onto $\mathbf{a}$'s direction is a linear operation, and linearity respects vector addition.
+- **Compatible with scalar multiplication**: $(k\mathbf{a}) \cdot \mathbf{b} = k (\mathbf{a} \cdot \mathbf{b})$. Stretch $\mathbf{a}$ by $k$, and its shadow on $\mathbf{b}$ stretches by exactly the same $k$.
 
-These three together make the dot product a **bilinear form** — linear in each argument when the other is fixed. That's a key reason it composes well with matrix-vector multiplication (next lesson up).
+Together these three make the dot product a **bilinear form** — linear in each argument when the other is fixed. That property is exactly what lets the dot product compose cleanly with matrix-vector multiplication, where each entry of $A\mathbf{v}$ is a dot product between a row of $A$ and the vector $\mathbf{v}$.
 
 <Misconception belief="If a · b = 0, then either a is zero, b is zero, or both.">
 
@@ -124,25 +132,31 @@ The dot product can be zero even when **both vectors are non-zero** — that's p
 
 ## Magnitudes and angles from dot products
 
-Two consequences of the dot product worth memorising:
+Two consequences of the dot product worth memorising — they fall out of the geometric definition almost for free, but they're useful constantly.
 
-**Vector magnitude:** $|\mathbf{a}|^2 = \mathbf{a} \cdot \mathbf{a}$. A vector dotted with itself gives its squared magnitude. Geometrically, the shadow of $\mathbf{a}$ on itself is exactly $\mathbf{a}$, and the formula collapses to $|\mathbf{a}| \cdot |\mathbf{a}| \cos 0 = |\mathbf{a}|^2$.
+**Vector magnitude.** $|\mathbf{a}|^2 = \mathbf{a} \cdot \mathbf{a}$. A vector dotted with itself gives its squared magnitude. Geometrically: the shadow of $\mathbf{a}$ on itself is exactly $\mathbf{a}$ (the perpendicular drop lands at $\mathbf{a}$'s tip), and the geometric formula collapses to $|\mathbf{a}| \cdot |\mathbf{a}| \cos 0 = |\mathbf{a}|^2$. This is *how* you compute magnitude from components — $|\mathbf{a}| = \sqrt{\mathbf{a} \cdot \mathbf{a}}$ — and it generalises to any dimension.
 
-**Angle between two vectors:** $\cos\theta = \dfrac{\mathbf{a} \cdot \mathbf{b}}{|\mathbf{a}| \, |\mathbf{b}|}$. Rearrange the geometric definition. This is *how* you compute the angle between two arbitrary vectors in any dimension — there's no other elementary way.
+**Angle between two vectors.** Rearrange the geometric form:
 
-The angle formula generalises directly to $\mathbb{R}^n$: take the dot product (sum of $n$ component products), divide by the product of magnitudes (each computed as $\sqrt{\mathbf{x} \cdot \mathbf{x}}$). High-dimensional vectors don't *visually* have an angle, but they have a *cosine* — and the cosine is what most "similarity" measures in machine learning actually use. Two CLIP embeddings have an angle in 512-dimensional space; the cosine of that angle is what A-FINE's fidelity head consumes.
+$$
+\cos\theta = \frac{\mathbf{a} \cdot \mathbf{b}}{|\mathbf{a}| \, |\mathbf{b}|}
+$$
+
+This is *the* way to compute the angle between two arbitrary vectors. In two or three dimensions you could draw the vectors and measure with a protractor, but that's not how it's done in practice; the formula above gives you $\cos\theta$ directly, and the angle follows from $\arccos$.
+
+The same formula works in $\mathbb{R}^n$ for any $n$ — take the dot product (sum of $n$ component products), divide by the product of magnitudes (each computed as $\sqrt{\mathbf{x} \cdot \mathbf{x}}$). High-dimensional vectors don't *visually* have an angle, but they have a *cosine of an angle*, and that cosine is what most "similarity" measures in modern machine learning actually compute. Two CLIP embeddings have an angle in 512-dimensional space; the cosine of that angle is what nearly every embedding-similarity comparison is built on. It's also what A-FINE's fidelity head extends — not just the cosine, but a richer SSIM-style structural similarity that the dot product is the simplest version of.
 
 ## Projection — the operation, not just the geometry
 
-The shadow segment isn't just a visualisation; it's a *vector operation*. The **projection of $\mathbf{a}$ onto $\mathbf{b}$** is the vector pointing along $\mathbf{b}$'s direction with magnitude equal to the signed shadow length:
+So far the "shadow" has been a visualisation aid. But the shadow is also a *vector operation* with its own name: the **projection** of $\mathbf{a}$ onto $\mathbf{b}$. It's the vector pointing along $\mathbf{b}$'s direction whose magnitude equals the signed shadow length:
 
 $$
 \text{proj}_{\mathbf{b}} \mathbf{a} = \frac{\mathbf{a} \cdot \mathbf{b}}{|\mathbf{b}|^2} \, \mathbf{b}
 $$
 
-The scalar coefficient $\dfrac{\mathbf{a} \cdot \mathbf{b}}{|\mathbf{b}|^2}$ is *exactly* what the widget displays as the "projection scalar." Multiplying by $\mathbf{b}$ converts that scalar to a vector along $\mathbf{b}$'s line.
+Read the formula one factor at a time. The scalar coefficient $\dfrac{\mathbf{a} \cdot \mathbf{b}}{|\mathbf{b}|^2}$ is the *projection scalar* — what the widget above displays as the "projection scalar" when you drag the vectors. Multiplying that scalar by $\mathbf{b}$ converts it into a vector lying on $\mathbf{b}$'s line, with the right length and direction to be the shadow.
 
-Projection is foundational: it underlies least-squares regression (projecting the data onto the column space of the design matrix), Gram-Schmidt orthogonalisation (subtracting projections to make orthogonal basis vectors), and the SVD (which decomposes a matrix into stretches along orthogonal projection directions).
+Projection is one of those operations that you'll meet again in nearly every direction you go. It underlies **least-squares regression** (where you project the observed data onto the column space of the design matrix). It underlies **Gram-Schmidt orthogonalisation** (which subtracts projections to build an orthonormal basis out of an arbitrary one). It underlies the **singular value decomposition** (which decomposes any matrix into a sequence of rotations and stretches along orthogonal projection directions). Once you've got the projection formula here, all of those downstream operations have one less moving part to learn.
 
 </Tier>
 
@@ -196,11 +210,11 @@ Projection is foundational: it underlies least-squares regression (projecting th
 
 ## Where to read next
 
-- **Linear Algebra — Matrices as Transformations** ([already authored](#/lesson/linear-algebra-matrices)) — matrix-vector multiplication is row-wise dot products. The geometric picture transfers directly.
-- **Linear Algebra — Linear Combinations and Span** (forthcoming) — projection generalises to projecting onto a subspace spanned by multiple vectors, building on the projection formula in the complete tier.
-- **A-FINE — Adaptive Fidelity Index** ([cross-track link](#/lesson/afine)) — A-FINE's fidelity head computes structural similarity in CLIP feature space using a formula that's a generalisation of the dot product (mean, variance, covariance — not just the dot product itself, but in the same family). The dot product is one entry point into "what does it mean for two feature vectors to be similar?"
+- **[Linear Algebra — Matrices as Transformations](#/lesson/linear-algebra-matrices)** — matrix-vector multiplication is row-wise dot products. The geometric picture from this lesson transfers directly into how matrices act on vectors.
+- **[Linear Algebra — Linear Combinations and Span](#/lesson/linear-algebra-span)** — projection generalises from "projecting onto one vector" to "projecting onto a subspace spanned by multiple vectors", building directly on the projection formula in the complete tier above.
+- **[A-FINE — Adaptive Fidelity Index](#/lesson/afine)** *(cross-track link)* — A-FINE's fidelity head computes a similarity score in CLIP feature space using a formula that's a richer cousin of the dot product (it uses means, variances, and a cross-covariance, not just the inner product). The dot product is the one-line version of "what does it mean for two feature vectors to be similar?"; A-FINE's fidelity head is the multi-line version, in the same family.
 
 External references:
 
 - **[3Blue1Brown — Dot products and duality](https://www.3blue1brown.com/lessons/dot-products)** — the visual intuition track this lesson is downstream of.
-- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — Chapter 1.2 covers the dot product rigorously.
+- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — Chapter 1.2 covers the dot product rigorously, including the law-of-cosines proof of the algebraic-geometric equivalence.

@@ -26,11 +26,13 @@ import { LessonMeta } from "../components/MDXComponents";
 
 <LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "FOUNDATIONS", "15–35 MIN"]} />
 
-Linear algebra is the language for talking about quantities that have **multiple components** and the **transformations** that act on them. Most of modern computational mathematics — machine learning, computer graphics, physics simulation, signal processing — runs on three primitive objects: scalars, vectors, and matrices. This lesson builds the first two; the matrices lesson follows separately.
+Pick up your phone, take a photograph, and watch what the camera does. It rotates the image to match the orientation you're holding the phone in. It corrects the lens distortion at the edges. It blends the exposure across frames. Every one of those steps is a *transformation*, and every transformation is doing the same kind of thing: it takes a collection of numbers (the pixels, or some representation of them), shuffles them around in a particular way, and produces a new collection of numbers. The language for talking about *those collections* and *those shufflings* is linear algebra. It runs every piece of modern computational mathematics — machine learning, computer graphics, physics simulation, signal processing — at the layer underneath the application.
+
+Linear algebra is built on three primitive objects: scalars, vectors, and matrices. This lesson is the foundation: scalars and vectors. The matrices lesson follows separately, because matrices are different kinds of things — they're *transformations*, not just objects, and that shift in role deserves its own page.
 
 <Tier level="standard">
 
-The goal isn't to memorise definitions. It's to develop the **geometric intuition** that lets you predict what a vector or matrix will do before you compute it — and that intuition only forms by *manipulating* the objects, not by reading about them. Every section below has a widget; touch the widgets.
+The goal of this lesson isn't to memorise definitions. It's to develop the **geometric intuition** that lets you predict what a vector is going to do *before* you compute it. That intuition only comes from manipulating the objects yourself, not from reading about them. Every section below has a widget. Touch the widgets — the math will land harder than the prose can deliver on its own.
 
 </Tier>
 
@@ -48,18 +50,18 @@ The goal isn't to memorise definitions. It's to develop the **geometric intuitio
 
 ## Scalars — a single number, with units
 
-A **scalar** is a single real number. Temperature, mass, speed, voltage — anything whose state is fully captured by *one* number. Mathematically we'll just write scalars as lowercase letters in normal italic: $a, b, c, \alpha, \lambda$.
+A **scalar** is a single real number. Temperature, mass, speed, voltage — anything whose entire state is captured by *one* number. Mathematically we'll write scalars as lowercase letters in italic: $a, b, c, \alpha, \lambda$. They're the simplest objects in linear algebra, and they earn their name not from being numbers, but from what they *do*.
 
-The two operations that matter are familiar:
+The two operations on scalars are the ones you've been using your whole life:
 
-- **Addition**: $a + b$. Closed (sum of two scalars is a scalar), commutative, associative.
+- **Addition**: $a + b$. Closed (the sum of two scalars is a scalar), commutative, associative.
 - **Multiplication**: $a \cdot b$. Closed, commutative, associative, distributive over addition.
 
-What makes a scalar a *scalar*, rather than just "a number," is that we use it to **scale** something else — multiply a vector by it, multiply a matrix by it. The scalar's job in linear algebra is to act on other objects.
+What makes a scalar a *scalar*, rather than just "a number", is the next layer of objects up. A scalar **scales** something — it multiplies a vector or a matrix, and in doing so it stretches them, shrinks them, or flips them. The scalar's whole job in linear algebra is to act on the other objects. That's why we give it a separate name.
 
 <Tier level="standard">
 
-> **Why insist on scalars vs vectors?** Because the operations differ. *Adding* two velocities is **not** scalar addition: velocity has a direction. Speed (the magnitude of velocity) is a scalar — but a 30 km/h east wind plus a 30 km/h west wind doesn't give 60 km/h; it gives zero net velocity. The "direction" has been lost when you collapse to a scalar. This is the slip the next section is built to fix.
+> **Why insist on scalars versus vectors?** Because the operations are different, and confusing them is the most common first mistake in linear algebra. *Adding* two velocities is **not** scalar addition — velocity has a direction, and you have to add the directions too. Speed (the magnitude of velocity) *is* a scalar, but a 30 km/h east wind plus a 30 km/h west wind doesn't give 60 km/h; it gives zero net velocity. The directions cancelled, and the moment you collapsed velocity to its scalar magnitude (speed), you lost the information needed to see the cancellation. The next section is built to make sure you don't lose it.
 
 </Tier>
 
@@ -79,14 +81,14 @@ What makes a scalar a *scalar*, rather than just "a number," is that we use it t
 
 ## Vectors — a list of components, geometrically an arrow
 
-A **vector** in $\mathbb{R}^2$ is an ordered pair of scalars: $\mathbf{v} = (v_1, v_2)$. In $\mathbb{R}^n$ it's an ordered $n$-tuple. We'll work in $\mathbb{R}^2$ throughout this lesson because it's the smallest dimension where geometric intuition fully applies — but everything generalises.
+A **vector** in $\mathbb{R}^2$ is an ordered pair of scalars: $\mathbf{v} = (v_1, v_2)$. In $\mathbb{R}^n$ it's an ordered $n$-tuple. We'll spend this lesson in $\mathbb{R}^2$ because it's the smallest dimension where the geometric intuition fully applies — but everything we say here generalises directly to higher dimensions. A 512-dimensional vector behaves the same way; you just can't draw it.
 
-Two equivalent ways to *read* a vector:
+Two equivalent ways to *read* a vector, and you'll need both:
 
-1. **Components**: $\mathbf{v} = (3, 2)$ means "three units along the first axis, two along the second." This is what you compute with.
-2. **Geometric**: an arrow from the origin to the point $(3, 2)$. Has a **magnitude** (its length, $|\mathbf{v}| = \sqrt{v_1^2 + v_2^2}$) and a **direction** (the angle it makes with the positive $x$-axis, $\theta = \arctan(v_2 / v_1)$). This is what you reason geometrically about.
+1. **Components**: $\mathbf{v} = (3, 2)$ means "three units along the first axis, two along the second". This is what you compute with.
+2. **Geometric**: an arrow from the origin to the point $(3, 2)$. The arrow has a **magnitude** (its length, $|\mathbf{v}| = \sqrt{v_1^2 + v_2^2}$) and a **direction** (the angle it makes with the positive $x$-axis, $\theta = \arctan(v_2 / v_1)$). This is what you reason geometrically about.
 
-Pick up a vector in the widget below and drag its tip. Watch the components, magnitude, and angle update together. They describe the same object from two angles.
+These aren't two different objects — they're two ways of looking at the same one. Pick up a vector in the widget below and drag its tip. Watch the components, magnitude, and angle all update together. They're describing the same arrow from different angles, and one of the things you want to build in your head over this lesson is the reflex to flip between them effortlessly.
 
 <VectorPlot
   initial={[{ id: "v", v: { x: 3, y: 2 }, label: "v" }]}
@@ -96,9 +98,11 @@ Pick up a vector in the widget below and drag its tip. Watch the components, mag
 
 ### Vector addition — head to tail
 
-Vectors add **component-wise**: $\mathbf{a} + \mathbf{b} = (a_1 + b_1, a_2 + b_2)$. That's the algebraic definition. The geometric definition is more illuminating: to add $\mathbf{a} + \mathbf{b}$, place $\mathbf{b}$'s tail at $\mathbf{a}$'s tip. The sum is the arrow from $\mathbf{a}$'s tail to $\mathbf{b}$'s new tip. This is the **head-to-tail** rule, and the two definitions are guaranteed to give the same answer.
+Vectors add **component-wise**: $\mathbf{a} + \mathbf{b} = (a_1 + b_1, a_2 + b_2)$. That's the algebraic definition, and it's straightforward — add the x-components, add the y-components, you're done.
 
-The widget below shows this directly. Two vectors $\mathbf{a}$ and $\mathbf{b}$ chain head-to-tail; the green resultant from the origin to the chain's end is $\mathbf{a} + \mathbf{b}$.
+The geometric definition is more illuminating, and worth carrying around in your head as the *primary* mental model. To add $\mathbf{a} + \mathbf{b}$, place $\mathbf{b}$'s tail at $\mathbf{a}$'s tip. The sum is the arrow from $\mathbf{a}$'s tail to $\mathbf{b}$'s new tip. This is the **head-to-tail rule**, and the two definitions are guaranteed to produce the same answer — the algebraic version is just what the geometric version does to the coordinates.
+
+The widget below makes this concrete. Two vectors $\mathbf{a}$ and $\mathbf{b}$ are chained head-to-tail; the green resultant from the origin to the end of the chain is $\mathbf{a} + \mathbf{b}$. Drag either vector and watch the sum react.
 
 <GoalChain
   index={2}
@@ -143,24 +147,24 @@ Only if they point in **exactly the same direction**. The lesson-opening questio
 
 ### Scalar multiplication
 
-Multiplying a vector by a scalar $k$ scales each component: $k \mathbf{v} = (k v_1, k v_2)$. That's the algebra. But the *meaning* — and the reason the operation is called "multiplication" in the first place — is iterated addition: $k \mathbf{v} = \mathbf{v} + \mathbf{v} + \ldots + \mathbf{v}$ ($k$ times) when $k$ is a positive integer. For non-integer or negative $k$ we extend the definition by the obvious rule (and a flip for $k < 0$), but the integer case is the conceptual anchor.
+Multiplying a vector by a scalar $k$ scales each component: $k\mathbf{v} = (k v_1, k v_2)$. That's the algebra. But the *meaning* — and the reason the operation is called "multiplication" in the first place — is **iterated addition**. When $k$ is a positive integer, $k\mathbf{v}$ is literally $\mathbf{v} + \mathbf{v} + \ldots + \mathbf{v}$, $k$ copies in a chain. The general definition for non-integer or negative $k$ just extends the integer rule (with a flip for $k < 0$), but the integer case is the conceptual anchor — if scalar multiplication ever feels mysterious, come back to "it's just adding $\mathbf{v}$ to itself a bunch of times".
 
-The widget below makes this concrete. Two view modes:
+The widget below makes that concrete. Two view modes:
 
-- **Stacked copies** (default): draws $|k|$ copies of $\mathbf{v}$ head-to-tail (or copies of $-\mathbf{v}$ when $k$ is negative). $k = 3$ is literally three arrows in a chain; $k = 0.5$ is half an arrow.
-- **Single stretched arrow**: draws $k\mathbf{v}$ as one arrow from the origin, stretched or flipped relative to $\mathbf{v}$. The standard textbook picture.
+- **Stacked copies** (default): draws $|k|$ copies of $\mathbf{v}$ head-to-tail (or copies of $-\mathbf{v}$ when $k$ is negative). $k = 3$ is literally three arrows in a chain; $k = 0.5$ is half an arrow. This is the iterated-addition picture.
+- **Single stretched arrow**: draws $k\mathbf{v}$ as one arrow from the origin, stretched or flipped relative to $\mathbf{v}$. The standard textbook picture, cleaner but loses the iterated-addition meaning.
 
 <ScalarMultiplier />
 
-The patterns to feel:
+The patterns to feel by dragging:
 
 - $k > 1$ — chain gets longer, direction unchanged.
-- $0 < k < 1$ — chain gets shorter than $\mathbf{v}$ itself, direction unchanged.
-- $k = 0$ — chain collapses to a point at the origin (the **zero vector**).
-- $k < 0$ — each copy reverses direction; the chain points the *opposite* way from $\mathbf{v}$. A "flipped" badge appears.
-- $|k| = 1$ — length preserved; $k = -1$ specifically is a pure direction-flip.
+- $0 < k < 1$ — chain gets shorter than $\mathbf{v}$ itself, still pointing the same way.
+- $k = 0$ — chain collapses to a point at the origin. This single point is the **zero vector**, the additive identity, and it's worth remembering that every vector has it as a possible scaling.
+- $k < 0$ — each copy reverses direction; the chain points the *opposite* way from $\mathbf{v}$. A "flipped" badge appears in the widget to flag it.
+- $|k| = 1$ — length is preserved; $k = -1$ is a pure direction-flip with no stretching.
 
-The magnitude rescales exactly: $|k\mathbf{v}| = |k| \cdot |\mathbf{v}|$. Note the **absolute value** — negative $k$ flips direction but doesn't make the magnitude negative.
+The magnitude rescales exactly: $|k\mathbf{v}| = |k| \cdot |\mathbf{v}|$. Notice the **absolute value** on $k$ — that detail is doing real work. Negative $k$ flips the vector's direction but does not make its magnitude negative.
 
 <Misconception belief="If k is negative, then k·v has negative magnitude.">
 
@@ -172,25 +176,25 @@ Magnitudes are always non-negative — they measure *length*, which is a positiv
 
 ### The dot product — a way to multiply two vectors into a scalar
 
-There's no "vector multiplication" in $\mathbb{R}^2$ in the way scalars multiply. There are several *products of two vectors*, and the most fundamental is the **dot product**, which collapses two vectors to a scalar:
+There's no straightforward way to "multiply" two vectors in $\mathbb{R}^2$ and get another vector — the candidate definitions all run into problems. What you *can* do is define operations that take two vectors and produce *something else*, and the most fundamental of those operations is the **dot product**, which produces a single scalar:
 
 $$
 \mathbf{a} \cdot \mathbf{b} = a_1 b_1 + a_2 b_2
 $$
 
-This algebraic form has a geometric equivalent:
+This algebraic form has a geometric equivalent that's a much better mental anchor:
 
 $$
 \mathbf{a} \cdot \mathbf{b} = |\mathbf{a}| \, |\mathbf{b}| \cos\theta
 $$
 
-where $\theta$ is the angle between the two vectors. Reading the geometric form:
+where $\theta$ is the angle between the two vectors. That these two expressions describe the same number is the dot product's central result — and the second expression reads naturally:
 
 - If the vectors are **parallel** ($\theta = 0$), $\cos\theta = 1$, so the dot product is the product of the magnitudes.
 - If the vectors are **perpendicular** ($\theta = 90°$), $\cos\theta = 0$, so the dot product is zero.
 - If the vectors are **anti-parallel** ($\theta = 180°$), $\cos\theta = -1$, so the dot product is the *negative* of the magnitude product.
 
-The dot product is **the** test for orthogonality: $\mathbf{a} \perp \mathbf{b}$ if and only if $\mathbf{a} \cdot \mathbf{b} = 0$.
+The dot product is **the** test for orthogonality. Two non-zero vectors are perpendicular if and only if their dot product is zero. The dedicated [Linear Algebra — The Dot Product](#/lesson/linear-algebra-dot-product) lesson develops the projection geometry, the relationship between the dot product and the angle, and the role the dot product plays in matrix-vector multiplication. The summary above is a preview; the lesson is where the projection picture lives.
 
 </Tier>
 
@@ -198,18 +202,15 @@ The dot product is **the** test for orthogonality: $\mathbf{a} \perp \mathbf{b}$
 
 ## What's next
 
-The next layer up — **matrices and the transformations they encode** — has its own lesson: [Linear Algebra — Matrices as Transformations](#/lesson/linear-algebra-matrices). Once you're comfortable with the foundations on this page, that's where to go.
+The next layer up is **matrices and the transformations they encode** — its own lesson at [Linear Algebra — Matrices as Transformations](#/lesson/linear-algebra-matrices). Once you're comfortable with the foundations on this page, that's where to go. Two more lessons in the track build directly on what's here:
 
-Two follow-up lessons in the Linear Algebra track are planned (not yet built):
+- **[The Dot Product](#/lesson/linear-algebra-dot-product)** — multiplying two vectors into a scalar, the geometric projection picture, orthogonality as a test, and the dot product's role as the building block for matrix-vector multiplication.
+- **[Linear Combinations and Span](#/lesson/linear-algebra-span)** — what set of points you can reach by mixing two or more vectors with scalar coefficients, and when those vectors are *linearly dependent*.
 
-- **The Dot Product** — multiplying two vectors into a scalar, the geometric projection picture, orthogonality as a test, and the dot product's role as the building block for matrix-vector multiplication.
-- **Linear Combinations and Span** — what set of points you can reach by mixing two or more vectors with scalar coefficients, and when those vectors are *linearly dependent*.
-
-The rest of the curriculum is laid out in `context/plans/linear-algebra-curriculum.md`.
+The full curriculum is laid out in `context/plans/linear-algebra-curriculum.md`.
 
 External references:
 
 - **[3Blue1Brown's "Essence of Linear Algebra" series](https://www.3blue1brown.com/topics/linear-algebra)** — the visual intuition track this lesson is downstream of.
 - **[Strang, "Introduction to Linear Algebra" (MIT 18.06)](https://math.mit.edu/~gs/linearalgebra/)** — the canonical rigorous treatment.
 - **[Immersive Math's interactive linear algebra textbook](http://immersivemath.com/ila/index.html)** — full interactive textbook, browser-rendered.
-
