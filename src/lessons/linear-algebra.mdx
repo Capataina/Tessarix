@@ -7,6 +7,7 @@ estimated_time: "20–60 min depending on tier"
 widgets_used:
   - VectorPlot
   - MatrixTransform
+  - ScalarMultiplier
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -16,6 +17,7 @@ widgets_used:
 
 import { VectorPlot } from "../components/widgets/VectorPlot";
 import { MatrixTransform } from "../components/widgets/MatrixTransform";
+import { ScalarMultiplier } from "../components/widgets/ScalarMultiplier";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -145,15 +147,30 @@ Only if they point in **exactly the same direction**. The lesson-opening questio
 
 ### Scalar multiplication
 
-Multiplying a vector by a scalar $k$ scales each component: $k \mathbf{v} = (k v_1, k v_2)$. Geometrically:
+Multiplying a vector by a scalar $k$ scales each component: $k \mathbf{v} = (k v_1, k v_2)$. That's the algebra. But the *meaning* — and the reason the operation is called "multiplication" in the first place — is iterated addition: $k \mathbf{v} = \mathbf{v} + \mathbf{v} + \ldots + \mathbf{v}$ ($k$ times) when $k$ is a positive integer. For non-integer or negative $k$ we extend the definition by the obvious rule (and a flip for $k < 0$), but the integer case is the conceptual anchor.
 
-- $k > 1$ stretches the vector while keeping its direction.
-- $0 < k < 1$ shrinks the vector while keeping its direction.
-- $k = 0$ collapses it to the origin (the zero vector).
-- $k < 0$ flips it through the origin (reverses direction).
-- $|k| = 1$ preserves length; combined with $k = -1$ it gives a pure direction-flip.
+The widget below makes this concrete. Two view modes:
 
-The magnitude rescales: $|k \mathbf{v}| = |k| \cdot |\mathbf{v}|$.
+- **Stacked copies** (default): draws $|k|$ copies of $\mathbf{v}$ head-to-tail (or copies of $-\mathbf{v}$ when $k$ is negative). $k = 3$ is literally three arrows in a chain; $k = 0.5$ is half an arrow.
+- **Single stretched arrow**: draws $k\mathbf{v}$ as one arrow from the origin, stretched or flipped relative to $\mathbf{v}$. The standard textbook picture.
+
+<ScalarMultiplier />
+
+The patterns to feel:
+
+- $k > 1$ — chain gets longer, direction unchanged.
+- $0 < k < 1$ — chain gets shorter than $\mathbf{v}$ itself, direction unchanged.
+- $k = 0$ — chain collapses to a point at the origin (the **zero vector**).
+- $k < 0$ — each copy reverses direction; the chain points the *opposite* way from $\mathbf{v}$. A "flipped" badge appears.
+- $|k| = 1$ — length preserved; $k = -1$ specifically is a pure direction-flip.
+
+The magnitude rescales exactly: $|k\mathbf{v}| = |k| \cdot |\mathbf{v}|$. Note the **absolute value** — negative $k$ flips direction but doesn't make the magnitude negative.
+
+<Misconception belief="If k is negative, then k·v has negative magnitude.">
+
+Magnitudes are always non-negative — they measure *length*, which is a positive distance. $|k\mathbf{v}| = |k| \cdot |\mathbf{v}|$, with the absolute value applied to $k$. What negative $k$ flips is *direction*, not magnitude. A vector pointing 30° east of north, scaled by $-1$, points 30° west of south — same length, opposite heading.
+
+</Misconception>
 
 <Tier level="complete">
 

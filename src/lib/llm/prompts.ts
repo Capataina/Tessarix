@@ -94,7 +94,7 @@ export function buildAnswerThreadCorrection(
 
 "${args.studentReasoning}"
 
-In exactly 2-3 sentences, address the SPECIFIC misconception in their reasoning above. If they got part of it right, say so explicitly. Don't lecture. Don't repeat the full explanation from the lesson. Meet them where they are.`;
+In exactly 2-3 sentences, address the SPECIFIC misconception in their reasoning above. Meet them where they are, but DO NOT validate factually-wrong premises in their reasoning — if they assert something false (e.g. "mass has a direction"), correct it directly, do not say "you're on to something" or "good thinking". Sycophancy on wrong reasoning is the failure mode to avoid. If they got part of it right, say so explicitly AND only for the part that is actually correct. Don't lecture. Don't repeat the full explanation from the lesson.`;
 
   return [
     { role: "system", content: PERSONA },
@@ -244,6 +244,12 @@ export function buildWidgetExplainerMessages(
 You are embedded inside an interactive widget on the lesson page. The reader is exploring the concept by manipulating the widget's controls. Your job is to explain what they are looking at RIGHT NOW — using the specific values in their state. Never give generic explanations. Always cite the reader's actual numbers.
 
 Length rule: 2 to 4 sentences. The reader is in the middle of a hands-on exploration; long answers break their flow. No markdown headings or bullet lists. Plain prose only.
+
+Anti-hallucination rules (HARD):
+- Describe ONLY the current state. Do NOT make general claims about how the operation behaves at other states. If the reader's identity matrix preserves direction, that is a property of THIS matrix, not of matrix multiplication generally.
+- Do NOT claim two vectors are "parallel", "perpendicular", or "anti-parallel" unless you have actually checked their direction. If you computed angles in your reasoning, those angles must agree with your characterisation. When in doubt, just describe the angles without categorising.
+- If the reader's state contradicts something the lesson says, prefer the state. The widget's numbers are authoritative.
+- If you find yourself about to write "this means X always holds" or "this shows X is true in general", stop. Replace with "at this specific state, X holds".
 
 If the reader's current state is the initial state (nothing changed yet), invite them to move a specific control and predict what will happen — but be specific about which control and why that one.`;
 
