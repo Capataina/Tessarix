@@ -1,0 +1,265 @@
+---
+title: "Linear Algebra — Basis and Change of Basis"
+tag: "Mathematics"
+last_updated: "2026-05-11"
+tags: ["MATHEMATICS", "LINEAR ALGEBRA", "BASIS", "COORDINATES", "CHANGE OF BASIS"]
+estimated_time: "20–40 min depending on tier"
+prerequisites:
+  - linear-algebra-foundations
+  - linear-algebra-span
+  - linear-algebra-matrix-inverse
+widgets_used:
+  - BasisExplorer
+  - PredictThenVerify
+  - GoalChain
+  - MultipleChoice
+  - Misconception
+  - KnowledgeCheck
+---
+
+import { BasisExplorer } from "../components/widgets/BasisExplorer";
+import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
+import { GoalChain } from "../components/assessments/GoalChain";
+import { MultipleChoice } from "../components/assessments/MultipleChoice";
+import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
+import { Misconception } from "../components/widgets/Misconception";
+import { Tier } from "../components/Tier";
+import { LessonMeta } from "../components/MDXComponents";
+
+# Linear Algebra — Basis and Change of Basis
+
+<LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "BASIS", "20–40 MIN"]} />
+
+You've been quietly using a particular basis since the first day you wrote a vector down. When you write $\mathbf{v} = (3, 2)$, you're saying "three of *something*, two of *something else*" — and the something and something-else are the **standard basis vectors** $\hat{\imath} = (1, 0)$ and $\hat{\jmath} = (0, 1)$, the directions that point along the $x$- and $y$-axes. You've internalised this so deeply that the basis itself has become invisible; the coordinates $(3, 2)$ feel like a property *of the vector*, full stop. But the coordinates aren't the vector. The vector is a geometric object — an arrow from the origin — and the coordinates are merely a *recipe* for reconstructing the arrow from a chosen pair of building-block directions. Change the building blocks, and the recipe changes; the arrow doesn't.
+
+This lesson is about that distinction. We'll see that the same geometric vector can have wildly different coordinates depending on which basis you pick, and that the *change of coordinates* between two bases is itself a matrix operation — one whose inverse is exactly the operation that goes back. By the end you should hear "the vector is $(3, 2)$" the way a careful mathematician hears it: *"the vector has coordinates $(3, 2)$ relative to the standard basis"*, with the relative-to clause silent but always present.
+
+<Tier level="standard">
+
+**Prerequisites:** [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations), [Linear Algebra — Linear Combinations and Span](#/lesson/linear-algebra-span), and [Linear Algebra — Matrix Inverse and Gaussian Elimination](#/lesson/linear-algebra-matrix-inverse). The span lesson gave you "any linear combination $\alpha\mathbf{u} + \beta\mathbf{v}$ traces out a region" — bases are the special case where every point in the plane has a *unique* such combination. The inverse lesson gave you the machinery for computing the change-of-basis matrix's inverse, which we'll need.
+
+</Tier>
+
+## What a basis is
+
+A **basis** for $\mathbb{R}^2$ is a set of two vectors $\{\mathbf{u}, \mathbf{v}\}$ such that:
+
+1. **They span the plane.** Every vector $\mathbf{w} \in \mathbb{R}^2$ can be written as some linear combination $\mathbf{w} = \alpha \mathbf{u} + \beta \mathbf{v}$.
+2. **They are linearly independent.** Neither is a scalar multiple of the other — equivalently, the only way to combine them into the zero vector is $\alpha = \beta = 0$.
+
+Either condition alone isn't enough. Two parallel vectors span only a line, not the plane. Three vectors might span the plane but they're not linearly independent (one is redundant). Exactly two linearly independent vectors form a basis for $\mathbb{R}^2$ — no more, no less.
+
+The two conditions together have a remarkable consequence: **every vector in $\mathbb{R}^2$ has a unique pair of coordinates $(\alpha, \beta)$ relative to a given basis.** Spanning guarantees the coordinates exist; independence guarantees they're unique. (If you could write $\mathbf{w} = \alpha_1 \mathbf{u} + \beta_1 \mathbf{v} = \alpha_2 \mathbf{u} + \beta_2 \mathbf{v}$ in two different ways, subtracting gives $(\alpha_1 - \alpha_2) \mathbf{u} + (\beta_1 - \beta_2) \mathbf{v} = \mathbf{0}$, which by independence forces $\alpha_1 = \alpha_2$ and $\beta_1 = \beta_2$.) Two different bases give you two different unique coordinate systems for the same plane — and that's the whole game.
+
+The widget below makes this directly visible. Left panel: the standard basis $\{\hat{\imath}, \hat{\jmath}\}$ with its familiar square grid; the target vector $\mathbf{w}$ shows its coordinates as $(x, y)$. Right panel: a custom basis $\{\mathbf{u}, \mathbf{v}\}$ (drag $\mathbf{u}$ and $\mathbf{v}$ to reshape it) with a tilted grid; the *same* target vector $\mathbf{w}$ now reads as $(\alpha, \beta)$ — the coordinates in the new basis.
+
+<BasisExplorer />
+
+Drag $\mathbf{w}$ in either panel. Both panels update — the *position* of $\mathbf{w}$ in the plane is unchanged; only its coordinate tuple shifts because the gridlines used to read it off are different. Now try the "Collapsed (parallel)" preset. The right panel goes dark with a "basis collapsed" overlay. Two parallel vectors don't form a basis — they fail the spanning condition, so no coordinate tuple exists for $\mathbf{w}$. The widget refuses to invent one rather than producing nonsense.
+
+<Tier level="standard">
+
+> **The standard basis is just a basis.** Nothing makes $\{\hat{\imath}, \hat{\jmath}\}$ canonical except convention. The plane doesn't care which two linearly-independent directions you pick. The choice $\hat{\imath} = (1,0), \hat{\jmath} = (0,1)$ is convenient because it makes the coordinates of every vector trivially readable from its components, but that convenience is paid for by losing the freedom to align the basis to whatever structure the *problem* has. In a problem with a natural diagonal symmetry, the diagonal directions $\mathbf{u} = (1,1)/\sqrt{2}$ and $\mathbf{v} = (-1,1)/\sqrt{2}$ are the "right" basis — the one that makes the problem's structure visible. The standard basis is the *default*, not the *truth*.
+
+</Tier>
+
+## Computing coordinates in a basis — the inverse strikes
+
+How did the widget compute the right-panel coordinates $(\alpha, \beta)$? This is where the previous lesson's machinery pays off. The defining equation
+
+$$
+\mathbf{w} = \alpha \mathbf{u} + \beta \mathbf{v}
+$$
+
+is a $2 \times 2$ linear system in the unknowns $\alpha, \beta$. Stacking $\mathbf{u}$ and $\mathbf{v}$ as the columns of a matrix $M = [\mathbf{u} \mid \mathbf{v}]$, the equation becomes
+
+$$
+\mathbf{w} = M \begin{pmatrix} \alpha \\ \beta \end{pmatrix},
+$$
+
+and solving for $(\alpha, \beta)$ requires inverting $M$:
+
+$$
+\begin{pmatrix} \alpha \\ \beta \end{pmatrix} = M^{-1} \mathbf{w}.
+$$
+
+This is the deep connection between the inverse lesson and this one. The change-of-basis transformation **is** the matrix $M^{-1}$, where $M$ is the matrix whose columns are the new basis vectors. The basis exists exactly when $M$ is invertible, which happens exactly when $\det M \ne 0$, which happens exactly when $\mathbf{u}$ and $\mathbf{v}$ are linearly independent. Three statements of the same fact, viewed from three different windows — basis-existence, matrix-invertibility, geometric-non-collapse — all wearing the same algebraic fingerprint $\det M \ne 0$.
+
+The collapsed-preset behaviour in the widget is exactly this: when $\mathbf{u}$ and $\mathbf{v}$ are parallel, $\det M = 0$, $M^{-1}$ doesn't exist, and the coordinate tuple is undefined. The widget surfaces the collapse rather than producing a numerically catastrophic answer.
+
+<PredictThenVerify
+  index={1}
+  question="If the standard-basis coordinates of w are (2, 3) and you change to a new basis with u = (2, 0) and v = (0, 3), what are w's coordinates in the new basis?"
+  options={[
+    { id: "a", label: "(4, 9) — multiply each component by the corresponding basis entry" },
+    { id: "b", label: "(1, 1) — w is exactly one of each new basis vector" },
+    { id: "c", label: "(2, 3) — coordinates don't change because the bases are aligned" },
+    { id: "d", label: "(0.5, 0.33) — divide each component by the corresponding basis entry" },
+  ]}
+  truth="b"
+/>
+
+## Change of basis as a transformation
+
+Here's the framing that makes everything click. Let $B$ denote the matrix whose columns are the new basis vectors $\mathbf{u}, \mathbf{v}$. Then:
+
+- $B$ **takes new-basis coordinates and produces standard-basis coordinates**. If you give $B$ the tuple $(\alpha, \beta)$ — i.e. the coordinates "as seen from the custom basis" — multiplying by $B$ gives you $\alpha \mathbf{u} + \beta \mathbf{v}$, which is the standard-basis representation. So $B$ is the *encode-into-standard* operation.
+
+- $B^{-1}$ **takes standard-basis coordinates and produces new-basis coordinates**. If you give $B^{-1}$ the tuple $(x, y)$ — i.e. the coordinates "as seen from the standard basis" — multiplying by $B^{-1}$ gives you the coefficients $(\alpha, \beta)$ such that $\alpha \mathbf{u} + \beta \mathbf{v} = (x, y)$. So $B^{-1}$ is the *decode-into-custom* operation.
+
+These are two halves of the same isomorphism. The plane is *the same plane*; only the coordinate language is changing. $B$ and $B^{-1}$ are the translators between the two languages, each undoing the other.
+
+In matrix form: if $[\mathbf{w}]_{std}$ denotes the standard-basis coordinates of $\mathbf{w}$ and $[\mathbf{w}]_{new}$ denotes its coordinates in the new basis $\{\mathbf{u}, \mathbf{v}\}$, then
+
+$$
+[\mathbf{w}]_{std} = B \cdot [\mathbf{w}]_{new}, \qquad [\mathbf{w}]_{new} = B^{-1} \cdot [\mathbf{w}]_{std}.
+$$
+
+Memorise the direction of the arrows. Multiplying by $B$ *goes into* the standard basis; multiplying by $B^{-1}$ *leaves* it. The most common mistake students make at this stage is getting $B$ and $B^{-1}$ confused — and the discipline that prevents it is to always carry the "$[\cdot]_{\text{basis}}$" subscript around for a few weeks until the directionality is internalised.
+
+<GoalChain
+  index={2}
+  title="Find coordinates in three different bases"
+  steps={[
+    {
+      goal: "Pick the 'Rotated 30°' preset, then drag w until its standard coords are approximately (1, 0) (within 0.15). What are its coordinates in the rotated basis?",
+      check: (s) => Math.abs(s.w_x - 1) < 0.15 && Math.abs(s.w_y - 0) < 0.15,
+      explanation: "In a basis rotated 30° counter-clockwise, the standard ê₁ direction is reached by going forward in u (cos 30° ≈ 0.866) and backward in v (-sin 30° ≈ -0.5). Concretely: w = (1, 0) = 0.866·u - 0.5·v, so [α, β] ≈ (0.87, -0.5). The widget should display approximately those numbers in the right-panel readout.",
+    },
+    {
+      goal: "Pick 'Stretched diagonal' and drag w to roughly (1, 1) (within 0.15). What changes?",
+      check: (s) => Math.abs(s.w_x - 1) < 0.15 && Math.abs(s.w_y - 1) < 0.15,
+      explanation: "With u = (1.6, 1.6) and v = (-1.2, 1.2), the direction (1, 1) is parallel to u. So w should be a pure multiple of u with no v contribution: [α, β] = (1/1.6, 0) ≈ (0.625, 0). The basis being non-orthogonal doesn't hurt this calculation — the formula M⁻¹·w works for any basis, orthogonal or not.",
+    },
+    {
+      goal: "Switch to 'Collapsed (parallel)' — observe what happens to the right panel.",
+      check: (s) => s.collapsed === 1,
+      explanation: "When u and v become parallel (both pointing along (1, 1) here, with opposite signs), det[u | v] = 0 — they don't span the plane, so they don't form a basis, and no coordinate tuple exists for w. The widget shows a 'basis collapsed' overlay rather than reporting nonsense.",
+    },
+  ]}
+  render={(onChange) => <BasisExplorer onStateChange={onChange} />}
+/>
+
+## Why non-standard bases matter
+
+You might reasonably ask: if everything we just did can be expressed in the standard basis using the formula $M^{-1}\mathbf{w}$, why bother with non-standard bases at all? Why not just compute everything in the standard basis and call it a day?
+
+The answer is structural. **Some bases reveal information that the standard basis hides.** Three big examples that motivate the rest of the linear algebra curriculum:
+
+| Basis | Why it matters | Where it appears |
+|---|---|---|
+| **Eigenbasis** | A linear transformation $A$ acts diagonally — i.e. just scales each basis vector — when expressed in its eigenbasis. The thing you couldn't easily reason about in the standard basis (a complicated transformation) becomes trivially simple in the right one. | Diagonalisation, spectral theorem, Markov chains, PCA |
+| **Orthonormal basis** | A basis of mutually-perpendicular unit vectors. The coordinates in such a basis are exactly the dot products with the basis vectors (no inversion needed), which is computationally cheap and numerically stable. | QR decomposition, Fourier series, signal processing |
+| **Principal-component basis** | The basis whose axes point in the directions of maximum variance of a data cloud. Compressing data by truncating coordinates in this basis loses the *least possible information*. | PCA, dimensionality reduction, image compression |
+
+Each of these is "the standard basis for a problem with a particular structure". The basis you pick should be the one that makes the *problem*'s structure visible. When the problem's structure aligns with the standard basis (which it often does in introductory exercises), the standard basis is the right basis. When it doesn't (which it always does in interesting problems), you change basis to align with the structure, do the computation in the easier basis, and — if needed — change back.
+
+<Tier level="standard">
+
+> **The change-of-basis matrix is everywhere.** Once you see this pattern, you'll see it constantly. In quantum mechanics, the "position basis" and "momentum basis" are different bases for the same state space, and the Fourier transform is the change-of-basis matrix between them. In computer graphics, the "world coordinates" and the "camera coordinates" are different bases for $\mathbb{R}^3$, and the view matrix is the change-of-basis transformation. In statistics, fitting a model in the "feature basis" versus the "principal-component basis" gives the same model but with different conditioning and interpretability. Anywhere a problem has natural coordinates that differ from the default, change-of-basis is the operation that mediates between them.
+
+</Tier>
+
+## Misconceptions
+
+<Misconception belief="A vector IS its coordinates — when you say w = (3, 2), the tuple (3, 2) is what w is.">
+
+The vector is a *geometric object*: an arrow in the plane, an element of the vector space $\mathbb{R}^2$. The coordinates $(3, 2)$ are a *representation* of that object relative to a particular choice of basis. Change the basis, and the same geometric arrow gets different coordinates; the arrow itself doesn't move. This conflation between "vector" and "coordinates of the vector relative to the standard basis" is harmless in most introductory exercises (because the standard basis is always implicit and never changes), but it becomes actively wrong the moment you start working with multiple bases — which you will, the moment eigenvectors or PCA show up. The right mental model: a vector is a basis-independent object; coordinates are a basis-relative description of it.
+
+</Misconception>
+
+<Misconception belief="Any two non-zero vectors form a basis for the plane.">
+
+Not quite. The two vectors must be **linearly independent** — neither can be a scalar multiple of the other. Two parallel non-zero vectors point along the same line and span only that line, not the plane. The widget's "Collapsed (parallel)" preset shows this directly: $\mathbf{u} = (1, 1)$ and $\mathbf{v} = (-1, -1)$ are both non-zero, but they don't form a basis. The diagnostic is the determinant: $\det[\mathbf{u} \mid \mathbf{v}] = 0$ exactly when the vectors fail to be linearly independent. Two vectors form a basis if and only if both are non-zero *and* their determinant is non-zero.
+
+</Misconception>
+
+<Tier level="complete">
+
+## The general definition — bases in $\mathbb{R}^n$ and beyond
+
+Everything generalises. A basis for $\mathbb{R}^n$ is any set of $n$ linearly independent vectors that span $\mathbb{R}^n$. Two key invariants:
+
+- **Every basis for $\mathbb{R}^n$ has exactly $n$ vectors.** Not $n-1$, not $n+1$. The number $n$ is called the **dimension** of the space, and it's a basis-independent number — every basis has exactly this many vectors. This is one of the foundational theorems of linear algebra.
+
+- **Any $n$ linearly independent vectors in $\mathbb{R}^n$ automatically span $\mathbb{R}^n$.** And conversely, any $n$ vectors that span $\mathbb{R}^n$ are automatically linearly independent. Above the threshold $n$, vectors become redundant; below $n$, they fail to span. The number $n$ is the exact threshold.
+
+The change-of-basis machinery scales identically. If $B$ is an $n \times n$ matrix whose columns are an alternative basis for $\mathbb{R}^n$, then $B$ takes new-basis coordinates to standard-basis coordinates and $B^{-1}$ goes the other way. The 2-dimensional case you just worked through is the smallest non-trivial example; the algebra extends without modification to 3 dimensions, 256 dimensions, or 16,384 dimensions (the dimension of a CLIP embedding — yes, change-of-basis applies there too).
+
+The notion also extends beyond $\mathbb{R}^n$. Vector spaces of polynomials, of continuous functions, of matrices themselves — all have bases (sometimes infinite-dimensional ones), and change-of-basis machinery applies in essentially the same form. The Fourier basis for periodic functions, the Hermite-polynomial basis for the Hilbert space of quantum mechanics, the wavelet basis for signal processing — all are non-standard bases for function spaces, and change-of-basis is the operation that translates between them.
+
+</Tier>
+
+---
+
+<KnowledgeCheck>
+
+<MultipleChoice
+  index={3}
+  question="Which of these pairs of vectors forms a basis for R²?"
+  options={[
+    { id: "a", label: "(1, 1) and (2, 2) — both non-zero" },
+    { id: "b", label: "(1, 2) and (3, 4) — linearly independent" },
+    { id: "c", label: "(0, 0) and (1, 1) — only one is non-zero" },
+    { id: "d", label: "(1, 0), (0, 1), and (1, 1) — three vectors covering the plane" },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={4}
+  question="If B is the matrix whose columns are a non-standard basis, and w is a vector with standard-basis coordinates (x, y), what is the formula for w's coordinates in the new basis?"
+  options={[
+    { id: "a", label: "B · (x, y) — multiplying by B converts to the new basis" },
+    { id: "b", label: "B⁻¹ · (x, y) — multiplying by B⁻¹ converts to the new basis" },
+    { id: "c", label: "Bᵀ · (x, y) — the transpose handles change of basis" },
+    { id: "d", label: "(x, y) — coordinates don't actually change" },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={5}
+  question="What's the SAME about a vector when expressed in two different bases?"
+  options={[
+    { id: "a", label: "Its coordinates — they're properties of the vector itself." },
+    { id: "b", label: "Its position in the plane / geometric location — the basis only changes the description, not the object." },
+    { id: "c", label: "Its magnitude only — direction is basis-dependent." },
+    { id: "d", label: "Nothing — different bases produce genuinely different vectors." },
+  ]}
+  correctId="b"
+/>
+
+<Tier level="complete">
+
+<MultipleChoice
+  index={6}
+  question="Why are eigenbases pedagogically important?"
+  options={[
+    { id: "a", label: "They're the only orthogonal bases that exist." },
+    { id: "b", label: "A linear transformation A acts as pure scaling along each eigenvector direction — so in the eigenbasis, A is diagonal, which is the simplest possible form." },
+    { id: "c", label: "They're computationally cheap to find for any matrix." },
+    { id: "d", label: "They preserve the standard basis as a subset." },
+  ]}
+  correctId="b"
+/>
+
+</Tier>
+
+</KnowledgeCheck>
+
+---
+
+## Where to read next
+
+This lesson sets up the substantial conceptual leap into the structure of vector spaces: bases, dimension, rank, null spaces, and ultimately eigenvectors and decompositions.
+
+- **Linear Algebra — Rank, Null Space, and the Four Fundamental Subspaces** (forthcoming) — the rank of a matrix is the number of linearly independent columns, which is the dimension of the basis they form. The null space is the set of vectors that get mapped to zero — also a subspace with its own basis. The four fundamental subspaces (row, column, null, left-null) are the structural anatomy of any matrix, and bases are the language for describing them.
+- **Linear Algebra — Eigenvectors and Diagonalisation** (forthcoming) — the eigenbasis of a matrix $A$ is the basis in which $A$ is diagonal. The change-of-basis matrix between the standard basis and the eigenbasis is the matrix $P$ in $A = PDP^{-1}$, and the diagonal $D$ is what $A$ "really" does to vectors — scaling along the eigendirections. This lesson is the prerequisite that makes eigenvalues make sense.
+- **[Linear Algebra — Matrix Inverse and Gaussian Elimination](#/lesson/linear-algebra-matrix-inverse)** — re-read with the new framing. The change-of-basis matrix $B^{-1}$ that you just used is exactly the same kind of object as the inverses computed in that lesson. Now you have a concrete reason to care.
+
+External references:
+
+- **[3Blue1Brown — Change of basis](https://www.3blue1brown.com/lessons/change-of-basis)** — the visual track for this lesson. The video's animation of gridlines morphing into the new basis is the moving-picture version of what this lesson's widget shows in static dual-panel form.
+- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — Chapter 7 covers basis, dimension, and the four subspaces in depth. The treatment of "coordinates depend on the basis" is a recurring motif throughout the book.
+- **[Axler, "Linear Algebra Done Right"](https://linear.axler.net/)** — develops the entire subject abstractly (vector spaces and bases, no matrices until necessary). Read after you've internalised the matrix-heavy approach; the abstract framing turns "basis" into the central object instead of an auxiliary concept.

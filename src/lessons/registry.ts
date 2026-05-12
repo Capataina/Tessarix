@@ -77,6 +77,7 @@ const linAlgMatrixOpsImport = () =>
   import("./linear-algebra-matrix-operations.mdx");
 const linAlgMatrixInverseImport = () =>
   import("./linear-algebra-matrix-inverse.mdx");
+const linAlgBasisImport = () => import("./linear-algebra-basis.mdx");
 
 export const LESSONS: LessonRegistryEntry[] = [
   {
@@ -134,6 +135,14 @@ export const LESSONS: LessonRegistryEntry[] = [
       "When can a linear transformation be undone? Matrix inversion as the partial-undo operation, with paired widgets: the inverse widget shows A and A⁻¹ as side-by-side transformations (parallelogram going back to unit square), and singular matrices visibly fail to invert. Gaussian elimination widget makes row reduction tangible — three elementary row operations, full history, with detection of unique-solution, free-variable, and inconsistent systems.",
     Component: lazy(linAlgMatrixInverseImport),
     frontmatter: loadFrontmatter(linAlgMatrixInverseImport),
+  },
+  {
+    slug: "linear-algebra-basis",
+    domain: "Mathematics",
+    summary:
+      "The same vector has different coordinates in different bases — the vector is geometric, the coordinates are a basis-relative description. Dual-panel widget displays the same draggable vector in the standard basis and a custom basis (with draggable basis vectors), with live readout of [α, β] coordinates and a collapse warning when u and v become parallel. Bridges into eigenbases, orthonormal bases, PCA principal components.",
+    Component: lazy(linAlgBasisImport),
+    frontmatter: loadFrontmatter(linAlgBasisImport),
   },
 ];
 
