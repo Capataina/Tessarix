@@ -11,6 +11,7 @@ prerequisites:
 widgets_used:
   - BasisExplorer
   - CoordinateTranslator
+  - BasisCardTournament
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -20,6 +21,7 @@ widgets_used:
 
 import { BasisExplorer } from "../components/widgets/linear-algebra/BasisExplorer";
 import { CoordinateTranslator } from "../components/widgets/linear-algebra/CoordinateTranslator";
+import { BasisCardTournament } from "../components/widgets/linear-algebra/BasisCardTournament";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -183,6 +185,14 @@ The vector is a *geometric object*: an arrow in the plane, an element of the vec
 Not quite. The two vectors must be **linearly independent** — neither can be a scalar multiple of the other. Two parallel non-zero vectors point along the same line and span only that line, not the plane. The widget's "Collapsed (parallel)" preset shows this directly: $\mathbf{u} = (1, 1)$ and $\mathbf{v} = (-1, -1)$ are both non-zero, but they don't form a basis. The diagnostic is the determinant: $\det[\mathbf{u} \mid \mathbf{v}] = 0$ exactly when the vectors fail to be linearly independent. Two vectors form a basis if and only if both are non-zero *and* their determinant is non-zero.
 
 </Misconception>
+
+The fastest way to internalise "linearly independent" as a visual reflex — separate from any algebra — is to be made to call it on pairs of vectors under mild pressure. The tournament below shows you a pair, gives you two buttons (is a basis / is not a basis), and advances if you get it right. Get it wrong and the run ends; you see the determinant, the rationale, and you start over. Ten rounds clear the tournament; the difficulty grows quietly with the round number — early pairs are obviously independent or obviously parallel, late pairs are near-collinear configurations that look fine until you check the slope ratio.
+
+Treat it as a calibration drill rather than a quiz. The point is not to grind out a win; the point is to feel what your eyes do when a pair is collinear-but-close to looking independent. By round seven or eight you'll catch yourself slowing down to check ratios — exactly the move the misconception above warns about. The widget makes the warning physical.
+
+<BasisCardTournament />
+
+A perfect-run tournament with subtle late rounds is genuinely hard. If you fail at round eight on a near-collinear pair, that pair is doing exactly the pedagogical work it was generated to do. Move on — losing a tournament is information, not a verdict.
 
 <Tier level="complete">
 
