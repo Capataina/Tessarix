@@ -9,6 +9,7 @@ widgets_used:
   - ScalarMultiplier
   - VectorChainPuzzle
   - VectorMaze
+  - MagnitudeRanker
   - ScalarSpeedMatch
   - MultipleChoice
   - PredictThenVerify
@@ -20,6 +21,7 @@ import { VectorPlot } from "../components/widgets/linear-algebra/VectorPlot";
 import { ScalarMultiplier } from "../components/widgets/linear-algebra/ScalarMultiplier";
 import { VectorChainPuzzle } from "../components/widgets/linear-algebra/VectorChainPuzzle";
 import { VectorMaze } from "../components/widgets/linear-algebra/VectorMaze";
+import { MagnitudeRanker } from "../components/widgets/linear-algebra/MagnitudeRanker";
 import { ScalarSpeedMatch } from "../components/widgets/linear-algebra/ScalarSpeedMatch";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -101,6 +103,16 @@ These aren't two different objects — they're two ways of looking at the same o
   widgetName="Single vector: components vs magnitude vs angle"
   widgetDescription="One vector in R^2 anchored at the origin. The reader drags its tip; the readout shows the components (x, y), magnitude (length), and direction (angle from the positive x-axis). Lets the reader feel the equivalence between the algebraic form (a, b) and the geometric form (magnitude, angle)."
 />
+
+### Magnitude ranker — your eye lies about length
+
+Here's a small test. Six arrows are about to appear on a canvas. They have different lengths and they point in wildly different directions. You will be asked to drag them, top-to-bottom, in order of decreasing magnitude. Take a moment first to look at the canvas — try to do the ranking *visually*, the way you'd order objects by length on a desk.
+
+Now look at the rows. The components $(v_x, v_y)$ are written next to each vector. The magnitude of a 2D vector is $|\mathbf{v}| = \sqrt{v_x^2 + v_y^2}$ — Pythagoras, applied to the components. Two vectors with the same horizontal extent can have very different magnitudes if one is more sloped than the other. The (3, 4) trap is the canonical example: components that don't look impressive individually combine to a magnitude of exactly 5, longer than (4, 0) by more than 20%. Your eye is poorly calibrated for this. Diagonal length is not the sum of horizontal and vertical extents — it's the square root of their squared sum, which the visual system handles much worse than it handles axis-aligned lengths.
+
+The traps the widget surfaces, in roughly the order they bite: ranking by horizontal extent ("the rightmost-pointing vector must be the longest"); ranking by visual altitude ("the highest tip means the largest magnitude"); ignoring negative components ("vectors that point left look short"). The submit reveals the true magnitudes; wrong rows are marked red with the actual $|\mathbf{v}|$ shown so you can see where your eye fooled you.
+
+<MagnitudeRanker />
 
 ### Vector addition — head to tail
 
