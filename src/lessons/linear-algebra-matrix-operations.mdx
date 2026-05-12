@@ -10,6 +10,7 @@ prerequisites:
 widgets_used:
   - MatrixComposition
   - TransformationOrdering
+  - MatrixMultiplicationBuilder
   - MultipleChoice
   - GoalChain
   - PredictThenVerify
@@ -19,6 +20,7 @@ widgets_used:
 
 import { MatrixComposition } from "../components/widgets/linear-algebra/MatrixComposition";
 import { TransformationOrdering } from "../components/widgets/linear-algebra/TransformationOrdering";
+import { MatrixMultiplicationBuilder } from "../components/widgets/linear-algebra/MatrixMultiplicationBuilder";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -93,6 +95,12 @@ AB = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} e & f \\ g & h
 $$
 
 Read the top-left entry: it's $ae + bg$, which is the dot product of $A$'s first row $(a, b)$ with $B$'s first column $(e, g)$. The top-right is the first row of $A$ dotted with the second column of $B$. The bottom-left, second row of $A$ with first column of $B$. Bottom-right, second row of $A$ with second column of $B$. Once you've seen the pattern — *row times column*, repeated for every entry of the output — the formula stops looking strange. It's just the inner product taken four times.
+
+The fastest way to internalise an algorithm is to *be* the algorithm, just once, by hand. The widget below makes that explicit. You have two matrices $A$ and $B$, and four empty slots for $AB$'s entries. Each slot needs exactly two ingredients: a *row of $A$* and a *column of $B$*. Click a row chip from $A$'s panel to pick it up; click the slot it belongs in. Same for a column chip from $B$. The widget knows which row and column each entry needs — drop the wrong one and it bounces back red.
+
+The point isn't to test arithmetic; it's to force the index pattern into your fingers. Entry $(i, j)$ of $AB$ wants Row $i$ of $A$ and Column $j$ of $B$. By the time you've solved all four entries by hand, the rule won't feel like a formula you're remembering — it'll feel like a thing you do.
+
+<MatrixMultiplicationBuilder />
 
 **But the geometric meaning is what makes the operation worth defining.** Matrix multiplication is **composition of transformations**. If $A$ and $B$ are both transformations of the plane, then $AB$ is the single transformation that does $B$ first and then $A$. Applying $AB$ to a vector $\mathbf{v}$ gives:
 

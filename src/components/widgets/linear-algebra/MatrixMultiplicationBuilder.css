@@ -1,0 +1,485 @@
+.mmb {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius);
+  margin: var(--space-5) 0;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mmb--solved {
+  border-color: var(--widget-success);
+  box-shadow: 0 0 0 1px var(--widget-success),
+    0 0 32px -8px rgba(62, 255, 142, 0.35);
+}
+
+.mmb__head {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+}
+
+.mmb__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mmb__heading-label {
+  font-size: 0.65rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mmb__heading-value {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--widget-text);
+}
+
+.mmb__operands {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.mmb__times {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  color: var(--widget-text-dim);
+}
+
+.mmb__equals {
+  display: flex;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  color: var(--widget-text-dim);
+}
+
+.mmb__operand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+}
+
+.mmb__operand-label {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--widget-accent);
+  letter-spacing: 0.04em;
+}
+
+/* Matrix display — 2×2 grid of numbers framed by brackets. */
+.mmb__matrix {
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mmb__matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 0.5rem 1.1rem;
+  font-family: var(--font-mono);
+}
+
+.mmb__entry {
+  font-size: 1rem;
+  color: var(--widget-text);
+  min-width: 1.5rem;
+  text-align: right;
+}
+
+.mmb__bracket {
+  width: 0.55rem;
+  height: 100%;
+  min-height: 3.4rem;
+}
+
+.mmb__bracket--left {
+  border-left: 2px solid var(--widget-text);
+  border-top: 2px solid var(--widget-text);
+  border-bottom: 2px solid var(--widget-text);
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.mmb__bracket--right {
+  border-right: 2px solid var(--widget-text);
+  border-top: 2px solid var(--widget-text);
+  border-bottom: 2px solid var(--widget-text);
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.mmb__bracket--big {
+  min-height: 7.4rem;
+  width: 0.7rem;
+}
+
+/* Row vs column highlight cues drawn onto the matrix grid. */
+.mmb__matrix--row .mmb__matrix-grid {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 212, 255, 0.06) 0%,
+    rgba(0, 212, 255, 0.06) 49%,
+    transparent 49%,
+    transparent 51%,
+    rgba(255, 90, 232, 0.06) 51%,
+    rgba(255, 90, 232, 0.06) 100%
+  );
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+}
+
+.mmb__matrix--col .mmb__matrix-grid {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 212, 255, 0.06) 0%,
+    rgba(0, 212, 255, 0.06) 49%,
+    transparent 49%,
+    transparent 51%,
+    rgba(255, 90, 232, 0.06) 51%,
+    rgba(255, 90, 232, 0.06) 100%
+  );
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+}
+
+.mmb__chip-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+.mmb__chip-stack-label {
+  font-size: 0.65rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.mmb__chip {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  align-items: center;
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border-strong);
+  color: var(--widget-text);
+  padding: 0.45rem 0.6rem;
+  font-family: var(--font-mono);
+  border-radius: var(--widget-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.mmb__chip:hover {
+  border-color: var(--widget-accent);
+  background: rgba(0, 212, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.mmb__chip-name {
+  font-size: 0.72rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.mmb__chip-values {
+  font-size: 0.95rem;
+  color: var(--widget-text);
+}
+
+.mmb__chip--selected {
+  border-color: var(--widget-accent);
+  background: rgba(0, 212, 255, 0.18);
+  box-shadow: 0 0 0 1px var(--widget-accent),
+    0 0 20px -8px rgba(0, 212, 255, 0.7);
+}
+
+.mmb__chip--selected .mmb__chip-name {
+  color: var(--widget-accent);
+}
+
+/* Product grid (the 2×2 of slots we're building). */
+.mmb__product {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+}
+
+.mmb__product-label {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--widget-accent);
+  margin-right: 0.4rem;
+  letter-spacing: 0.04em;
+}
+
+.mmb__product-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.mmb__slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  background: var(--widget-bg);
+  border: 1px dashed var(--widget-border-strong);
+  border-radius: var(--widget-radius-sm);
+  min-height: 5.4rem;
+  position: relative;
+}
+
+.mmb__slot--done {
+  border-style: solid;
+  border-color: var(--widget-success);
+  background: rgba(62, 255, 142, 0.08);
+}
+
+.mmb__slot-label {
+  font-size: 0.7rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+}
+
+.mmb__slot-targets {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mmb__slot-dot {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--widget-text-dim);
+  text-align: center;
+}
+
+.mmb__subtarget {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  align-items: center;
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  color: var(--widget-text-dim);
+  padding: 0.4rem 0.3rem;
+  font-family: var(--font-mono);
+  border-radius: var(--widget-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  min-width: 0;
+}
+
+.mmb__subtarget:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.mmb__subtarget--armed {
+  border-color: var(--widget-accent);
+  color: var(--widget-accent);
+  background: rgba(0, 212, 255, 0.08);
+  animation: mmbPulse 1.2s ease-in-out infinite;
+}
+
+.mmb__subtarget--filled {
+  border-color: var(--widget-accent);
+  color: var(--widget-accent);
+  background: rgba(0, 212, 255, 0.12);
+}
+
+.mmb__subtarget-name {
+  font-size: 0.75rem;
+}
+
+.mmb__subtarget-status {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Rejection animation: the slot keys-off rejectKey to retrigger this. */
+@keyframes mmbReject {
+  0% {
+    background: rgba(255, 90, 90, 0.35);
+    border-color: var(--widget-danger);
+  }
+  100% {
+    background: var(--widget-bg);
+    border-color: var(--widget-border-strong);
+  }
+}
+
+@keyframes mmbPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.18);
+  }
+}
+
+.mmb__subtarget[key]:not(.mmb__subtarget--armed) {
+  /* The keyed remount on rejectKey replays this. */
+  animation: mmbReject 0.45s ease-out;
+}
+
+/* Completed slot — a single button that shows the computed value plus the
+   row/col formula reminder. Clicking it clears the slot. */
+.mmb__slot-done-btn {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  background: transparent;
+  border: none;
+  color: var(--widget-success);
+  cursor: pointer;
+  padding: 0.4rem 0;
+}
+
+.mmb__slot-done-value {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+}
+
+.mmb__slot-done-formula {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--widget-text-dim);
+}
+
+/* Verdict block. */
+.mmb__verdict {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: var(--space-3);
+  border-radius: var(--widget-radius-sm);
+  border: 1px solid var(--widget-border);
+}
+
+.mmb__verdict--idle {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.mmb__verdict--armed {
+  background: rgba(0, 212, 255, 0.06);
+  border-color: var(--widget-accent);
+}
+
+.mmb__verdict--solved {
+  background: rgba(62, 255, 142, 0.06);
+  border-color: var(--widget-success);
+}
+
+.mmb__verdict-label {
+  font-size: 0.65rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mmb__verdict-value {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--widget-text);
+}
+
+.mmb__verdict--solved .mmb__verdict-value {
+  color: var(--widget-success);
+}
+
+.mmb__verdict--armed .mmb__verdict-value {
+  color: var(--widget-accent);
+}
+
+/* Action row at the bottom — puzzle picker + reset. */
+.mmb__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.mmb__puzzle-pick {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--widget-border-strong);
+  color: var(--widget-text-dim);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  border-radius: var(--widget-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.mmb__puzzle-pick:hover {
+  border-color: var(--widget-accent);
+  color: var(--widget-text);
+}
+
+.mmb__puzzle-pick--active {
+  border-color: var(--widget-accent);
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--widget-accent);
+}
+
+.mmb__reset {
+  appearance: none;
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--widget-border-strong);
+  color: var(--widget-text-dim);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  border-radius: var(--widget-radius-sm);
+  cursor: pointer;
+}
+
+.mmb__reset:hover {
+  border-color: var(--widget-warn);
+  color: var(--widget-warn);
+  background: rgba(255, 214, 51, 0.06);
+}
