@@ -11,6 +11,7 @@ widgets_used:
   - OrthogonalityDartboard
   - ProjectionTargetGame
   - EmbeddingNearestNeighbour
+  - DotProductCalculator
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -22,6 +23,7 @@ import { DotProductGeometry } from "../components/widgets/linear-algebra/DotProd
 import { OrthogonalityDartboard } from "../components/widgets/linear-algebra/OrthogonalityDartboard";
 import { ProjectionTargetGame } from "../components/widgets/linear-algebra/ProjectionTargetGame";
 import { EmbeddingNearestNeighbour } from "../components/widgets/linear-algebra/EmbeddingNearestNeighbour";
+import { DotProductCalculator } from "../components/widgets/linear-algebra/DotProductCalculator";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -77,6 +79,14 @@ Before continuing, predict the equivalence yourself on a concrete pair.
   ]}
   truth="b"
 />
+
+### Building the sum, one product at a time
+
+There's a trap inside the algebraic formula that's worth surfacing now, before it has a chance to become a quiet bug in your handwritten calculations. The formula is $a_1 b_1 + a_2 b_2$ — emphasis on *the indices match*. You pair $a_1$ with $b_1$ and $a_2$ with $b_2$; you never mix $a_1$ with $b_2$. Stated like that, it sounds tautological. In practice — particularly when readers are tired or working under time pressure — the cross-pair mistake $a_1 b_2 + a_2 b_1$ is one of the most common errors.
+
+The widget below makes the rule concrete by handing you six candidate product tiles for each round: the two correct ones ($a_1 b_1$ and $a_2 b_2$), the two cross-pair traps, and two same-vector distractors thrown in for completeness. Your job is to push the correct tiles into the sum bar. The wrong tiles can't make it in — they flash red and shake when you try. Five rounds work through the patterns that surface other failure modes too: mixed signs (round 3), perpendicular pairs whose dot product is *zero* without either vector being zero (round 4), and a perpendicular mixed-sign pair where the cancellation has to happen across opposite-sign components (round 5).
+
+<DotProductCalculator />
 
 ## The shadow on the line
 
