@@ -12,6 +12,7 @@ widgets_used:
   - TransformationOrdering
   - MatrixMultiplicationBuilder
   - CommutativityBingo
+  - TransposeFlipper
   - MultipleChoice
   - GoalChain
   - PredictThenVerify
@@ -23,6 +24,7 @@ import { MatrixComposition } from "../components/widgets/linear-algebra/MatrixCo
 import { TransformationOrdering } from "../components/widgets/linear-algebra/TransformationOrdering";
 import { MatrixMultiplicationBuilder } from "../components/widgets/linear-algebra/MatrixMultiplicationBuilder";
 import { CommutativityBingo } from "../components/widgets/linear-algebra/CommutativityBingo";
+import { TransposeFlipper } from "../components/widgets/linear-algebra/TransposeFlipper";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -77,6 +79,12 @@ The transpose doesn't have a clean visual interpretation in the way the others d
 The "transpose reverses the order of products" rule looks like a quirk until you see *why* it has to be that way. $AB$ applies $B$ first and then $A$. The transpose has to be a *reflection* of that operation, and reflecting an ordered sequence reverses the order — exactly the way putting on shoes and socks reverses when you take them off. The shoes go on second, so they come off first.
 
 </Tier>
+
+The next widget lets you *be* the transpose. A $3 \times 3$ matrix is shown, with each entry as a button. Click an off-diagonal entry to arm it, then click its mirror across the main diagonal — entry $(j, i)$, if you armed $(i, j)$ — to swap them. The diagonal stays locked: those entries don't move under transposition. Reach the transposed matrix and the puzzle is solved.
+
+There's a small optimality constraint worth noticing. A $3 \times 3$ matrix has exactly three off-diagonal pairs that need swapping — $(1,2) \leftrightarrow (2,1)$, $(1,3) \leftrightarrow (3,1)$, $(2,3) \leftrightarrow (3,2)$ — so the *minimum* number of swaps is three. Anything more means you swapped the same pair twice and silently undid one of your earlier moves. The widget reports your swap count alongside the minimum so you can see whether your sequence was the elegant one or the wandering one. One puzzle in the picker is a *symmetric* matrix — its transpose equals itself, and zero swaps suffice. That's not a trick; it's the defining property of symmetric matrices, and meeting it here is a useful preview of how often symmetric matrices show up later.
+
+<TransposeFlipper />
 
 <Misconception belief={"(AB)^T = A^T B^T — the transpose distributes the same way scalars do."}>
 
