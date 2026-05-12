@@ -10,6 +10,7 @@ widgets_used:
   - VectorChainPuzzle
   - VectorMaze
   - MagnitudeRanker
+  - ComponentReverseEngineer
   - ScalarSpeedMatch
   - MultipleChoice
   - PredictThenVerify
@@ -22,6 +23,7 @@ import { ScalarMultiplier } from "../components/widgets/linear-algebra/ScalarMul
 import { VectorChainPuzzle } from "../components/widgets/linear-algebra/VectorChainPuzzle";
 import { VectorMaze } from "../components/widgets/linear-algebra/VectorMaze";
 import { MagnitudeRanker } from "../components/widgets/linear-algebra/MagnitudeRanker";
+import { ComponentReverseEngineer } from "../components/widgets/linear-algebra/ComponentReverseEngineer";
 import { ScalarSpeedMatch } from "../components/widgets/linear-algebra/ScalarSpeedMatch";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -113,6 +115,16 @@ Now look at the rows. The components $(v_x, v_y)$ are written next to each vecto
 The traps the widget surfaces, in roughly the order they bite: ranking by horizontal extent ("the rightmost-pointing vector must be the longest"); ranking by visual altitude ("the highest tip means the largest magnitude"); ignoring negative components ("vectors that point left look short"). The submit reveals the true magnitudes; wrong rows are marked red with the actual $|\mathbf{v}|$ shown so you can see where your eye fooled you.
 
 <MagnitudeRanker />
+
+### Component reverse-engineer — read the arrow back into numbers
+
+The usual exercise runs in one direction: you're given $(v_x, v_y)$ and you draw the arrow. The next widget runs in the *other* direction, which turns out to be the directional skill the rest of linear algebra rests on. An arrow is drawn from the origin to some hidden point. Your job is to type the components that produced it. The widget overlays your current guess as a ghost arrow on the same canvas — every time you nudge $v_x$ or $v_y$, the ghost moves, and you can see whether you're converging on the target or wandering off.
+
+The mathematics is small and the practice is enormous. The arrow's tip is at the point $(v_x, v_y)$; $v_x$ is its horizontal distance from the origin, $v_y$ its vertical. That is the definition of components in $\mathbb{R}^2$ — but reading them off a drawn arrow is what you'll do over and over once matrices arrive (every column of a $2 \times 2$ matrix is exactly this kind of component pair, read off the matrix's image of a basis vector). Three tiers: integer components on easy, half-integers on medium, tenths on hard. When your guess matches within tolerance, the canvas flashes green and a new round generates automatically.
+
+The traps it surfaces: confusing the sign of $v_y$ when the arrow points down (negative-$y$ vectors); estimating $v_x$ from the *projection onto the diagonal* rather than the actual horizontal extent (a slanted arrow's $v_x$ is its horizontal shadow, not its length); and on the hard tier, settling for a near-miss because the difference between $v_x = 1.2$ and $v_x = 1.3$ is genuinely hard to see by eye. The give-up button reveals the answer with dashed decomposition lines, so you can see exactly where your reading missed.
+
+<ComponentReverseEngineer />
 
 ### Vector addition — head to tail
 
