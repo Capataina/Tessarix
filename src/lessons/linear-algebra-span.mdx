@@ -12,6 +12,7 @@ widgets_used:
   - ReachTheTarget
   - DependenceDetector
   - BasisOrNot
+  - SpanShrinker
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -23,6 +24,7 @@ import { SpanColouringGame } from "../components/widgets/linear-algebra/SpanColo
 import { ReachTheTarget } from "../components/widgets/linear-algebra/ReachTheTarget";
 import { DependenceDetector } from "../components/widgets/linear-algebra/DependenceDetector";
 import { BasisOrNot } from "../components/widgets/linear-algebra/BasisOrNot";
+import { SpanShrinker } from "../components/widgets/linear-algebra/SpanShrinker";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -161,6 +163,14 @@ c_1 \mathbf{v}_1 + c_2 \mathbf{v}_2 + \ldots + c_k \mathbf{v}_k = \mathbf{0}
 $$
 
 is with all $c_i = 0$. Dependence means *some* non-trivial choice of $c_i$'s makes the combination zero — which is just a fancy way of saying *some* combination of all-but-one of the vectors expresses the remaining one. In plain language: at least one of the vectors is redundant, contributing no new direction the others can't already build.
+
+### Redundancy as a puzzle
+
+A spanning set with redundancy hides a question: *which* of the vectors is actually carrying its weight, and which is along for the ride? The widget below makes that question explicit. Start with three vectors. At each turn, pick a vector to remove and predict whether the span will *shrink* (you removed a load-bearing vector) or *stay the same* (the removed vector was already in the span of the others). Wrong predictions cost a life — three lives per round.
+
+The shape of the puzzles is the lesson. In the first puzzle, two of the three vectors are parallel, so removing either of them leaves the third covering everything they did. In a puzzle where all three vectors live on the same line through the origin, no removal can shrink the span until only the zero vector is left — the span is already 1D and the third dimension was never there to lose. In the trickiest case, three pairwise-independent vectors are *jointly* dependent (one is a linear combination of the other two), and the first removal — *any* first removal — preserves the span. That last one is the punchline: "dependent" is a property of the *set*, not of any single vector.
+
+<SpanShrinker />
 
 ## Span and the columns of a matrix
 
