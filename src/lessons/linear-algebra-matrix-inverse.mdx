@@ -11,6 +11,7 @@ prerequisites:
 widgets_used:
   - MatrixInverse
   - GaussianElimination
+  - InverseRevealer
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -20,6 +21,7 @@ widgets_used:
 
 import { MatrixInverse } from "../components/widgets/linear-algebra/MatrixInverse";
 import { GaussianElimination } from "../components/widgets/linear-algebra/GaussianElimination";
+import { InverseRevealer } from "../components/widgets/linear-algebra/InverseRevealer";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -125,6 +127,12 @@ $$
 $$
 
 The $\frac{1}{\det A}$ factor exactly cancels the determinant in the diagonal entries, and the off-diagonals collapse to zero by happy cancellation. The mechanics are dull; the *fact* that they work out is what makes the formula correct.
+
+Reading the formula is one thing; executing it under pressure is another. The widget below puts you on the spot: a random 2×2 matrix appears, and you have to write down its inverse — all four entries, by hand, before the widget will tell you whether you got it right. Use the wizards if you need them: the det check confirms the matrix is invertible before you commit; the formula reminder spells out the swap-and-negate pattern with your matrix's entries already substituted.
+
+The point isn't to memorise the answer for *this* matrix; it's to internalise the *pattern* so the formula becomes automatic. Easy mode keeps the inverses to clean fractions like $1/2$; hard mode mixes in singular matrices where the right answer is to recognise that there *is* no inverse and declare it. Spotting singularity before you've wasted effort trying to invert is the most valuable instinct this lesson can build.
+
+<InverseRevealer />
 
 <Tier level="standard">
 
