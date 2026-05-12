@@ -9,6 +9,7 @@ prerequisites:
 widgets_used:
   - MatrixTransform
   - MatrixGuessr
+  - TransformationLibraryMatch
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -17,6 +18,7 @@ widgets_used:
 
 import { MatrixTransform } from "../components/widgets/linear-algebra/MatrixTransform";
 import { MatrixGuessr } from "../components/widgets/linear-algebra/MatrixGuessr";
+import { TransformationLibraryMatch } from "../components/widgets/linear-algebra/TransformationLibraryMatch";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -131,6 +133,16 @@ If "the columns of $A$ are the images of the basis vectors" is the most useful s
 Hints are cheap; give-up is cheaper. The point isn't to win every round — it's to build a reflex for reading matrices off geometry.
 
 <MatrixGuessr />
+
+## The named-transformation dictionary
+
+Reading a matrix off a picture is the harder direction. The easier direction — going from a *named* transformation like "rotate by 30°" or "shear-x by 1" to the four matrix entries — is the one you'll use far more often in practice. It's the move you make every time you write down a matrix from a verbal description, every time you sanity-check a calculation against the geometric label, every time you read a colleague's diff and want to know what their matrix is doing.
+
+It's also the move that has nothing clever about it. Every named transformation has a small closed-form recipe — rotation by $\theta$ is $\begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$, shear-x by $k$ is $\begin{pmatrix} 1 & k \\ 0 & 1 \end{pmatrix}$, scale-y by $s$ is $\begin{pmatrix} 1 & 0 \\ 0 & s \end{pmatrix}$, reflection across the *x*-axis is $\begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$. The dictionary is small enough to memorise, and the matching game below cements the lookup by forcing six commitments at once: drag a line from each transformation name on the left to the matrix on the right that produces it.
+
+The trap to name: half the wrong matches will look almost right because they share three of four entries with the correct matrix. The difference between "rotate 30°" and "scale 2× vertically" lives in the off-diagonal entries — get the columns wrong and you've named the wrong transformation. The columns of $A$ are still the images of $\hat{\imath}$ and $\hat{\jmath}$; the matching game is just the dictionary version of that same identity.
+
+<TransformationLibraryMatch />
 
 <Tier level="complete">
 
