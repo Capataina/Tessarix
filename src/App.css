@@ -430,33 +430,6 @@
   color: var(--text-secondary);
   font-size: var(--text-md);
   line-height: 1.7;
-  /* Justified body with hyphenation produces clean line edges on both
-     sides — the "edges of the text box are crisp" effect. We pair
-     `text-wrap: pretty` (where supported) to avoid widows / orphans
-     in the last few lines of each paragraph, and `text-justify: inter-word`
-     so word-spacing absorbs the slack instead of letter-spacing. */
-  text-align: justify;
-  text-justify: inter-word;
-  hyphens: auto;
-  -webkit-hyphens: auto;
-  text-wrap: pretty;
-  /* Slightly tighter word-spacing ceiling — too much space between words
-     produces visual "rivers"; this caps the slack a justification pass
-     can introduce. */
-  word-spacing: -0.005em;
-}
-
-/* Don't justify short, structural paragraphs inside callouts / metas —
-   those read better left-aligned because their lines are too short for
-   justification to look anything but stretched. */
-.lesson blockquote p,
-.lesson-meta p,
-.misconception p,
-.lesson li p {
-  text-align: start;
-  hyphens: manual;
-  -webkit-hyphens: manual;
-  word-spacing: normal;
 }
 
 .lesson p strong {
