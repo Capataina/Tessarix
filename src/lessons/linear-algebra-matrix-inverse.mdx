@@ -14,6 +14,7 @@ widgets_used:
   - InverseRevealer
   - ElementaryMatrixCardGame
   - SingularityWatcher
+  - RREFSpeedrun
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -26,6 +27,7 @@ import { GaussianElimination } from "../components/widgets/linear-algebra/Gaussi
 import { InverseRevealer } from "../components/widgets/linear-algebra/InverseRevealer";
 import { ElementaryMatrixCardGame } from "../components/widgets/linear-algebra/ElementaryMatrixCardGame";
 import { SingularityWatcher } from "../components/widgets/linear-algebra/SingularityWatcher";
+import { RREFSpeedrun } from "../components/widgets/linear-algebra/RREFSpeedrun";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -216,6 +218,10 @@ The widget below puts the algorithm in your hands. Three operation controls — 
 <Tier level="standard">
 
 The thing to internalise as you play with the widget: elimination is *mechanical*. There's no creativity involved. The standard recipe — for each column from left to right, find a non-zero pivot, scale it to 1, use it to zero out everything else in its column — is an algorithm a computer can execute without any intuition. The intuition is in the *interpretation*: when elimination produces a row of zeros (under-determined system, free variable) or a row of the form $[0\ 0\ 0\ |\ c]$ with $c \ne 0$ (inconsistent system, no solution), the structure of the original problem has been laid bare. The algorithm is dumb; the *output* of the algorithm tells you everything about whether the system has a unique solution, infinitely many, or none.
+
+Mechanical doesn't mean *strategy-free*, though. The same matrix reduced in different orders can take three operations or eight, depending on which pivots you clear first, when you swap rows to avoid fractions, and whether you scale before adding. The widget below puts that strategic discipline on the clock: sixty seconds to reduce a 3×3 matrix to RREF, score weighted by both operations applied and seconds elapsed. The clock starts on your first move (so reading time is free), and stops automatically the instant the matrix hits RREF. Personal best per preset is tracked across runs — the second attempt at the same matrix almost always beats the first.
+
+<RREFSpeedrun />
 
 </Tier>
 
