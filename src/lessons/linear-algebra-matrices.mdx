@@ -8,6 +8,7 @@ prerequisites:
   - linear-algebra-foundations
 widgets_used:
   - MatrixTransform
+  - MatrixGuessr
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -15,6 +16,7 @@ widgets_used:
 ---
 
 import { MatrixTransform } from "../components/widgets/linear-algebra/MatrixTransform";
+import { MatrixGuessr } from "../components/widgets/linear-algebra/MatrixGuessr";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -121,6 +123,14 @@ Three special cases worth feeling in your hands.
 A determinant of zero means the matrix is **singular** — the transformation collapses the entire plane onto a lower-dimensional subspace (a line, or in the $\mathbf{0}$ matrix case, a single point). All of $\mathbb{R}^2$ now lives in a 1D image. This is a fundamentally different regime from "small effect" — it's an *irreversible* operation. You can't recover the original vector from its image because infinitely many original vectors map to the same image point. Algebraically: singular matrices have no inverse.
 
 </Misconception>
+
+## Matrix Guessr — read the matrix off the picture
+
+If "the columns of $A$ are the images of the basis vectors" is the most useful single fact about matrices, the quiz below is what cements it. You'll see the image of the unit square under a hidden matrix; your job is to enter the matrix from the four input boxes. Look at where $\hat{\imath}$ (the dashed white arrow along the *x*-axis) ended up — that's the first column. Look at where $\hat{\jmath}$ (the dashed white arrow along the *y*-axis) ended up — that's the second column. Three difficulty levels: easy is integer entries and axis-aligned transformations; medium adds rotations and reflections with integer coefficients; hard introduces decimal rotation matrices where the entries are $\cos\theta$ and $\sin\theta$ values.
+
+Hints are cheap; give-up is cheaper. The point isn't to win every round — it's to build a reflex for reading matrices off geometry.
+
+<MatrixGuessr />
 
 <Tier level="complete">
 
