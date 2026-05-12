@@ -159,6 +159,11 @@ html[data-reduced-motion="true"] *::after {
 body {
   font-family: var(--font-body);
   font-size: 1rem;
+  /* Base body weight is Satoshi Medium (500), one notch above the default
+     Regular (400). Satoshi reads slightly thin on dark backgrounds at
+     small sizes; the Medium cut keeps the geometry of the font while
+     adding enough stroke weight for comfortable on-screen reading. */
+  font-weight: 500;
   line-height: 1.65;
   color: var(--text-primary);
   background-color: var(--bg-base);

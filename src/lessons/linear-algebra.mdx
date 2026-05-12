@@ -7,6 +7,7 @@ estimated_time: "15–35 min depending on tier"
 widgets_used:
   - VectorPlot
   - ScalarMultiplier
+  - VectorChainPuzzle
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -15,6 +16,7 @@ widgets_used:
 
 import { VectorPlot } from "../components/widgets/linear-algebra/VectorPlot";
 import { ScalarMultiplier } from "../components/widgets/linear-algebra/ScalarMultiplier";
+import { VectorChainPuzzle } from "../components/widgets/linear-algebra/VectorChainPuzzle";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
@@ -144,6 +146,14 @@ The widget below makes this concrete. Two vectors $\mathbf{a}$ and $\mathbf{b}$ 
 Only if they point in **exactly the same direction**. The lesson-opening question made this point. In general, $|\mathbf{a} + \mathbf{b}|$ depends on the angle between $\mathbf{a}$ and $\mathbf{b}$: equal-length opposing vectors sum to zero; perpendicular vectors give a Pythagorean sum; same-direction vectors give an additive sum. The **triangle inequality** $|\mathbf{a} + \mathbf{b}| \leq |\mathbf{a}| + |\mathbf{b}|$ holds always, with equality only in the same-direction case.
 
 </Misconception>
+
+### Chain construction — a puzzle for the head-to-tail rule
+
+Now that you've felt the head-to-tail rule with two vectors, try it as a *puzzle*. The widget below gives you a target $\mathbf{T}$ and a palette of candidate vectors. Click palette tiles to chain them — each new vector starts where the previous one ended. The chain succeeds when the running sum lands on $\mathbf{T}$. Some puzzles can be solved with fewer segments than others; the widget tracks how close to optimal your chain is.
+
+This is where commutativity and path-independence become visible. Two readers solving the same puzzle in different orders trace out *different paths through the plane* — but their final endpoints coincide, because vector addition doesn't care about the order. The path is the journey; the destination is the sum.
+
+<VectorChainPuzzle />
 
 ### Scalar multiplication
 
