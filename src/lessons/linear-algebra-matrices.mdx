@@ -9,6 +9,10 @@ prerequisites:
 widgets_used:
   - MatrixTransform
   - MatrixGuessr
+  - TransformationLibraryMatch
+  - DeterminantSlider
+  - CornerPredictor
+  - UnitSquareTetris
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -17,6 +21,10 @@ widgets_used:
 
 import { MatrixTransform } from "../components/widgets/linear-algebra/MatrixTransform";
 import { MatrixGuessr } from "../components/widgets/linear-algebra/MatrixGuessr";
+import { TransformationLibraryMatch } from "../components/widgets/linear-algebra/TransformationLibraryMatch";
+import { DeterminantSlider } from "../components/widgets/linear-algebra/DeterminantSlider";
+import { CornerPredictor } from "../components/widgets/linear-algebra/CornerPredictor";
+import { UnitSquareTetris } from "../components/widgets/linear-algebra/UnitSquareTetris";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -124,6 +132,14 @@ A determinant of zero means the matrix is **singular** — the transformation co
 
 </Misconception>
 
+### Singularity is a knife edge
+
+Here's something worth feeling in your hands. The space of $2 \times 2$ matrices is four-dimensional — each matrix is a choice of four numbers $(a, b, c, d)$. Of all those choices, how many produce a singular matrix? The condition is $ad - bc = 0$ — a single equation in four unknowns, which carves out a *three-dimensional* surface inside the four-dimensional ambient space. Singular matrices form a set of measure zero. Pick a random matrix from a continuous distribution and you'll get a non-singular one with probability one.
+
+Said more vividly: singularity is a knife edge. The two columns of $A$ — those basis-vector images $A\hat{\imath}$ and $A\hat{\jmath}$ — have to be *exactly* linearly dependent, one a precise scalar multiple of the other. A hair off in any direction and you're back in the invertible regime. The widget below is the experiential version of that fact. Drag the two basis vectors until $\det A$ drops to zero (within $0.005$). You won't get it on the first try. You'll get close, the "near miss" indicator will flash, then a small adjustment will push you back out. That difficulty *is* the lesson — the singular set is genuinely thin.
+
+<DeterminantSlider />
+
 ## Matrix Guessr — read the matrix off the picture
 
 If "the columns of $A$ are the images of the basis vectors" is the most useful single fact about matrices, the quiz below is what cements it. You'll see the image of the unit square under a hidden matrix; your job is to enter the matrix from the four input boxes. Look at where $\hat{\imath}$ (the dashed white arrow along the *x*-axis) ended up — that's the first column. Look at where $\hat{\jmath}$ (the dashed white arrow along the *y*-axis) ended up — that's the second column. Three difficulty levels: easy is integer entries and axis-aligned transformations; medium adds rotations and reflections with integer coefficients; hard introduces decimal rotation matrices where the entries are $\cos\theta$ and $\sin\theta$ values.
@@ -131,6 +147,26 @@ If "the columns of $A$ are the images of the basis vectors" is the most useful s
 Hints are cheap; give-up is cheaper. The point isn't to win every round — it's to build a reflex for reading matrices off geometry.
 
 <MatrixGuessr />
+
+## The named-transformation dictionary
+
+Reading a matrix off a picture is the harder direction. The easier direction — going from a *named* transformation like "rotate by 30°" or "shear-x by 1" to the four matrix entries — is the one you'll use far more often in practice. It's the move you make every time you write down a matrix from a verbal description, every time you sanity-check a calculation against the geometric label, every time you read a colleague's diff and want to know what their matrix is doing.
+
+It's also the move that has nothing clever about it. Every named transformation has a small closed-form recipe — rotation by $\theta$ is $\begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$, shear-x by $k$ is $\begin{pmatrix} 1 & k \\ 0 & 1 \end{pmatrix}$, scale-y by $s$ is $\begin{pmatrix} 1 & 0 \\ 0 & s \end{pmatrix}$, reflection across the *x*-axis is $\begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$. The dictionary is small enough to memorise, and the matching game below cements the lookup by forcing six commitments at once: drag a line from each transformation name on the left to the matrix on the right that produces it.
+
+The trap to name: half the wrong matches will look almost right because they share three of four entries with the correct matrix. The difference between "rotate 30°" and "scale 2× vertically" lives in the off-diagonal entries — get the columns wrong and you've named the wrong transformation. The columns of $A$ are still the images of $\hat{\imath}$ and $\hat{\jmath}$; the matching game is just the dictionary version of that same identity.
+
+<TransformationLibraryMatch />
+
+## Spatial prediction — where will the corners land?
+
+Matching a name to a matrix is one half of the practical loop. The other half is *prediction*: given a matrix, can you point — physically, on the plane — at where the corners of the unit square will end up?
+
+There's a difference between knowing the formula $A\mathbf{v} = (a v_x + b v_y, c v_x + d v_y)$ and being able to *aim* with it. The widget below asks for the second skill. You'll be given a matrix and the original unit square; your job is to click four positions where you predict each corner will land, in order: $(0, 0)$ first, then $\hat{\imath} = (1, 0)$, then $\hat{\imath} + \hat{\jmath} = (1, 1)$, then $\hat{\jmath} = (0, 1)$. After all four are placed, hit "Reveal & grade" and the widget overlays the true parallelogram, draws an error line from each prediction to its true counterpart, and reports per-corner distances in math units.
+
+The trap to watch for: the corner $(0, 0)$ stays at $(0, 0)$ for every linear transformation — the origin is fixed. Clicking elsewhere for the first corner is a common slip and a useful one to catch. After that, the second corner $(1, 0)$ goes to the matrix's first column $(a, c)$, the fourth corner $(0, 1)$ goes to the second column $(b, d)$, and the third corner $(1, 1)$ goes to their sum $(a + b, c + d)$ — by linearity, which is the lesson's whole point.
+
+<CornerPredictor />
 
 <Tier level="complete">
 
@@ -154,6 +190,14 @@ Apply transformation $A$ to a vector $\mathbf{v}$, then apply transformation $B$
 The order matters. $AB \ne BA$ in general. Rotate first and then shear: you get one final shape. Shear first and then rotate: you get a different final shape. Try it in your head with a unit square. Rotate it 30° anticlockwise and *then* shear it horizontally — the shear acts on a tilted square. Shear it horizontally and *then* rotate 30° — the rotation acts on a parallelogram that was already non-square. The two operations don't commute, and that non-commutativity is one of the most consequential facts in all of linear algebra. The [Linear Algebra — Matrix Operations](#/lesson/linear-algebra-matrix-operations) lesson makes this concrete with a side-by-side widget that shows $AB$ and $BA$ simultaneously.
 
 </Tier>
+
+## Speed round — read the matrix at a glance
+
+There's a difference between *knowing* the rule and *recognising* the rule. The matching game above asked for six commitments at your own pace; MatrixGuessr asked for slow, careful entries. Both let you stop and reason about the columns. The widget below removes that affordance — shapes drop from the top of the canvas with a finite deadline, and the only thing standing between you and a "life lost" is a quick visual read of where $\hat{\imath}$ and $\hat{\jmath}$ ended up.
+
+It's intentionally slightly unfair. Six and a half seconds isn't long enough to compute four matrix-vector products. It's long enough to *see* that the shape is taller than it is wide and pick the scale-y matrix, or that the basis vectors swapped and pick the reflection. That's the reflex the rest of the lesson exists to build — when you've internalised "columns are basis-vector images" properly, you don't read each entry, you read the shape. Three lives, one shape at a time.
+
+<UnitSquareTetris />
 
 ---
 
