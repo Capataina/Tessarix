@@ -1,0 +1,213 @@
+.bct {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius);
+  margin: var(--space-5) 0;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+}
+
+.bct:focus-visible {
+  border-color: var(--widget-accent);
+  box-shadow: 0 0 0 1px var(--widget-accent);
+}
+
+.bct--won {
+  border-color: var(--widget-success);
+  box-shadow: 0 0 0 1px var(--widget-success),
+    0 0 28px -8px rgba(62, 255, 142, 0.35);
+}
+
+.bct--lost {
+  border-color: var(--widget-danger);
+}
+
+.bct__head {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+}
+
+.bct__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.bct__heading-label {
+  font-size: 0.65rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bct__heading-value {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  color: var(--widget-text);
+}
+
+.bct__canvas {
+  width: 60%;
+  max-width: 280px;
+  height: auto;
+  aspect-ratio: 1;
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+  align-self: center;
+}
+
+.bct__buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.bct__btn {
+  appearance: none;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border-strong);
+  color: var(--widget-text);
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--widget-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease,
+    transform 0.1s ease;
+}
+
+.bct__btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.bct__btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.bct__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bct__btn--yes:hover:not(:disabled) {
+  border-color: var(--widget-success);
+  background: rgba(62, 255, 142, 0.08);
+}
+
+.bct__btn--no:hover:not(:disabled) {
+  border-color: var(--widget-danger);
+  background: rgba(255, 90, 90, 0.08);
+}
+
+.bct__btn-mark {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.bct__btn--yes .bct__btn-mark {
+  color: var(--widget-success);
+}
+
+.bct__btn--no .bct__btn-mark {
+  color: var(--widget-danger);
+}
+
+.bct__btn-label {
+  font-size: 0.9rem;
+  color: var(--widget-text);
+}
+
+.bct__btn-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--widget-text-dim);
+}
+
+.bct__verdict {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: var(--space-3);
+  border-radius: var(--widget-radius-sm);
+  border: 1px solid var(--widget-border);
+}
+
+.bct__verdict--playing {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.bct__verdict--correct {
+  background: rgba(62, 255, 142, 0.06);
+  border-color: var(--widget-success);
+}
+
+.bct__verdict--won {
+  background: rgba(62, 255, 142, 0.1);
+  border-color: var(--widget-success);
+}
+
+.bct__verdict--lost {
+  background: rgba(255, 90, 90, 0.08);
+  border-color: var(--widget-danger);
+}
+
+.bct__verdict-label {
+  font-size: 0.7rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bct__verdict-value {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--widget-text);
+}
+
+.bct__verdict--correct .bct__verdict-value {
+  color: var(--widget-success);
+}
+
+.bct__verdict--won .bct__verdict-value {
+  color: var(--widget-success);
+}
+
+.bct__verdict--lost .bct__verdict-value {
+  color: var(--widget-text);
+}
+
+.bct__restart {
+  appearance: none;
+  background: var(--widget-accent);
+  border: 1px solid var(--widget-accent);
+  color: var(--widget-bg);
+  padding: 0.55rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--widget-radius-sm);
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  align-self: center;
+}
+
+.bct__restart:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}

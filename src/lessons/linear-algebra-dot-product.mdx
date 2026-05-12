@@ -8,6 +8,11 @@ prerequisites:
   - linear-algebra-foundations
 widgets_used:
   - DotProductGeometry
+  - OrthogonalityDartboard
+  - ProjectionTargetGame
+  - EmbeddingNearestNeighbour
+  - DotProductCalculator
+  - CosineWheelHunt
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -16,6 +21,11 @@ widgets_used:
 ---
 
 import { DotProductGeometry } from "../components/widgets/linear-algebra/DotProductGeometry";
+import { OrthogonalityDartboard } from "../components/widgets/linear-algebra/OrthogonalityDartboard";
+import { ProjectionTargetGame } from "../components/widgets/linear-algebra/ProjectionTargetGame";
+import { EmbeddingNearestNeighbour } from "../components/widgets/linear-algebra/EmbeddingNearestNeighbour";
+import { DotProductCalculator } from "../components/widgets/linear-algebra/DotProductCalculator";
+import { CosineWheelHunt } from "../components/widgets/linear-algebra/CosineWheelHunt";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -71,6 +81,14 @@ Before continuing, predict the equivalence yourself on a concrete pair.
   ]}
   truth="b"
 />
+
+### Building the sum, one product at a time
+
+There's a trap inside the algebraic formula that's worth surfacing now, before it has a chance to become a quiet bug in your handwritten calculations. The formula is $a_1 b_1 + a_2 b_2$ — emphasis on *the indices match*. You pair $a_1$ with $b_1$ and $a_2$ with $b_2$; you never mix $a_1$ with $b_2$. Stated like that, it sounds tautological. In practice — particularly when readers are tired or working under time pressure — the cross-pair mistake $a_1 b_2 + a_2 b_1$ is one of the most common errors.
+
+The widget below makes the rule concrete by handing you six candidate product tiles for each round: the two correct ones ($a_1 b_1$ and $a_2 b_2$), the two cross-pair traps, and two same-vector distractors thrown in for completeness. Your job is to push the correct tiles into the sum bar. The wrong tiles can't make it in — they flash red and shake when you try. Five rounds work through the patterns that surface other failure modes too: mixed signs (round 3), perpendicular pairs whose dot product is *zero* without either vector being zero (round 4), and a perpendicular mixed-sign pair where the cancellation has to happen across opposite-sign components (round 5).
+
+<DotProductCalculator />
 
 ## The shadow on the line
 
@@ -156,6 +174,35 @@ The dot product can be zero even when **both vectors are non-zero** — that's p
 
 </Misconception>
 
+## Aiming for a right angle
+
+The orthogonality test — $\mathbf{a} \perp \mathbf{b} \iff \mathbf{a} \cdot \mathbf{b} = 0$ — is a sentence you can recite. It's a different thing to *feel* it. A perpendicular pair has a quiet, definite quality on the page: the two arrows form a right angle and the dot product collapses to exactly zero. Drift a few degrees and the number swings hard; the geometric and algebraic perpendicularity move in lockstep.
+
+The dartboard below makes that lockstep visible. A reference vector $\mathbf{r}$ is fixed at a random angle. Your job is to drag the *dart* vector $\mathbf{d}$ until it points at a right angle to $\mathbf{r}$. The widget colour-codes how close you are — red when you're more than 30° off, yellow as you warm up, green within 2° of perpendicular. The dot product readout swings continuously and lands on zero exactly when the angle does. Hit green and the round scores; a new $\mathbf{r}$ spawns and you go again.
+
+What this surfaces, beyond the visual: the failure mode the misconception above warned about. Watching $\mathbf{r} \cdot \mathbf{d}$ swing past zero, overshoot, and swing back, *while both vectors stay non-zero the whole time*, makes "a · b can be zero without a or b being zero" something you've directly experienced. The dart's magnitude is locked on purpose — you can't shrink your way to a fake zero. The only path to green is angle.
+
+<OrthogonalityDartboard />
+
+<Tier level="standard">
+
+Two patterns to notice as you play:
+
+- **The swing is steepest near perpendicular.** As $\mathbf{d}$ approaches the right angle, the dot product changes *fastest* — small dart movements cause large swings in the readout. Geometrically this is $\cos\theta$'s steepest descent near $\theta = 90°$, where its derivative is $-\sin\theta = \pm 1$.
+- **Two perpendicular targets per round.** $\mathbf{r}$ has two perpendicular directions — rotating $\mathbf{r}$ by $+90°$ or $-90°$ both work. The widget highlights both bands; either counts as a hit.
+
+</Tier>
+
+## The dot product is a many-to-one invariant
+
+One more pattern worth getting hands-on before the lesson closes. Once you can compute $\mathbf{a} \cdot \mathbf{b}$ both ways and read it as a signed agreement number, a natural follow-up question is: *given a target value $X$, can I construct two vectors whose dot product equals $X$?* The answer is yes — and there are many ways. The dot product is a many-to-one map: short vectors at a small angle and long vectors at a wider angle can produce the same scalar.
+
+The widget below makes that explicit. You're shown a target value (positive, negative, or zero), and your job is to drag $\mathbf{u}$ and $\mathbf{v}$ until $\mathbf{u} \cdot \mathbf{v}$ matches the target within tolerance. Six targets work through the patterns: positive (vectors agreeing), negative (vectors opposing), zero (the perpendicular regime where magnitude can't save you). The widget displays $|\mathbf{u}|$, $|\mathbf{v}|$, $\theta$, $\cos\theta$, and the product $|\mathbf{u}||\mathbf{v}|\cos\theta$ alongside the algebraic $\mathbf{u} \cdot \mathbf{v}$, so you can see *how* the geometric factors compose to produce the algebraic result.
+
+The history list at the bottom remembers your past hits. Solve a target two different ways and notice that the configurations may look completely different — a short pair at $30°$ versus a long pair at $70°$ — while landing the same dot product. That's the many-to-one structure made tangible.
+
+<CosineWheelHunt />
+
 <Tier level="complete">
 
 ## Magnitudes and angles from dot products
@@ -174,6 +221,16 @@ This is *the* way to compute the angle between two arbitrary vectors. In two or 
 
 The same formula works in $\mathbb{R}^n$ for any $n$ — take the dot product (sum of $n$ component products), divide by the product of magnitudes (each computed as $\sqrt{\mathbf{x} \cdot \mathbf{x}}$). High-dimensional vectors don't *visually* have an angle, but they have a *cosine of an angle*, and that cosine is what most "similarity" measures in modern machine learning actually compute. Two CLIP embeddings have an angle in 512-dimensional space; the cosine of that angle is what nearly every embedding-similarity comparison is built on. It's also what A-FINE's fidelity head extends — not just the cosine, but a richer SSIM-style structural similarity that the dot product is the simplest version of.
 
+### Cosine similarity as nearest-neighbour search
+
+The reason cosine similarity matters in practice — far more than the more familiar Euclidean distance — is that direction is more semantically meaningful than position when the vectors are learned embeddings. A CLIP image embedding for a "dog" and another for a "wolf" both point roughly the same way in the 512-dimensional embedding space; their *magnitudes* are noisier and depend on incidentals like image brightness and contrast that have nothing to do with the meaning. Cosine collapses out the magnitude noise; Euclidean does not.
+
+The widget below makes this concrete in 2D. Thirty fake "embedding" points are scattered across the plane in five clusters — think of each cluster as a semantic category (animals, vehicles, food, places, tools). Pick any point as the query; then predict by eye which three points are its nearest neighbours by cosine similarity. The widget reveals the true cosine top-3 and, for comparison, the Euclidean top-3.
+
+The most useful moments are when the two disagree — when a point that *looks* close (small Euclidean distance) is at a different angle from the origin and so falls out of the cosine top-3, and a more distant point in the same direction takes its place. That gap is exactly what's happening in high-D embedding search: a CLIP "dog" image will rank a far-away dog photo above a nearby cat photo, because the dog photos point the same way and the cat photo doesn't, regardless of pixel-level proximity.
+
+<EmbeddingNearestNeighbour />
+
 ## Projection — the operation, not just the geometry
 
 So far the "shadow" has been a visualisation aid. But the shadow is also a *vector operation* with its own name: the **projection** of $\mathbf{a}$ onto $\mathbf{b}$. It's the vector pointing along $\mathbf{b}$'s direction whose magnitude equals the signed shadow length:
@@ -185,6 +242,16 @@ $$
 Read the formula one factor at a time. The scalar coefficient $\dfrac{\mathbf{a} \cdot \mathbf{b}}{|\mathbf{b}|^2}$ is the *projection scalar* — what the widget above displays as the "projection scalar" when you drag the vectors. Multiplying that scalar by $\mathbf{b}$ converts it into a vector lying on $\mathbf{b}$'s line, with the right length and direction to be the shadow.
 
 Projection is one of those operations that you'll meet again in nearly every direction you go. It underlies **least-squares regression** (where you project the observed data onto the column space of the design matrix). It underlies **Gram-Schmidt orthogonalisation** (which subtracts projections to build an orthonormal basis out of an arbitrary one). It underlies the **singular value decomposition** (which decomposes any matrix into a sequence of rotations and stretches along orthogonal projection directions). Once you've got the projection formula here, all of those downstream operations have one less moving part to learn.
+
+### Predict where the foot lands
+
+The formula is the safe path — it always gives you the right answer, in any dimension, for any pair of vectors. The dangerous path, in the friendly sense, is to predict the foot's position *by eye* before computing it. That's what trains the geometric intuition that lets you spot when an answer is implausible later.
+
+The widget below makes that prediction explicit. Two vectors are drawn; your job is to click where you think the foot of the perpendicular from $\mathbf{a}$'s tip onto $\mathbf{b}$'s line will land. Your click snaps to $\mathbf{b}$'s line — you can't be "off the line," only off along the line. Then the widget reveals the actual foot and scores how close you got. Six rounds, varied configurations, including the two cases readers misjudge most often: when the foot lands *beyond* $\mathbf{b}$'s tip (the projection scalar exceeds 1), and when the foot lands *behind* the origin (the scalar goes negative because the angle is obtuse).
+
+Don't be discouraged if you miss the first one or two. The whole point is to calibrate the eye — by round four or five you should be hitting "close" or "exact" reliably.
+
+<ProjectionTargetGame />
 
 <Misconception belief={"proj_b(a) = proj_a(b) — projection is symmetric, like the dot product."}>
 
