@@ -37,9 +37,15 @@
   --glow-yellow: rgba(255, 214, 51, 0.35);
   --glow-green: rgba(62, 255, 142, 0.35);
 
-  /* Typography */
-  --font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  /* Typography
+   * Body / heading: Satoshi (Indian Type Foundry), a geometric humanist
+   * sans with sharp open counters and excellent on-screen rendering at
+   * UI sizes. Used everywhere except code, math, numerical readouts, and
+   * other monospaced contexts.
+   * Mono: JetBrains Mono — high-legibility, slightly-condensed monospace
+   * with a careful zero glyph; pairs cleanly with Satoshi's geometry. */
+  --font-body: "Satoshi", "Inter", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 
   /* Sizes */
@@ -161,6 +167,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  /* Lining numerals for UI consistency; contextual alternates + standard
+     ligatures on. Tabular-figures is opted-in per-component (numeric
+     readouts, tables) rather than enforced globally. */
+  font-feature-settings: "ss01", "cv01", "calt", "liga", "kern", "lnum";
+  font-variant-numeric: lining-nums proportional-nums;
 
   /* Subtle radial vignette to give the background depth — mimics the Nexus Ops mockup */
   background-image:
