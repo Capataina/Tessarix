@@ -11,6 +11,7 @@ widgets_used:
   - MatrixComposition
   - TransformationOrdering
   - MatrixMultiplicationBuilder
+  - CommutativityBingo
   - MultipleChoice
   - GoalChain
   - PredictThenVerify
@@ -21,6 +22,7 @@ widgets_used:
 import { MatrixComposition } from "../components/widgets/linear-algebra/MatrixComposition";
 import { TransformationOrdering } from "../components/widgets/linear-algebra/TransformationOrdering";
 import { MatrixMultiplicationBuilder } from "../components/widgets/linear-algebra/MatrixMultiplicationBuilder";
+import { CommutativityBingo } from "../components/widgets/linear-algebra/CommutativityBingo";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -161,6 +163,16 @@ The widget below makes this directly visible. Two $2 \times 2$ matrices $A$ and 
 This is the most common mistake students bring to linear algebra from earlier mathematics. Scalar multiplication is commutative; matrix multiplication is **not**. There exist pairs of matrices that *do* commute (any matrix with itself; any matrix with the identity; any matrix with a scalar multiple of the identity; pairs of rotations around the same axis; pairs of matrices that share an eigenvector basis), but they are the *exception*. The default expectation should be $AB \ne BA$, and the burden of proof falls on whoever wants to claim commutativity in a specific case.
 
 </Misconception>
+
+## Sixteen judgements — when does AB equal BA?
+
+A single MatrixComposition panel is enough to make the *fact* of non-commutativity stick. The harder question is more interesting: *when does it fail*? Which pairs commute, which don't, and is there a pattern? The next widget asks you to judge sixteen pairs in one pass and submit your verdicts.
+
+Half the pairs commute. Half don't. Some commuting pairs are easy: any matrix paired with the identity. Some are sneaky: two upper-triangular matrices with the same diagonal entries, which slip into the commuting camp through a structural coincidence most people miss the first time. The non-commuting pairs are the more important class — they're the default, the rule, the thing your intuition should reach for unless something specific argues otherwise. Trust the visual cues at your peril.
+
+<CommutativityBingo />
+
+The score isn't the point. The point is the patterns the wrong answers expose. If you marked two diagonal matrices as "don't commute" — you've internalised non-commutativity as the *only* rule and stopped looking for exceptions. If you marked a rotation + shear as "commute" — you've over-generalised from the symmetric look of both matrices and missed that the *operation* they encode is order-sensitive. The commuting-pair patterns above (identity, scalar-multiples of identity, diagonal-with-diagonal, same-axis rotations, same-axis shears, same matrix with its own power, upper-triangulars with equal diagonals) cover most of the cases that come up in practice. Memorise that list — the rest of linear algebra runs through it.
 
 ## Ordering puzzle — non-commutativity in your hands
 
