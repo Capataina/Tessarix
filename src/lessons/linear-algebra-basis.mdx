@@ -12,6 +12,7 @@ widgets_used:
   - BasisExplorer
   - CoordinateTranslator
   - BasisCardTournament
+  - EigenbasisHunt
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -22,6 +23,7 @@ widgets_used:
 import { BasisExplorer } from "../components/widgets/linear-algebra/BasisExplorer";
 import { CoordinateTranslator } from "../components/widgets/linear-algebra/CoordinateTranslator";
 import { BasisCardTournament } from "../components/widgets/linear-algebra/BasisCardTournament";
+import { EigenbasisHunt } from "../components/widgets/linear-algebra/EigenbasisHunt";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -165,6 +167,14 @@ The answer is structural. **Some bases reveal information that the standard basi
 | **Principal-component basis** | The basis whose axes point in the directions of maximum variance of a data cloud. Compressing data by truncating coordinates in this basis loses the *least possible information*. | PCA, dimensionality reduction, image compression |
 
 Each of these is "the standard basis for a problem with a particular structure". The basis you pick should be the one that makes the *problem*'s structure visible. When the problem's structure aligns with the standard basis (which it often does in introductory exercises), the standard basis is the right basis. When it doesn't (which it always does in interesting problems), you change basis to align with the structure, do the computation in the easier basis, and — if needed — change back.
+
+The eigenbasis is worth foreshadowing here because it crystallises *why* change-of-basis is the centrepiece of so much of the rest of linear algebra. The idea: for a generic transformation $A$, most directions get *rotated* — $A\mathbf{x}$ points somewhere completely unrelated to $\mathbf{x}$. But some special directions don't rotate at all; $A$ just scales them. Those directions are called **eigenvectors** of $A$, and the basis built out of them is the eigenbasis. In the eigenbasis, $A$ stops looking like a complicated mix of rotation and stretch; it looks like a diagonal matrix — pure scaling per axis.
+
+The widget below makes those special directions findable by inspection. You drag a test vector $\mathbf{x}$; the widget continuously shows $A\mathbf{x}$ as a second arrow. When the two arrows line up (parallel or antiparallel), $A$ is acting on $\mathbf{x}$ as pure scaling, and the widget records the direction with its scale factor $\lambda$. Try the rotation preset first and watch nothing line up — pure rotations have no real eigenvectors, and sweeping $\mathbf{x}$ around the whole plane never produces alignment. Then try the shear: one eigendirection, the shear axis, easy to find. Then the stretch-plus-shear: two eigendirections, one obvious and one subtle.
+
+<EigenbasisHunt />
+
+You're not asked to compute anything. The eigenvalue formula is one lesson down the curriculum. The widget's job is to give you the *visual experience* of the special directions long before you see the formula — so that when "the eigenvectors of $A$" arrives as a definition, it reads as the name for something you've already met.
 
 <Tier level="standard">
 
