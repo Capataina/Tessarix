@@ -18,7 +18,7 @@ The four-tier content architecture (`context/notes/content-architecture.md`) alr
 
 ## Status — what's built
 
-As of 2026-05-11, **six lessons** in the linear-algebra track are authored, all in the canonical voice (`context/notes/lesson-voice.md`):
+As of 2026-05-12, **seven lessons** in the linear-algebra track are authored, all in the canonical voice (`context/notes/lesson-voice.md`):
 
 | Slug | Title | Layer | Status |
 |---|---|---|---|
@@ -28,6 +28,9 @@ As of 2026-05-11, **six lessons** in the linear-algebra track are authored, all 
 | `linear-algebra-span` | Linear Combinations and Span | 3 | ✅ Built |
 | `linear-algebra-matrix-operations` | Matrix Operations | 2 | ✅ Built |
 | `linear-algebra-matrix-inverse` | Matrix Inverse and Gaussian Elimination | 2 | ✅ Built |
+| `linear-algebra-basis` | Basis and Change of Basis | 3 | ✅ Built |
+
+**44 widgets shipped** across these 7 lessons (was 13 going into the 2026-05-11 → 2026-05-12 session): the 9 original (VectorPlot, ScalarMultiplier, MatrixTransform, DotProductGeometry, LinearCombination, MatrixComposition, MatrixInverse, GaussianElimination, BasisExplorer), 4 orchestrator-shipped Wave-1 widgets (VectorChainPuzzle, SpanColouringGame, MatrixGuessr, TransformationOrdering), and 31 agent-shipped widgets (5 per lesson via 7 parallel Opus background agents — see `creative-widgets-catalogue.md` §Status for full enumeration).
 
 The remaining lessons in the recommended track are not yet authored. The next priorities are listed in §Implementation priorities below.
 

@@ -242,6 +242,34 @@ A pool of generated questions calibrated by reader's recent answers. Wrong answe
 
 Each commits independently as it ships.
 
+## Status — 2026-05-12
+
+**31 of the 35 catalogue widgets shipped** in a single parallel-agent wave (7 Opus background agents in worktree isolation, one per lesson). Total linear-algebra widget count: **44** (was 13 going in: VectorPlot, ScalarMultiplier, MatrixTransform, DotProductGeometry, LinearCombination, MatrixComposition, MatrixInverse, GaussianElimination, BasisExplorer + 4 shipped by orchestrator this session pre-dispatch).
+
+**Per-lesson shipped count:**
+
+| Lesson | New widgets this session |
+|---|---|
+| Foundations | VectorChainPuzzle, ScalarSpeedMatch, VectorMaze, MagnitudeRanker, ComponentReverseEngineer (5) |
+| Dot Product | OrthogonalityDartboard, ProjectionTargetGame, EmbeddingNearestNeighbour, DotProductCalculator, CosineWheelHunt (5) |
+| Matrices | MatrixGuessr, TransformationLibraryMatch, UnitSquareTetris, DeterminantSlider, CornerPredictor (5) |
+| Span | SpanColouringGame, ReachTheTarget, DependenceDetector, BasisOrNot, SpanShrinker (5) |
+| Matrix Operations | TransformationOrdering, MatrixMultiplicationBuilder, CommutativityBingo, TransposeFlipper, ABversusBAGuesser (5) |
+| Matrix Inverse | InverseRevealer, ElementaryMatrixCardGame, SingularityWatcher, RREFSpeedrun, SystemTriage (5) |
+| Basis | CoordinateTranslator, BasisCardTournament, EigenbasisHunt, GridMorphMatcher, ChangeOfBasisRelay (5) |
+
+**Catalogue deviations (substitutes / not-shipped):**
+
+- **Matrices: CornerPredictor substituted for ShapeTransformPainter** — the agent's choice; free-form paint mechanics would have added UI complexity (brush, stroke buffering, area accumulation) for the same conceptual payload; per-corner-distance is a cleaner grading signal.
+- **Dot Product: CosineWheelHunt named-as-catalogue but implemented as a free-drag target hunt** with live |u|·|v|·cos θ readout; the "wheel" concept folded into the readout rather than rendered as a separate dial.
+- No other deviations; all other catalogue widgets shipped as-spec.
+
+**Mechanics introduced** (none of these existed before): drag-to-construct (snap-to-tail) · click-to-mark · auto-graded input quiz (3 difficulty tiers) · drag-to-order cards (with adjacent-swap) · drag-to-connect lines · real-time matrix-recognition tetris · race-to-zero target game · spatial-prediction click-the-foot · multi-select identification · rapid-fire judgement quiz · constraint-satisfaction predict-the-shrink · build-the-product algorithmic game · commutativity bingo grid · min-swap puzzle · predict-one-entry · cosine-vs-Euclidean nearest-neighbour comparison · build-the-sum tile drop · open-ended target-hunt · navigate-under-custom-basis · tournament survival bracket · eigenvector discovery · lattice reconstruction · two-step relay solver · timed elimination speedrun · 5-second rapid classification · build-A⁻¹-from-cards · root-hunt singularity.
+
+**Workflow note (durable):** the wide-scope build pattern used here — 7 Opus background agents in worktree isolation, one per lesson, each with a self-contained brief — is captured as an auto-memory entry (`project_parallel_agent_dispatch_for_wide_scope.md`). Reach for it again when a future wave (eigenvalue track, decompositions track, applied-LA track) lands.
+
+**Wave 2 candidates:** the 4 catalogue widgets not shipped (ShapeTransformPainter-as-free-form, a "wheel" version of CosineWheelHunt, plus any new mechanics that surface from subsequent feedback). Plus the cross-lesson stretch ideas (VectorSpaceArcade hub, LinearAlgebraBuilder sandbox, AdaptiveDifficultyQuiz).
+
 **What ISN'T in this catalogue (and why):**
 - Anything that requires backend AI grading (would slow down the page; we have local LLM for explanations, not for grading).
 - Anything 3D (entire codebase is 2D; introducing 3D would need a new rendering layer).
