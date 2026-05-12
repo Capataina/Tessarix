@@ -11,6 +11,7 @@ widgets_used:
   - MatrixGuessr
   - TransformationLibraryMatch
   - DeterminantSlider
+  - CornerPredictor
   - UnitSquareTetris
   - MultipleChoice
   - GoalChain
@@ -22,6 +23,7 @@ import { MatrixTransform } from "../components/widgets/linear-algebra/MatrixTran
 import { MatrixGuessr } from "../components/widgets/linear-algebra/MatrixGuessr";
 import { TransformationLibraryMatch } from "../components/widgets/linear-algebra/TransformationLibraryMatch";
 import { DeterminantSlider } from "../components/widgets/linear-algebra/DeterminantSlider";
+import { CornerPredictor } from "../components/widgets/linear-algebra/CornerPredictor";
 import { UnitSquareTetris } from "../components/widgets/linear-algebra/UnitSquareTetris";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
@@ -155,6 +157,16 @@ It's also the move that has nothing clever about it. Every named transformation 
 The trap to name: half the wrong matches will look almost right because they share three of four entries with the correct matrix. The difference between "rotate 30°" and "scale 2× vertically" lives in the off-diagonal entries — get the columns wrong and you've named the wrong transformation. The columns of $A$ are still the images of $\hat{\imath}$ and $\hat{\jmath}$; the matching game is just the dictionary version of that same identity.
 
 <TransformationLibraryMatch />
+
+## Spatial prediction — where will the corners land?
+
+Matching a name to a matrix is one half of the practical loop. The other half is *prediction*: given a matrix, can you point — physically, on the plane — at where the corners of the unit square will end up?
+
+There's a difference between knowing the formula $A\mathbf{v} = (a v_x + b v_y, c v_x + d v_y)$ and being able to *aim* with it. The widget below asks for the second skill. You'll be given a matrix and the original unit square; your job is to click four positions where you predict each corner will land, in order: $(0, 0)$ first, then $\hat{\imath} = (1, 0)$, then $\hat{\imath} + \hat{\jmath} = (1, 1)$, then $\hat{\jmath} = (0, 1)$. After all four are placed, hit "Reveal & grade" and the widget overlays the true parallelogram, draws an error line from each prediction to its true counterpart, and reports per-corner distances in math units.
+
+The trap to watch for: the corner $(0, 0)$ stays at $(0, 0)$ for every linear transformation — the origin is fixed. Clicking elsewhere for the first corner is a common slip and a useful one to catch. After that, the second corner $(1, 0)$ goes to the matrix's first column $(a, c)$, the fourth corner $(0, 1)$ goes to the second column $(b, d)$, and the third corner $(1, 1)$ goes to their sum $(a + b, c + d)$ — by linearity, which is the lesson's whole point.
+
+<CornerPredictor />
 
 <Tier level="complete">
 
