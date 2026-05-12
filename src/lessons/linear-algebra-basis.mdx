@@ -244,6 +244,30 @@ The notion also extends beyond $\mathbb{R}^n$. Vector spaces of polynomials, of 
   correctId="b"
 />
 
+<MultipleChoice
+  index={7}
+  question="How many vectors does every basis for R⁴ contain?"
+  options={[
+    { id: "a", label: "Exactly 4 — every basis for Rⁿ has exactly n vectors, no more, no less." },
+    { id: "b", label: "Between 3 and 5 — depending on which basis you pick." },
+    { id: "c", label: "8 — twice the dimension, accounting for positive and negative directions." },
+    { id: "d", label: "Any number ≥ 4 — the only requirement is that they span R⁴." },
+  ]}
+  correctId="a"
+/>
+
+<MultipleChoice
+  index={8}
+  question="A vector w has standard-basis coordinates (5, 3). In a custom basis B = [[2, 0], [0, 1]] (i.e. u = (2, 0), v = (0, 1)), what are w's coordinates [α, β]?"
+  options={[
+    { id: "a", label: "(2.5, 3) — apply B⁻¹·w; B⁻¹ = [[0.5, 0], [0, 1]], so [α, β] = (0.5·5, 1·3) = (2.5, 3)." },
+    { id: "b", label: "(10, 3) — apply B·w directly." },
+    { id: "c", label: "(5, 3) — coordinates are basis-independent." },
+    { id: "d", label: "(3, 5) — swap the components." },
+  ]}
+  correctId="a"
+/>
+
 </Tier>
 
 </KnowledgeCheck>

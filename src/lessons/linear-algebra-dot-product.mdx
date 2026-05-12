@@ -248,6 +248,30 @@ Two unit vectors $\mathbf{u} = (1, 0)$ and $\mathbf{v} = (\cos 60°, \sin 60°) 
   correctId="a"
 />
 
+<MultipleChoice
+  index={7}
+  question="In a CLIP embedding space, two image vectors a and b have the same cosine similarity as another pair c and d. What CAN you say about the four vectors?"
+  options={[
+    { id: "a", label: "a, b, c, d all have the same magnitudes." },
+    { id: "b", label: "The angle between a and b equals the angle between c and d, but the magnitudes can be anything." },
+    { id: "c", label: "a = c and b = d — same cosine similarity implies the vectors are equal." },
+    { id: "d", label: "The dot products a · b and c · d must be equal." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={8}
+  question="You have vectors a = (1, 0, 0, ..., 0) and b = (0, 1, 0, ..., 0) in 512-dimensional space. What is a · b?"
+  options={[
+    { id: "a", label: "0 — they're orthogonal; the dot product extends to ℝⁿ unchanged." },
+    { id: "b", label: "1 — exactly one component matches between them." },
+    { id: "c", label: "√2 — the magnitude of their difference." },
+    { id: "d", label: "Undefined — the dot product only works in 2D and 3D." },
+  ]}
+  correctId="a"
+/>
+
 </Tier>
 
 </KnowledgeCheck>

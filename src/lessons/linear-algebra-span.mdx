@@ -191,6 +191,30 @@ Three different vocabularies for the same single fact: linear dependence of colu
   correctId="b"
 />
 
+<MultipleChoice
+  index={5}
+  question="You're handed three vectors in R²: u₁, u₂, u₃. What's the MAXIMUM possible dimension of span{u₁, u₂, u₃}?"
+  options={[
+    { id: "a", label: "3 — three vectors can span a three-dimensional space." },
+    { id: "b", label: "2 — you can never span more than the ambient space (R² is two-dimensional)." },
+    { id: "c", label: "1 — three vectors are always dependent, so the span collapses to a line." },
+    { id: "d", label: "6 — each vector has 2 components, total 6." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={6}
+  question="Two vectors u and v are linearly dependent. Which of these is the SAME fact stated differently?"
+  options={[
+    { id: "a", label: "det[u | v] = 0 — the matrix with u and v as columns is singular." },
+    { id: "b", label: "u · v = 0 — the dot product is zero." },
+    { id: "c", label: "|u| = |v| — the vectors have equal magnitude." },
+    { id: "d", label: "u + v = 0 — they cancel out." },
+  ]}
+  correctId="a"
+/>
+
 </Tier>
 
 </KnowledgeCheck>

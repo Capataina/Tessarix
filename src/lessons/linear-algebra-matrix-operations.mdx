@@ -258,6 +258,42 @@ Not every matrix has one. Inverses exist exactly when the determinant is non-zer
   correctId="b"
 />
 
+<MultipleChoice
+  index={6}
+  question="A is 3×4 and B is 4×2. What is the shape of AB?"
+  options={[
+    { id: "a", label: "3×2 — outer dimensions of the product." },
+    { id: "b", label: "4×4 — the inner dimensions must agree." },
+    { id: "c", label: "AB is undefined; multiplication requires square matrices." },
+    { id: "d", label: "3×4 — the left matrix's shape determines the result." },
+  ]}
+  correctId="a"
+/>
+
+<MultipleChoice
+  index={7}
+  question="A is 2×3 and B is 3×2. Which of these claims about AB and BA is correct?"
+  options={[
+    { id: "a", label: "AB and BA are both 2×3 — the shapes flip." },
+    { id: "b", label: "AB is 2×2 and BA is 3×3 — they're DIFFERENT shapes, so it's literally impossible for them to be equal." },
+    { id: "c", label: "AB and BA are both 3×3 — matrix products are symmetric." },
+    { id: "d", label: "AB is 3×3 and BA is 2×2 — the larger inner dimension wins." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={8}
+  question="What is (A + B)ᵀ in terms of Aᵀ and Bᵀ?"
+  options={[
+    { id: "a", label: "Aᵀ + Bᵀ — transpose distributes over addition entry-by-entry." },
+    { id: "b", label: "Bᵀ + Aᵀ in REVERSED order, like (AB)ᵀ = BᵀAᵀ." },
+    { id: "c", label: "AᵀBᵀ — transpose introduces multiplication." },
+    { id: "d", label: "(A + B) — transposing a sum has no effect." },
+  ]}
+  correctId="a"
+/>
+
 </Tier>
 
 </KnowledgeCheck>

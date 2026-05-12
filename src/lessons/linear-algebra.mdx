@@ -11,6 +11,7 @@ widgets_used:
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
+  - KnowledgeCheck
   - Misconception
 ---
 
@@ -18,6 +19,7 @@ import { VectorPlot } from "../components/widgets/linear-algebra/VectorPlot";
 import { ScalarMultiplier } from "../components/widgets/linear-algebra/ScalarMultiplier";
 import { VectorChainPuzzle } from "../components/widgets/linear-algebra/VectorChainPuzzle";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
+import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { Misconception } from "../components/widgets/shared/Misconception";
@@ -207,6 +209,52 @@ where $\theta$ is the angle between the two vectors. That these two expressions 
 The dot product is **the** test for orthogonality. Two non-zero vectors are perpendicular if and only if their dot product is zero. The dedicated [Linear Algebra — The Dot Product](#/lesson/linear-algebra-dot-product) lesson develops the projection geometry, the relationship between the dot product and the angle, and the role the dot product plays in matrix-vector multiplication. The summary above is a preview; the lesson is where the projection picture lives.
 
 </Tier>
+
+---
+
+<KnowledgeCheck>
+
+<MultipleChoice
+  index={3}
+  question="Two vectors a and b have magnitudes |a| = 4 and |b| = 7. Which of these statements about |a + b| is GUARANTEED to be true?"
+  options={[
+    { id: "a", label: "|a + b| = 11 (the magnitudes always add)." },
+    { id: "b", label: "|a + b| ≤ 11 (with equality only when a and b point the same way)." },
+    { id: "c", label: "|a + b| ≥ 11 (the resultant is never shorter than the sum of magnitudes)." },
+    { id: "d", label: "|a + b| = √65 (Pythagoras applies whenever you add vectors)." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={4}
+  question="What does it mean geometrically when you multiply a vector v by the scalar k = -2?"
+  options={[
+    { id: "a", label: "Rotate v by 180° AND double its length — same line, opposite direction, twice as long." },
+    { id: "b", label: "Rotate v by 90° anticlockwise and double its length." },
+    { id: "c", label: "Halve v and flip its sign — produces a vector half as long pointing the other way." },
+    { id: "d", label: "Multiply each component by −2, but the magnitude stays the same." },
+  ]}
+  correctId="a"
+/>
+
+<Tier level="standard">
+
+<MultipleChoice
+  index={5}
+  question="If a and b are non-zero vectors and a · b = 0, what can you conclude?"
+  options={[
+    { id: "a", label: "At least one of a or b must be the zero vector." },
+    { id: "b", label: "a and b are perpendicular — the dot product is zero exactly when the angle between them is 90°." },
+    { id: "c", label: "a and b are parallel — the dot product collapses when vectors align." },
+    { id: "d", label: "a = −b — the dot product is zero only when one vector is the negative of the other." },
+  ]}
+  correctId="b"
+/>
+
+</Tier>
+
+</KnowledgeCheck>
 
 ---
 

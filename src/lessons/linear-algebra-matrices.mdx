@@ -197,6 +197,42 @@ The order matters. $AB \ne BA$ in general. Rotate first and then shear: you get 
   correctId="c"
 />
 
+<MultipleChoice
+  index={5}
+  question="A 2×2 matrix A has det(A) = -3. What does the negative determinant tell you about A's geometric action?"
+  options={[
+    { id: "a", label: "A scales every vector by -3 — output vectors point in the opposite direction." },
+    { id: "b", label: "A scales areas by a factor of 3 AND flips orientation (reverses the cyclic order of basis vectors)." },
+    { id: "c", label: "A is singular — negative determinants only occur for non-invertible matrices." },
+    { id: "d", label: "A rotates the plane by 180°." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={6}
+  question="Look at this transformation: the unit square is sent to a parallelogram with corners at (0,0), (2,1), (3,3), (1,2). What is the matrix A that produced it?"
+  options={[
+    { id: "a", label: "[[2, 1], [1, 2]]" },
+    { id: "b", label: "[[1, 2], [2, 1]] — the columns are the corners (1, 2) and (2, 1)." },
+    { id: "c", label: "[[2, 1], [1, 2]] — the columns are the images of î = (2, 1) and ĵ = (1, 2)." },
+    { id: "d", label: "[[3, 3], [3, 3]] — read off the opposite corner." },
+  ]}
+  correctId="c"
+/>
+
+<MultipleChoice
+  index={7}
+  question="The identity matrix I = [[1, 0], [0, 1]] satisfies AI = IA = A for any matrix A. Why is its column structure exactly what it is?"
+  options={[
+    { id: "a", label: "Because det(I) = 1 — and any matrix with det = 1 acts as the identity." },
+    { id: "b", label: "Because I's columns are î = (1, 0) and ĵ = (0, 1) — applying I sends the basis vectors to themselves, which means it sends every vector to itself." },
+    { id: "c", label: "Because the diagonal entries are 1 — diagonal matrices are always the identity." },
+    { id: "d", label: "Because it's the smallest matrix; small matrices have no effect." },
+  ]}
+  correctId="b"
+/>
+
 </Tier>
 
 </KnowledgeCheck>
