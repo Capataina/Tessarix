@@ -12,6 +12,7 @@ widgets_used:
   - ProjectionTargetGame
   - EmbeddingNearestNeighbour
   - DotProductCalculator
+  - CosineWheelHunt
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -24,6 +25,7 @@ import { OrthogonalityDartboard } from "../components/widgets/linear-algebra/Ort
 import { ProjectionTargetGame } from "../components/widgets/linear-algebra/ProjectionTargetGame";
 import { EmbeddingNearestNeighbour } from "../components/widgets/linear-algebra/EmbeddingNearestNeighbour";
 import { DotProductCalculator } from "../components/widgets/linear-algebra/DotProductCalculator";
+import { CosineWheelHunt } from "../components/widgets/linear-algebra/CosineWheelHunt";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -190,6 +192,16 @@ Two patterns to notice as you play:
 - **Two perpendicular targets per round.** $\mathbf{r}$ has two perpendicular directions — rotating $\mathbf{r}$ by $+90°$ or $-90°$ both work. The widget highlights both bands; either counts as a hit.
 
 </Tier>
+
+## The dot product is a many-to-one invariant
+
+One more pattern worth getting hands-on before the lesson closes. Once you can compute $\mathbf{a} \cdot \mathbf{b}$ both ways and read it as a signed agreement number, a natural follow-up question is: *given a target value $X$, can I construct two vectors whose dot product equals $X$?* The answer is yes — and there are many ways. The dot product is a many-to-one map: short vectors at a small angle and long vectors at a wider angle can produce the same scalar.
+
+The widget below makes that explicit. You're shown a target value (positive, negative, or zero), and your job is to drag $\mathbf{u}$ and $\mathbf{v}$ until $\mathbf{u} \cdot \mathbf{v}$ matches the target within tolerance. Six targets work through the patterns: positive (vectors agreeing), negative (vectors opposing), zero (the perpendicular regime where magnitude can't save you). The widget displays $|\mathbf{u}|$, $|\mathbf{v}|$, $\theta$, $\cos\theta$, and the product $|\mathbf{u}||\mathbf{v}|\cos\theta$ alongside the algebraic $\mathbf{u} \cdot \mathbf{v}$, so you can see *how* the geometric factors compose to produce the algebraic result.
+
+The history list at the bottom remembers your past hits. Solve a target two different ways and notice that the configurations may look completely different — a short pair at $30°$ versus a long pair at $70°$ — while landing the same dot product. That's the many-to-one structure made tangible.
+
+<CosineWheelHunt />
 
 <Tier level="complete">
 
