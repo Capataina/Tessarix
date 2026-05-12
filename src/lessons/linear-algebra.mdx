@@ -8,6 +8,7 @@ widgets_used:
   - VectorPlot
   - ScalarMultiplier
   - VectorChainPuzzle
+  - VectorMaze
   - ScalarSpeedMatch
   - MultipleChoice
   - PredictThenVerify
@@ -18,6 +19,7 @@ widgets_used:
 import { VectorPlot } from "../components/widgets/linear-algebra/VectorPlot";
 import { ScalarMultiplier } from "../components/widgets/linear-algebra/ScalarMultiplier";
 import { VectorChainPuzzle } from "../components/widgets/linear-algebra/VectorChainPuzzle";
+import { VectorMaze } from "../components/widgets/linear-algebra/VectorMaze";
 import { ScalarSpeedMatch } from "../components/widgets/linear-algebra/ScalarSpeedMatch";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -156,6 +158,16 @@ Now that you've felt the head-to-tail rule with two vectors, try it as a *puzzle
 This is where commutativity and path-independence become visible. Two readers solving the same puzzle in different orders trace out *different paths through the plane* — but their final endpoints coincide, because vector addition doesn't care about the order. The path is the journey; the destination is the sum.
 
 <VectorChainPuzzle />
+
+### Walls, budgets, and order — vector addition as embodied translation
+
+Suppose you are standing on a tile floor and somebody hands you a small set of cards. Each card has an arrow on it: *step right*, *step up*, *step diagonally up-right*, *step left*. You have to reach a marked tile across the room. Some of the tiles between you and the goal are blocked off by furniture you cannot step through. You have eight moves before the lesson ends. Where do you go first?
+
+This is the maze widget. The mathematics is exactly the same as the chain puzzle above — your position after $n$ moves is the sum of the $n$ chosen vectors — but the *embodiment* is different. You are no longer choosing arrows on a canvas to make a running sum match a target; you are physically navigating a grid one move at a time. The destination still doesn't care about order — three rights and two ups land you at $(3, 2)$ no matter which order you choose them in — but the *path* through walls does. Try reaching the goal in puzzle 3 with the wall in the way: the destination is still $(4, 2) = 4\hat{\imath} + 2\hat{\jmath}$, but you cannot get there by going right-first. The wall forces you to commit to an ordering, even though commutativity guarantees the sum doesn't notice.
+
+The traps this surfaces: spending moves on detours without realising the budget will run out (greedy local choices that don't backtrack); forgetting that $-\hat{\imath}$ is an available move when the start position has already overshot the goal (puzzle 4 forces this — the goal is to the *left* of the start); and reflexively treating the action set as fixed rather than reading the palette each puzzle (puzzle 2 unlocks the diagonal $\hat{\imath}+\hat{\jmath}$, which collapses two moves into one).
+
+<VectorMaze />
 
 ### Scalar multiplication
 
