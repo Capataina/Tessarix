@@ -26,6 +26,7 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
+import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./GaussianElimination.css";
 
@@ -156,6 +157,7 @@ interface GaussianEliminationProps {
 export function GaussianElimination({
   onStateChange,
 }: GaussianEliminationProps) {
+  const { recordInteraction } = useWidgetTelemetry("GaussianElimination");
   const [preset, setPreset] = useState(0);
   const [snapshots, setSnapshots] = useState<Matrix[]>([
     cloneMatrix(PRESETS[0].matrix),
@@ -218,19 +220,31 @@ export function GaussianElimination({
     }
     setSnapshots([...snapshots, next]);
     setHistory([...history, { description: desc }]);
+    recordInteraction("apply", {
+      op: opType,
+      ri: rowI,
+      rj: rowJ,
+      scalar,
+      step: history.length + 1,
+    });
   };
 
   const undo = () => {
     if (snapshots.length <= 1) return;
     setSnapshots(snapshots.slice(0, -1));
     setHistory(history.slice(0, -1));
+    recordInteraction("undo", { remaining: history.length - 1 });
   };
 
   const reset = (idx: number = preset) => {
+    const presetChanged = idx !== preset;
     setPreset(idx);
     const fresh = cloneMatrix(PRESETS[idx].matrix);
     setSnapshots([fresh]);
     setHistory([]);
+    recordInteraction(presetChanged ? "preset" : "reset", {
+      preset: PRESETS[idx].label,
+    });
   };
 
   return (

@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { emit as emitTelemetry } from "../lib/telemetry";
 
 /**
  * User-facing UI preferences. Persisted to localStorage and reflected onto
@@ -116,13 +117,36 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
   const update = useCallback(
     <K extends keyof Settings>(key: K, value: Settings[K]) => {
-      setSettings((prev) => ({ ...prev, [key]: value }));
+      setSettings((prev) => {
+        if (prev[key] !== value) {
+          emitTelemetry({
+            kind: "settings_changed",
+            data: {
+              key: String(key),
+              old_value: prev[key] as unknown,
+              new_value: value as unknown,
+            },
+          });
+        }
+        return { ...prev, [key]: value };
+      });
     },
     [],
   );
 
   const reset = useCallback(() => {
-    setSettings(DEFAULT_SETTINGS);
+    setSettings((prev) => {
+      const changedKeys = (Object.keys(DEFAULT_SETTINGS) as (keyof Settings)[]).filter(
+        (k) => prev[k] !== DEFAULT_SETTINGS[k],
+      );
+      if (changedKeys.length > 0) {
+        emitTelemetry({
+          kind: "settings_reset",
+          data: { keys_reset: changedKeys.map(String) },
+        });
+      }
+      return DEFAULT_SETTINGS;
+    });
   }, []);
 
   const value = useMemo(

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LESSONS, type LessonRegistryEntry, type LessonFrontmatter } from "../lessons/registry";
 import { useLLMStream } from "../lib/llm/hooks";
 import { PERSONA } from "../lib/llm/prompts";
@@ -22,6 +22,39 @@ export function Catalog({ onSelect }: CatalogProps) {
   const [activeDomain, setActiveDomain] = useState<string | null>(null);
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
+  // Catalog lifecycle telemetry — emit catalog_open on mount, catalog_close on
+  // unmount, with dwell time. Captures whether a card was clicked (selectedRef
+  // is set by the per-card click handler before unmount).
+  const mountedAtRef = useRef<number>(0);
+  const selectedRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    mountedAtRef.current = performance.now();
+    emitTelemetry({ kind: "catalog_open", data: {} });
+    return () => {
+      emitTelemetry({
+        kind: "catalog_close",
+        data: {
+          dwell_ms: Math.round(performance.now() - mountedAtRef.current),
+          selected_slug: selectedRef.current,
+        },
+      });
+    };
+  }, []);
+
+  // Wrap onSelect so we capture the chosen slug before unmount and emit
+  // catalog_card_click with index information.
+  const handleCardClick = useCallback(
+    (slug: string, index: number) => {
+      selectedRef.current = slug;
+      emitTelemetry({
+        kind: "catalog_card_click",
+        data: { slug, index, via: "card" },
+      });
+      onSelect(slug);
+    },
+    [onSelect],
+  );
+
   // Resolve frontmatter once at mount.
   useEffect(() => {
     let cancelled = false;
@@ -34,6 +67,34 @@ export function Catalog({ onSelect }: CatalogProps) {
       cancelled = true;
     };
   }, []);
+
+  // Telemetry on debounced filter changes — emit a catalog_filter when domain
+  // or tag toggles, and a catalog_search after the user stops typing.
+  useEffect(() => {
+    emitTelemetry({
+      kind: "catalog_filter",
+      data: {
+        domain: activeDomain ?? undefined,
+        tag: activeTag ?? undefined,
+      },
+    });
+  }, [activeDomain, activeTag]);
+
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length === 0) return;
+    const t = window.setTimeout(() => {
+      emitTelemetry({
+        kind: "catalog_search",
+        data: { query: q, result_count: filtered.length },
+      });
+    }, 600);
+    return () => window.clearTimeout(t);
+    // We intentionally don't include `filtered` in deps — we want the *current*
+    // result count at the moment the timer fires, which `filtered` will have
+    // updated to via the inner useMemo by that point.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   // Build the filter facets from the resolved frontmatter.
   const domains = useMemo(() => {
@@ -159,8 +220,13 @@ export function Catalog({ onSelect }: CatalogProps) {
           </div>
 
           <div className="catalog__cards">
-            {filtered.map((l) => (
-              <CatalogCard key={l.slug} lesson={l} onSelect={onSelect} />
+            {filtered.map((l, i) => (
+              <CatalogCard
+                key={l.slug}
+                lesson={l}
+                index={i}
+                onSelect={() => handleCardClick(l.slug, i)}
+              />
             ))}
             {filtered.length === 0 && (
               <div className="catalog__empty">
@@ -176,16 +242,31 @@ export function Catalog({ onSelect }: CatalogProps) {
 
 interface CatalogCardProps {
   lesson: ResolvedLesson;
-  onSelect: (slug: string) => void;
+  index: number;
+  onSelect: () => void;
 }
 
-function CatalogCard({ lesson, onSelect }: CatalogCardProps) {
+function CatalogCard({ lesson, index, onSelect }: CatalogCardProps) {
   const fm = lesson.fm;
+
+  // Emit catalog_card_view on first render so we know which cards the user
+  // actually saw (vs. those scrolled-past). Intersection-observer-based
+  // visibility would be more precise; the per-render emit is the cheap
+  // approximation.
+  useEffect(() => {
+    emitTelemetry({
+      kind: "catalog_card_view",
+      data: { slug: lesson.slug, index },
+    });
+    // We want this to fire once per card per mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <button
       type="button"
       className="catalog-card"
-      onClick={() => onSelect(lesson.slug)}
+      onClick={onSelect}
     >
       <div className="catalog-card__domain">{lesson.domain}</div>
       <h3 className="catalog-card__title">{fm?.title ?? lesson.slug}</h3>

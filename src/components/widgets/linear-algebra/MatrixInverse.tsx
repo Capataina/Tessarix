@@ -34,6 +34,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
+import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./MatrixInverse.css";
 
@@ -82,6 +83,7 @@ export function MatrixInverse({
   initialV = { x: 0.7, y: 0.4 },
   onStateChange,
 }: MatrixInverseProps) {
+  const { recordInteraction } = useWidgetTelemetry("MatrixInverse");
   const [A, setA] = useState<Matrix2>(initialA);
   const [v, setV] = useState<Vec2>(initialV);
 
@@ -154,7 +156,10 @@ export function MatrixInverse({
             key={p.label}
             type="button"
             className="mat-inv__preset"
-            onClick={() => setA(p.A)}
+            onClick={() => {
+              setA(p.A);
+              recordInteraction("preset", { label: p.label });
+            }}
           >
             {p.label}
           </button>

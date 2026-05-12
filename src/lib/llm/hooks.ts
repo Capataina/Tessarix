@@ -140,14 +140,27 @@ export function useLLMStream() {
       }
 
       let accumulated = "";
+      let firstTokenAt: number | null = null;
       const channel = new Channel<StreamEvent>();
       channel.onmessage = (msg) => {
         // Closes over the LOCAL flag — guaranteed isolated from any later
         // stream's flag.
         if (localAbort.aborted) return;
         if (msg.event === "token") {
+          if (firstTokenAt === null) firstTokenAt = performance.now();
           accumulated += msg.data.content;
           setText((prev) => prev + msg.data.content);
+          if (opts?.telemetryFeature) {
+            emitTelemetry({
+              kind: "llm_stream_chunk",
+              data: {
+                feature: opts.telemetryFeature,
+                turn: opts.telemetryTurn,
+                chunk_length: msg.data.content.length,
+                cumulative_length: accumulated.length,
+              },
+            });
+          }
         } else if (msg.event === "done") {
           if (abortRef.current === localAbort) {
             setIsStreaming(false);
@@ -162,6 +175,11 @@ export function useLLMStream() {
                 response_text: accumulated,
                 duration_ms: Math.round(performance.now() - tStart),
                 streamed: true,
+                first_token_ms:
+                  firstTokenAt !== null
+                    ? Math.round(firstTokenAt - tStart)
+                    : undefined,
+                token_count_estimate: Math.max(1, Math.round(accumulated.length / 4)),
               },
             });
           }

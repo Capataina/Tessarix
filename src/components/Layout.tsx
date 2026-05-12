@@ -88,12 +88,26 @@ export function Layout({
         }
       }
 
+      const docHeight = Math.round(document.documentElement.scrollHeight);
+      const denom = Math.max(1, docHeight - window.innerHeight);
+      const scrollPct = Math.max(
+        0,
+        Math.min(1, window.scrollY / denom),
+      );
+      const activeHeadingEl = active
+        ? (document.getElementById(active) as HTMLHeadingElement | null)
+        : null;
       emitTelemetry({
         kind: "scroll",
         data: {
           y: Math.round(window.scrollY),
-          doc_height: Math.round(document.documentElement.scrollHeight),
-          active_heading: active,
+          doc_height: docHeight,
+          scroll_pct: Number(scrollPct.toFixed(4)),
+          active_heading: activeHeadingEl?.textContent?.trim() || active,
+          active_heading_id: active,
+          active_heading_level: activeHeadingEl
+            ? Number(activeHeadingEl.tagName.slice(1))
+            : undefined,
         },
       });
     };

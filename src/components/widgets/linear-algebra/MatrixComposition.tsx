@@ -24,6 +24,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
+import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./MatrixComposition.css";
 
@@ -61,6 +62,7 @@ export function MatrixComposition({
   initialB = { a: 0.707, b: -0.707, c: 0.707, d: 0.707 }, // rotate 45°
   onStateChange,
 }: MatrixCompositionProps) {
+  const { recordInteraction } = useWidgetTelemetry("MatrixComposition");
   const [A, setA] = useState<Matrix2>(initialA);
   const [B, setB] = useState<Matrix2>(initialB);
 
@@ -144,6 +146,7 @@ export function MatrixComposition({
             onClick={() => {
               setA(p.A);
               setB(p.B);
+              recordInteraction("preset", { label: p.label });
             }}
           >
             {p.label}

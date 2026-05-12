@@ -35,6 +35,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
+import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./BasisExplorer.css";
 
@@ -76,6 +77,7 @@ export function BasisExplorer({
   initialW = { x: 1.5, y: 1.5 },
   onStateChange,
 }: BasisExplorerProps) {
+  const { recordInteraction } = useWidgetTelemetry("BasisExplorer");
   const [u, setU] = useState<Vec2>(initialU);
   const [v, setV] = useState<Vec2>(initialV);
   const [w, setW] = useState<Vec2>(initialW);
@@ -134,6 +136,7 @@ export function BasisExplorer({
             onClick={() => {
               setU(p.u);
               setV(p.v);
+              recordInteraction("preset", { label: p.label });
             }}
           >
             {p.label}
