@@ -8,6 +8,7 @@ prerequisites:
   - linear-algebra-foundations
 widgets_used:
   - LinearCombination
+  - SpanColouringGame
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -15,6 +16,7 @@ widgets_used:
 ---
 
 import { LinearCombination } from "../components/widgets/linear-algebra/LinearCombination";
+import { SpanColouringGame } from "../components/widgets/linear-algebra/SpanColouringGame";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -108,6 +110,16 @@ Here's where the lesson on matrices and this lesson connect. **The determinant f
 Dependence is broader. $\mathbf{u}$ and $\mathbf{v}$ are dependent whenever **one is any scalar multiple of the other** — including negative multiples (so $\mathbf{u}$ and $-\mathbf{u}$ are dependent), fractional multiples ($\mathbf{u}$ and $0.5\mathbf{u}$), and the zero-vector edge case ($\mathbf{u}$ and $\mathbf{0}$ are technically dependent because $\mathbf{0} = 0 \cdot \mathbf{u}$). The right phrasing isn't "identical" — it's "they live on the same line through the origin."
 
 </Misconception>
+
+## Click to test — span as something you interrogate, not just look at
+
+The widget above shows you the span. The widget below lets you *interrogate* it. Two basis vectors $\mathbf{u}$ and $\mathbf{v}$ as before — drag them to set up a basis. Then **click anywhere on the canvas to drop a test point**. Each click is evaluated: green if the point is reachable as some $\alpha\mathbf{u} + \beta\mathbf{v}$, red if not.
+
+Two things to try. First, drop a dozen test points around the plane while $\mathbf{u}$ and $\mathbf{v}$ are independent. Every one turns green; the whole plane is reachable. Now grab $\mathbf{v}$ and drag it onto $\mathbf{u}$'s line — every test point off that line flips red the moment $\mathbf{v}$ becomes a scalar multiple of $\mathbf{u}$. The span collapsed; your tests are now witnesses to the collapse.
+
+Second, toggle the mode to **lattice** (integer coefficients only). The continuous green region disappears; only the integer-lattice intersection points stay green. This previews the difference between *the span* (a continuous region) and *integer combinations* (a discrete lattice) — a distinction that matters for cryptography, error-correcting codes, and any setting where coefficients have to come from a discrete set.
+
+<SpanColouringGame />
 
 <Tier level="complete">
 

@@ -1,0 +1,135 @@
+.scg {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius);
+  margin: var(--space-5) 0;
+}
+
+.scg__head {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+}
+
+.scg__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.scg__heading-label {
+  font-size: 0.65rem;
+  color: var(--widget-text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scg__heading-value {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  color: var(--widget-text);
+}
+
+.scg__heading-value--ok {
+  color: var(--widget-success);
+}
+
+.scg__heading-value--danger {
+  color: var(--widget-danger);
+}
+
+.scg__toggle {
+  appearance: none;
+  text-align: left;
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border-strong);
+  color: var(--widget-text);
+  padding: 0.4rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  border-radius: var(--widget-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.scg__toggle:hover {
+  border-color: var(--widget-accent);
+}
+
+.scg__toggle--on {
+  border-color: var(--widget-warn);
+  background: rgba(255, 214, 51, 0.06);
+  color: var(--widget-warn);
+}
+
+.scg__canvas {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius-sm);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.scg__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.scg__btn,
+.scg__preset {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--widget-border-strong);
+  color: var(--widget-text-dim);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  border-radius: var(--widget-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.scg__btn:hover,
+.scg__preset:hover {
+  border-color: var(--widget-accent);
+  background: rgba(0, 212, 255, 0.06);
+  color: var(--widget-text);
+}
+
+.scg__instructions {
+  font-size: 0.85rem;
+  color: var(--widget-text-dim);
+  line-height: 1.6;
+  padding: var(--space-3);
+  background: var(--widget-bg-elevated);
+  border-left: 2px solid var(--widget-accent);
+  border-radius: var(--widget-radius-sm);
+}
+
+.scg__instructions strong {
+  color: var(--widget-text);
+}
+
+.scg__legend {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.scg__legend--u {
+  color: var(--widget-chart-1);
+}
+
+.scg__legend--v {
+  color: var(--widget-chart-2);
+}
