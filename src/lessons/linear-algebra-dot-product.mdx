@@ -8,6 +8,7 @@ prerequisites:
   - linear-algebra-foundations
 widgets_used:
   - DotProductGeometry
+  - OrthogonalityDartboard
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -16,6 +17,7 @@ widgets_used:
 ---
 
 import { DotProductGeometry } from "../components/widgets/linear-algebra/DotProductGeometry";
+import { OrthogonalityDartboard } from "../components/widgets/linear-algebra/OrthogonalityDartboard";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -155,6 +157,25 @@ Together these three make the dot product a **bilinear form** — linear in each
 The dot product can be zero even when **both vectors are non-zero** — that's precisely the orthogonality case. $(1, 0) \cdot (0, 1) = 0$ even though both vectors have magnitude 1. The dot product measures *agreement*, not magnitude; two non-zero vectors can simply have no agreement (i.e., be perpendicular).
 
 </Misconception>
+
+## Aiming for a right angle
+
+The orthogonality test — $\mathbf{a} \perp \mathbf{b} \iff \mathbf{a} \cdot \mathbf{b} = 0$ — is a sentence you can recite. It's a different thing to *feel* it. A perpendicular pair has a quiet, definite quality on the page: the two arrows form a right angle and the dot product collapses to exactly zero. Drift a few degrees and the number swings hard; the geometric and algebraic perpendicularity move in lockstep.
+
+The dartboard below makes that lockstep visible. A reference vector $\mathbf{r}$ is fixed at a random angle. Your job is to drag the *dart* vector $\mathbf{d}$ until it points at a right angle to $\mathbf{r}$. The widget colour-codes how close you are — red when you're more than 30° off, yellow as you warm up, green within 2° of perpendicular. The dot product readout swings continuously and lands on zero exactly when the angle does. Hit green and the round scores; a new $\mathbf{r}$ spawns and you go again.
+
+What this surfaces, beyond the visual: the failure mode the misconception above warned about. Watching $\mathbf{r} \cdot \mathbf{d}$ swing past zero, overshoot, and swing back, *while both vectors stay non-zero the whole time*, makes "a · b can be zero without a or b being zero" something you've directly experienced. The dart's magnitude is locked on purpose — you can't shrink your way to a fake zero. The only path to green is angle.
+
+<OrthogonalityDartboard />
+
+<Tier level="standard">
+
+Two patterns to notice as you play:
+
+- **The swing is steepest near perpendicular.** As $\mathbf{d}$ approaches the right angle, the dot product changes *fastest* — small dart movements cause large swings in the readout. Geometrically this is $\cos\theta$'s steepest descent near $\theta = 90°$, where its derivative is $-\sin\theta = \pm 1$.
+- **Two perpendicular targets per round.** $\mathbf{r}$ has two perpendicular directions — rotating $\mathbf{r}$ by $+90°$ or $-90°$ both work. The widget highlights both bands; either counts as a hit.
+
+</Tier>
 
 <Tier level="complete">
 
