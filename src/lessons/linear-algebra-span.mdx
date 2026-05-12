@@ -11,6 +11,7 @@ widgets_used:
   - SpanColouringGame
   - ReachTheTarget
   - DependenceDetector
+  - BasisOrNot
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -21,6 +22,7 @@ import { LinearCombination } from "../components/widgets/linear-algebra/LinearCo
 import { SpanColouringGame } from "../components/widgets/linear-algebra/SpanColouringGame";
 import { ReachTheTarget } from "../components/widgets/linear-algebra/ReachTheTarget";
 import { DependenceDetector } from "../components/widgets/linear-algebra/DependenceDetector";
+import { BasisOrNot } from "../components/widgets/linear-algebra/BasisOrNot";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -172,6 +174,14 @@ Three different vocabularies for the same single fact: linear dependence of colu
 </Tier>
 
 ---
+
+## Build the reflex — basis or not, at speed
+
+Reading dependence off a det calculation works. It also takes several seconds, and the algebraic step doesn't survive into higher dimensions where you can't compute a determinant in your head. The faster path — and the one that scales — is visual recognition: two vectors at a glance, and you already know whether they share a line through the origin.
+
+The widget below is a metronome for that reflex. Ten pairs of vectors are shown, one at a time. For each, hit <kbd>B</kbd> if the pair is a basis (two independent directions, span ℝ²) or <kbd>N</kbd> if it isn't (parallel, opposite, or one is zero). The pairs deliberately mix easy cases with near-misses — two vectors at a 12° angle that look almost colinear but aren't, or decimal-multiple parallel pairs that fool the eye that expects integer relationships. The scorecard at the end breaks accuracy down by category so you can see exactly where your visual gut is calibrated and where it isn't.
+
+<BasisOrNot />
 
 <KnowledgeCheck>
 
