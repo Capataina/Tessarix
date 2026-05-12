@@ -12,6 +12,7 @@ widgets_used:
   - MatrixInverse
   - GaussianElimination
   - InverseRevealer
+  - ElementaryMatrixCardGame
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -22,6 +23,7 @@ widgets_used:
 import { MatrixInverse } from "../components/widgets/linear-algebra/MatrixInverse";
 import { GaussianElimination } from "../components/widgets/linear-algebra/GaussianElimination";
 import { InverseRevealer } from "../components/widgets/linear-algebra/InverseRevealer";
+import { ElementaryMatrixCardGame } from "../components/widgets/linear-algebra/ElementaryMatrixCardGame";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -219,6 +221,12 @@ In other words: row reduction of $[A \mid I]$ doesn't *compute* $A^{-1}$ by some
 
 When does this fail? When $A$ is singular — when no sequence of row operations can turn $A$ into $I$. That happens exactly when elimination produces a row of zeros on the left, which is exactly when $\det A = 0$, which is exactly the geometric collapse we identified at the start of the lesson. Every diagnostic agrees: **singular ⇔ uninvertible ⇔ $\det = 0$ ⇔ row reduction leaves a zero row on the left ⇔ columns are linearly dependent**. These are all the same property of $A$, viewed through different windows.
 
+Reading this once is one thing; *building* an inverse from elementary matrices, one factor at a time, is another. The widget below makes the algebra physical. You're shown a matrix $A$ and a deck of three card types — swap two rows, scale a row by $k$, add $k$ times one row to another. Each card is an elementary matrix; playing it multiplies the current matrix on the left by that elementary matrix. Your goal is to reduce $A$ to the identity. The other panel — the running product — starts at $I$ and accumulates every elementary matrix you play. By the [A | I] reasoning we just walked through, *when the current matrix becomes the identity, the running product equals $A^{-1}$, by construction*. Every card you play is one factor in $A^{-1}$.
+
+This is not a metaphor or a mnemonic. The widget is performing exactly the algebra the lesson described, with the elementary matrices made visible. Lower card counts mean leaner inverse-factorisations; the personal-best counter is there to make "find the shortest sequence" a real goal across replays.
+
+<ElementaryMatrixCardGame />
+
 ## Misconceptions
 
 <Misconception belief="Every square matrix has an inverse — the formula $A^{-1} = (1/\det A) \cdot \text{adjugate}$ always works.">
@@ -306,6 +314,30 @@ The pattern: any time a piece of mathematics has the structure "solve for $\math
     { id: "d", label: "(AB)^T — the transpose and inverse of a product are the same thing" },
   ]}
   correctId="b"
+/>
+
+<MultipleChoice
+  index={7}
+  question="You row-reduce the augmented matrix [A | b] and end up with a row of [0 0 0 | 5]. What does this tell you about the system Ax = b?"
+  options={[
+    { id: "a", label: "Unique solution — every column has a pivot." },
+    { id: "b", label: "Infinite solutions — there's a free variable." },
+    { id: "c", label: "No solution — the row reads 0 = 5, an impossibility, so the system is inconsistent." },
+    { id: "d", label: "x = (0, 0, 0, 5) — the row gives the solution directly." },
+  ]}
+  correctId="c"
+/>
+
+<MultipleChoice
+  index={8}
+  question="Why is np.linalg.solve(A, b) preferred over np.linalg.inv(A) @ b in numerical code?"
+  options={[
+    { id: "a", label: "Computing the inverse takes more operations AND is less numerically stable than directly solving by elimination — explicit inversion materialises an intermediate matrix that amplifies floating-point errors." },
+    { id: "b", label: "np.linalg.inv doesn't exist for square matrices." },
+    { id: "c", label: "They give different answers mathematically." },
+    { id: "d", label: "solve is older API; inv is deprecated." },
+  ]}
+  correctId="a"
 />
 
 </Tier>
