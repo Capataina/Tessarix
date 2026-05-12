@@ -8,6 +8,7 @@ widgets_used:
   - VectorPlot
   - ScalarMultiplier
   - VectorChainPuzzle
+  - ScalarSpeedMatch
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -17,6 +18,7 @@ widgets_used:
 import { VectorPlot } from "../components/widgets/linear-algebra/VectorPlot";
 import { ScalarMultiplier } from "../components/widgets/linear-algebra/ScalarMultiplier";
 import { VectorChainPuzzle } from "../components/widgets/linear-algebra/VectorChainPuzzle";
+import { ScalarSpeedMatch } from "../components/widgets/linear-algebra/ScalarSpeedMatch";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
@@ -181,6 +183,16 @@ The magnitude rescales exactly: $|k\mathbf{v}| = |k| \cdot |\mathbf{v}|$. Notice
 Magnitudes are always non-negative — they measure *length*, which is a positive distance. $|k\mathbf{v}| = |k| \cdot |\mathbf{v}|$, with the absolute value applied to $k$. What negative $k$ flips is *direction*, not magnitude. A vector pointing 30° east of north, scaled by $-1$, points 30° west of south — same length, opposite heading.
 
 </Misconception>
+
+### Speed-match — three seconds, pick the scalar
+
+You have built the intuition slowly. Now compress it. The widget below flashes a vector $\mathbf{v}$ and a target $k\mathbf{v}$ on the canvas, drops four scalar candidates underneath, and gives you three seconds to choose. The mechanics of the operation haven't changed — $k$ scales the length, the sign decides the direction — but the *time budget* has. Three seconds is not enough to compute the ratio carefully. It is just enough to *see* it.
+
+This is the point of the round. The scalar you reach for under pressure is the one your intuition has already wired in. If you find yourself reaching for the wrong sign when $k$ is negative, or guessing $k = 2$ when the target is barely longer than $\mathbf{v}$, that's the feedback the widget exists to surface — your eye hasn't calibrated to length-and-direction yet, and the timer is the thing forcing the calibration. Three difficulty tiers: integer scalars on easy, half-integers on medium, decimals with 0.3-step distractors on hard.
+
+The traps the widget surfaces, in roughly the order they bite: missing the sign on negative $k$ (the target points the opposite way, your eye still picks a positive scalar of the same magnitude); confusing $k$ with $|k|$ when the target is shorter (picking $0.5$ when the answer is $-0.5$); over-reading the visual length under time pressure and picking $k = 3$ when the answer is $k = 2$. None of these are computation errors — they are *intuition* errors, which is exactly what three-second rounds expose.
+
+<ScalarSpeedMatch />
 
 <Tier level="complete">
 
