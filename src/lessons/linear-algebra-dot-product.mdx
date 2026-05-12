@@ -9,6 +9,7 @@ prerequisites:
 widgets_used:
   - DotProductGeometry
   - MultipleChoice
+  - PredictThenVerify
   - GoalChain
   - Misconception
   - KnowledgeCheck
@@ -18,6 +19,7 @@ import { DotProductGeometry } from "../components/widgets/linear-algebra/DotProd
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
+import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { Misconception } from "../components/widgets/shared/Misconception";
 import { Tier } from "../components/Tier";
 import { LessonMeta } from "../components/MDXComponents";
@@ -56,6 +58,20 @@ Take a moment to register how different these two formulas *look*. One uses comp
 
 You'll use the algebraic form to compute, and you'll use the geometric form to think. That division of labour is the dot product's whole pedagogical pattern.
 
+Before continuing, predict the equivalence yourself on a concrete pair.
+
+<PredictThenVerify
+  index={1}
+  question="Take a = (3, 4) and b = (4, 3). Compute a · b two ways: the algebraic way (multiply components, add) gives one number; the geometric way (|a|·|b|·cos θ) gives another. Which of the following is true?"
+  options={[
+    { id: "a", label: "Algebraic = 24, geometric = 25 — they differ slightly because of rounding in cos θ." },
+    { id: "b", label: "Algebraic = 24, geometric = 24 — they agree exactly. Both equal 5·5·cos θ where cos θ = 24/25." },
+    { id: "c", label: "Algebraic = 25, geometric = 0 — only one formula gives the right answer." },
+    { id: "d", label: "Both give 0 — the vectors are perpendicular." },
+  ]}
+  truth="b"
+/>
+
 ## The shadow on the line
 
 The geometric form has a visual reading that's worth burning into your visual memory. Draw the two vectors $\mathbf{a}$ and $\mathbf{b}$ starting at the same origin. Drop a perpendicular from the tip of $\mathbf{a}$ onto the line through $\mathbf{b}$. The foot of that perpendicular is at signed distance $|\mathbf{a}| \cos\theta$ from the origin, measured along $\mathbf{b}$'s direction. That signed distance is the **shadow** of $\mathbf{a}$ on $\mathbf{b}$.
@@ -85,7 +101,7 @@ This last point — that the dot product can be **zero** for two non-zero vector
 </Tier>
 
 <GoalChain
-  index={1}
+  index={2}
   title="Discover the dot product's geometry"
   steps={[
     {
@@ -121,6 +137,18 @@ The dot product has three structural properties that make it usable as a buildin
 - **Compatible with scalar multiplication**: $(k\mathbf{a}) \cdot \mathbf{b} = k (\mathbf{a} \cdot \mathbf{b})$. Stretch $\mathbf{a}$ by $k$, and its shadow on $\mathbf{b}$ stretches by exactly the same $k$.
 
 Together these three make the dot product a **bilinear form** — linear in each argument when the other is fixed. That property is exactly what lets the dot product compose cleanly with matrix-vector multiplication, where each entry of $A\mathbf{v}$ is a dot product between a row of $A$ and the vector $\mathbf{v}$.
+
+<PredictThenVerify
+  index={3}
+  question="Suppose a = (1, 2), b = (3, 0), c = (0, 4). Use distributivity to compute a · (b + c) without computing b + c first. What's the result?"
+  options={[
+    { id: "a", label: "11 — apply a · (b + c) = a · b + a · c = (3 + 0) + (0 + 8) = 11" },
+    { id: "b", label: "8 — distributivity doesn't apply to dot products" },
+    { id: "c", label: "3 — only the first term survives" },
+    { id: "d", label: "(3, 8) — the dot product of a vector with a sum is a vector" },
+  ]}
+  truth="a"
+/>
 
 <Misconception belief="If a · b = 0, then either a is zero, b is zero, or both.">
 
@@ -158,6 +186,24 @@ Read the formula one factor at a time. The scalar coefficient $\dfrac{\mathbf{a}
 
 Projection is one of those operations that you'll meet again in nearly every direction you go. It underlies **least-squares regression** (where you project the observed data onto the column space of the design matrix). It underlies **Gram-Schmidt orthogonalisation** (which subtracts projections to build an orthonormal basis out of an arbitrary one). It underlies the **singular value decomposition** (which decomposes any matrix into a sequence of rotations and stretches along orthogonal projection directions). Once you've got the projection formula here, all of those downstream operations have one less moving part to learn.
 
+<Misconception belief={"proj_b(a) = proj_a(b) — projection is symmetric, like the dot product."}>
+
+The **dot product** is commutative — $\mathbf{a} \cdot \mathbf{b} = \mathbf{b} \cdot \mathbf{a}$. The **projection operation** is not. Projecting $\mathbf{a}$ onto $\mathbf{b}$ gives a vector along $\mathbf{b}$'s direction; projecting $\mathbf{b}$ onto $\mathbf{a}$ gives a vector along $\mathbf{a}$'s direction. The two results live on different lines (unless $\mathbf{a}$ and $\mathbf{b}$ are already parallel).
+
+Concrete example: with $\mathbf{a} = (1, 2)$ and $\mathbf{b} = (3, 0)$:
+
+$$
+\text{proj}_{\mathbf{b}}\mathbf{a} = \frac{3}{9}(3, 0) = (1, 0), \qquad \text{proj}_{\mathbf{a}}\mathbf{b} = \frac{3}{5}(1, 2) = (0.6, 1.2).
+$$
+
+Two different vectors, on two different lines, of two different magnitudes. The dot product *factor* $\mathbf{a} \cdot \mathbf{b} = 3$ appears in both numerators (because it's symmetric), but the denominator and the post-multiplied vector are different. The asymmetry isn't a quirk — it's a consequence of "shadow on a line" depending on *which line*.
+
+</Misconception>
+
+## A worked angle calculation
+
+Two unit vectors $\mathbf{u} = (1, 0)$ and $\mathbf{v} = (\cos 60°, \sin 60°) = (0.5, 0.866)$. The dot product is $1 \cdot 0.5 + 0 \cdot 0.866 = 0.5$. Both magnitudes are 1, so $\cos\theta = 0.5 / (1 \cdot 1) = 0.5$, which means $\theta = 60°$. The formula reproduces the angle we built into $\mathbf{v}$'s construction — exactly. Doing this calculation by hand once is the moment the algebraic-and-geometric equivalence stops being a slogan and becomes muscle memory.
+
 </Tier>
 
 ---
@@ -165,7 +211,7 @@ Projection is one of those operations that you'll meet again in nearly every dir
 <KnowledgeCheck>
 
 <MultipleChoice
-  index={2}
+  index={4}
   question="The dot product of (3, 4) and (4, -3) is:"
   options={[
     { id: "a", label: "25 (the product of their magnitudes — both have magnitude 5)" },
@@ -177,7 +223,7 @@ Projection is one of those operations that you'll meet again in nearly every dir
 />
 
 <MultipleChoice
-  index={3}
+  index={5}
   question="Two vectors a and b each have magnitude 4. The angle between them is 120°. What is a · b?"
   options={[
     { id: "a", label: "16 (always |a|·|b| when both magnitudes are 4)" },
@@ -191,7 +237,7 @@ Projection is one of those operations that you'll meet again in nearly every dir
 <Tier level="complete">
 
 <MultipleChoice
-  index={4}
+  index={6}
   question="You compute a · b and find it's a large positive number. What does this tell you geometrically?"
   options={[
     { id: "a", label: "The two vectors point in nearly the same direction AND at least one is long." },
