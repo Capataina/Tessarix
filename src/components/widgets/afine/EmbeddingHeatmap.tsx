@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./EmbeddingHeatmap.css";
 
 const EMBED_DIM = 512;

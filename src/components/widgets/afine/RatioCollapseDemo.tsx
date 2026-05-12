@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { LineChart, type Series } from "./LineChart";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { LineChart, type Series } from "../shared/LineChart";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./RatioCollapseDemo.css";
 
 const FEATURE_DIM = 512;

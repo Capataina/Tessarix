@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { drawReference } from "../../lib/imaging/render";
-import { gaussianBlur, translate } from "../../lib/imaging/distortions";
-import { psnr, ssim } from "../../lib/imaging/metrics";
-import { LineChart } from "./LineChart";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { drawReference } from "../../../lib/imaging/render";
+import { gaussianBlur, translate } from "../../../lib/imaging/distortions";
+import { psnr, ssim } from "../../../lib/imaging/metrics";
+import { LineChart } from "../shared/LineChart";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./TranslationVsBlurPlot.css";
 
 const CANVAS_SIZE = 192;

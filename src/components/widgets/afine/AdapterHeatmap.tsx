@@ -6,7 +6,7 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./AdapterHeatmap.css";
 
 const HEATMAP_SIZE = 240;

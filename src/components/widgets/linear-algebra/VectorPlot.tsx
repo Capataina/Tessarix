@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { resolveColor } from "../../lib/theme";
-import { computeDomain, makeFromPx, makeToPx } from "../../lib/geometry";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { resolveColor } from "../../../lib/theme";
+import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./VectorPlot.css";
 
 /**

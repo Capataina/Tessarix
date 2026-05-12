@@ -6,15 +6,15 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
-import { extractLessonContext } from "../../lib/llm/dom";
-import { useLLMStream } from "../../lib/llm/hooks";
+import { extractLessonContext } from "../../../lib/llm/dom";
+import { useLLMStream } from "../../../lib/llm/hooks";
 import {
   buildWidgetExplainerMessages,
   buildWidgetQuestionMessages,
-} from "../../lib/llm/prompts";
-import type { ChatMessage } from "../../lib/llm/types";
-import { emit as emitTelemetry } from "../../lib/telemetry";
-import { RichText } from "../RichText";
+} from "../../../lib/llm/prompts";
+import type { ChatMessage } from "../../../lib/llm/types";
+import { emit as emitTelemetry } from "../../../lib/telemetry";
+import { RichText } from "../../RichText";
 import "./WidgetExplainer.css";
 
 interface WidgetExplainerProps {

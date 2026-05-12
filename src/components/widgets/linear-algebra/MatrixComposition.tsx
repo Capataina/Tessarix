@@ -22,9 +22,9 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { resolveColor, resolveColorAlpha } from "../../lib/theme";
-import { computeDomain, makeToPx } from "../../lib/geometry";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
+import { computeDomain, makeToPx } from "../../../lib/geometry";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./MatrixComposition.css";
 
 const CANVAS_SIZE = 280;

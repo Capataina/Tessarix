@@ -32,9 +32,9 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { resolveColor, resolveColorAlpha } from "../../lib/theme";
-import { computeDomain, makeFromPx, makeToPx } from "../../lib/geometry";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
+import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./MatrixInverse.css";
 
 const CANVAS_SIZE = 280;

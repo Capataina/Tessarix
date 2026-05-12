@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { drawReference } from "../../lib/imaging/render";
+import { drawReference } from "../../../lib/imaging/render";
 import {
   brightness,
   gaussianBlur,
   gaussianNoise,
   translate,
-} from "../../lib/imaging/distortions";
-import { psnr, ssim } from "../../lib/imaging/metrics";
-import { emit as emitTelemetry } from "../../lib/telemetry";
-import { WidgetExplainer } from "./WidgetExplainer";
+} from "../../../lib/imaging/distortions";
+import { psnr, ssim } from "../../../lib/imaging/metrics";
+import { emit as emitTelemetry } from "../../../lib/telemetry";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./MetricComparison.css";
 
 const CANVAS_SIZE = 256;

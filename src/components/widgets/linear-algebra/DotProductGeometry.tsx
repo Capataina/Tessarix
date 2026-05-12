@@ -24,9 +24,9 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { resolveColor, resolveColorAlpha } from "../../lib/theme";
-import { computeDomain, makeFromPx, makeToPx } from "../../lib/geometry";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
+import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./DotProductGeometry.css";
 
 const CANVAS_SIZE = 360;

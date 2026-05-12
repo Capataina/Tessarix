@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { LineChart, type Series } from "./LineChart";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { LineChart, type Series } from "../shared/LineChart";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./GeluComparison.css";
 
 const X_MIN = -3;

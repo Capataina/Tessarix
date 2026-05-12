@@ -26,7 +26,7 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./GaussianElimination.css";
 
 const ROWS = 3;

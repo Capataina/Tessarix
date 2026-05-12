@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { WidgetExplainer } from "./WidgetExplainer";
+import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./FidelityHeadCalculator.css";
 
 const DIM = 8;
