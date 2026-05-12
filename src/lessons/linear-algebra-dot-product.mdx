@@ -10,6 +10,7 @@ widgets_used:
   - DotProductGeometry
   - OrthogonalityDartboard
   - ProjectionTargetGame
+  - EmbeddingNearestNeighbour
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -20,6 +21,7 @@ widgets_used:
 import { DotProductGeometry } from "../components/widgets/linear-algebra/DotProductGeometry";
 import { OrthogonalityDartboard } from "../components/widgets/linear-algebra/OrthogonalityDartboard";
 import { ProjectionTargetGame } from "../components/widgets/linear-algebra/ProjectionTargetGame";
+import { EmbeddingNearestNeighbour } from "../components/widgets/linear-algebra/EmbeddingNearestNeighbour";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -196,6 +198,16 @@ $$
 This is *the* way to compute the angle between two arbitrary vectors. In two or three dimensions you could draw the vectors and measure with a protractor, but that's not how it's done in practice; the formula above gives you $\cos\theta$ directly, and the angle follows from $\arccos$.
 
 The same formula works in $\mathbb{R}^n$ for any $n$ — take the dot product (sum of $n$ component products), divide by the product of magnitudes (each computed as $\sqrt{\mathbf{x} \cdot \mathbf{x}}$). High-dimensional vectors don't *visually* have an angle, but they have a *cosine of an angle*, and that cosine is what most "similarity" measures in modern machine learning actually compute. Two CLIP embeddings have an angle in 512-dimensional space; the cosine of that angle is what nearly every embedding-similarity comparison is built on. It's also what A-FINE's fidelity head extends — not just the cosine, but a richer SSIM-style structural similarity that the dot product is the simplest version of.
+
+### Cosine similarity as nearest-neighbour search
+
+The reason cosine similarity matters in practice — far more than the more familiar Euclidean distance — is that direction is more semantically meaningful than position when the vectors are learned embeddings. A CLIP image embedding for a "dog" and another for a "wolf" both point roughly the same way in the 512-dimensional embedding space; their *magnitudes* are noisier and depend on incidentals like image brightness and contrast that have nothing to do with the meaning. Cosine collapses out the magnitude noise; Euclidean does not.
+
+The widget below makes this concrete in 2D. Thirty fake "embedding" points are scattered across the plane in five clusters — think of each cluster as a semantic category (animals, vehicles, food, places, tools). Pick any point as the query; then predict by eye which three points are its nearest neighbours by cosine similarity. The widget reveals the true cosine top-3 and, for comparison, the Euclidean top-3.
+
+The most useful moments are when the two disagree — when a point that *looks* close (small Euclidean distance) is at a different angle from the origin and so falls out of the cosine top-3, and a more distant point in the same direction takes its place. That gap is exactly what's happening in high-D embedding search: a CLIP "dog" image will rank a far-away dog photo above a nearby cat photo, because the dog photos point the same way and the cat photo doesn't, regardless of pixel-level proximity.
+
+<EmbeddingNearestNeighbour />
 
 ## Projection — the operation, not just the geometry
 
