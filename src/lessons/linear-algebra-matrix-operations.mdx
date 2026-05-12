@@ -9,6 +9,7 @@ prerequisites:
   - linear-algebra-matrices
 widgets_used:
   - MatrixComposition
+  - TransformationOrdering
   - MultipleChoice
   - GoalChain
   - PredictThenVerify
@@ -17,6 +18,7 @@ widgets_used:
 ---
 
 import { MatrixComposition } from "../components/widgets/linear-algebra/MatrixComposition";
+import { TransformationOrdering } from "../components/widgets/linear-algebra/TransformationOrdering";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -151,6 +153,14 @@ The widget below makes this directly visible. Two $2 \times 2$ matrices $A$ and 
 This is the most common mistake students bring to linear algebra from earlier mathematics. Scalar multiplication is commutative; matrix multiplication is **not**. There exist pairs of matrices that *do* commute (any matrix with itself; any matrix with the identity; any matrix with a scalar multiple of the identity; pairs of rotations around the same axis; pairs of matrices that share an eigenvector basis), but they are the *exception*. The default expectation should be $AB \ne BA$, and the burden of proof falls on whoever wants to claim commutativity in a specific case.
 
 </Misconception>
+
+## Ordering puzzle — non-commutativity in your hands
+
+Up to this point you've seen non-commutativity demonstrated. The widget below lets you *cause* it. You'll be given a target transformation (its image of the unit square is drawn dashed). Below are five named transformation cards — Rotate, Shear, Scale-x, Scale-y, Reflect. Click cards from the palette to add them to a sequence; the sequence composes left-to-right (the leftmost card applies first). The widget shows your composition's action on the unit square in real time, alongside the target.
+
+The most instructive button is the **⇄** (swap-adjacent) icon between cards in the sequence. Solve a puzzle, then hit ⇄ to swap two of your cards. The composed shape almost always changes — sometimes dramatically. Two transformations in opposite order can produce very different results, and the swap button is the cleanest way to feel that fact land.
+
+<TransformationOrdering />
 
 <Tier level="standard">
 
