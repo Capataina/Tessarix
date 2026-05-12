@@ -10,6 +10,7 @@ prerequisites:
   - linear-algebra-matrix-inverse
 widgets_used:
   - BasisExplorer
+  - CoordinateTranslator
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -18,6 +19,7 @@ widgets_used:
 ---
 
 import { BasisExplorer } from "../components/widgets/linear-algebra/BasisExplorer";
+import { CoordinateTranslator } from "../components/widgets/linear-algebra/CoordinateTranslator";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -98,6 +100,14 @@ The collapsed-preset behaviour in the widget is exactly this: when $\mathbf{u}$ 
   ]}
   truth="b"
 />
+
+Before pushing on to the matrix-form framing, try the identity with your fingers. The widget below puts you at the helm of a small ship on a grid drawn in the standard basis — but the only label given for the target is its coordinates in a *custom* basis $(\alpha, \beta)$. The controls are also in the custom basis: pressing $+u$ translates the ship by $+\mathbf{u}$ in standard-basis space, $+v$ by $+\mathbf{v}$, and similarly for the negatives. To reach the target you have to execute the equation $\mathbf{T} = \alpha\mathbf{u} + \beta\mathbf{v}$ as a sequence of presses.
+
+Notice what this does to your perception of the target. The target looks like *a specific spot on the grid*, but the only number you have for it is "two in $u$, one in $v$". To get there, you cannot just count grid squares — you have to count along the custom-basis directions, which run diagonally to the standard grid. Each preset puts you in a new basis with the controls in a new language; the ship's pixel-position is the same animal in every basis, but the path to it changes completely.
+
+<CoordinateTranslator />
+
+The "minimum moves" counter is the magic-trick reveal. The smallest number of presses needed is $|\alpha| + |\beta|$ — and the reader who walks the direct route discovers that fact by experience, not by being told. Every move-counter overshoot is the reader's body learning that path-length in the custom basis is what matters, not Euclidean distance on the standard grid. By the time you've solved all four puzzles, you have *enacted* the change-of-basis identity four times over.
 
 ## Change of basis as a transformation
 
