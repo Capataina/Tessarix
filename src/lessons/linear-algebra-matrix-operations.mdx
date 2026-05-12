@@ -13,6 +13,7 @@ widgets_used:
   - MatrixMultiplicationBuilder
   - CommutativityBingo
   - TransposeFlipper
+  - ABversusBAGuesser
   - MultipleChoice
   - GoalChain
   - PredictThenVerify
@@ -25,6 +26,7 @@ import { TransformationOrdering } from "../components/widgets/linear-algebra/Tra
 import { MatrixMultiplicationBuilder } from "../components/widgets/linear-algebra/MatrixMultiplicationBuilder";
 import { CommutativityBingo } from "../components/widgets/linear-algebra/CommutativityBingo";
 import { TransposeFlipper } from "../components/widgets/linear-algebra/TransposeFlipper";
+import { ABversusBAGuesser } from "../components/widgets/linear-algebra/ABversusBAGuesser";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -181,6 +183,14 @@ Half the pairs commute. Half don't. Some commuting pairs are easy: any matrix pa
 <CommutativityBingo />
 
 The score isn't the point. The point is the patterns the wrong answers expose. If you marked two diagonal matrices as "don't commute" — you've internalised non-commutativity as the *only* rule and stopped looking for exceptions. If you marked a rotation + shear as "commute" — you've over-generalised from the symmetric look of both matrices and missed that the *operation* they encode is order-sensitive. The commuting-pair patterns above (identity, scalar-multiples of identity, diagonal-with-diagonal, same-axis rotations, same-axis shears, same matrix with its own power, upper-triangulars with equal diagonals) cover most of the cases that come up in practice. Memorise that list — the rest of linear algebra runs through it.
+
+## How big is the gap? — predicting one entry at a time
+
+Saying "$AB \ne BA$ in general" is true but bloodless. The harder question is *how different* are they — and the only honest way to develop a feel for that is to predict specific entries and find out where you land. The next widget asks for exactly that. It hands you a pair of matrices, lets you pick one entry of $AB$ and one entry of $BA$, and asks you to compute each by hand — row-dot-column, one number per side — before the reveal.
+
+Your round score is the *better* of your two guesses. The framing is on purpose. The point isn't to punish you for the dot product you got wrong; it's to reward you for the one you got right, while making the gap between $AB$ and $BA$ visible in the entry where you can compare your number to both truths. As the rounds accumulate, the widget tracks the mean $\|AB - BA\|_1$ across the deck — the average size of the gap, in absolute terms. For typical small-integer matrices it sits around 10–40. That's *not small*. One of the rounds is rigged with a commuting pair (you'll spot it from the matrix on the left), and the gap reads zero exactly, which is the only case where the prediction game gets boring.
+
+<ABversusBAGuesser />
 
 ## Ordering puzzle — non-commutativity in your hands
 
