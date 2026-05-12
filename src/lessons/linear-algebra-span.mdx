@@ -9,6 +9,10 @@ prerequisites:
 widgets_used:
   - LinearCombination
   - SpanColouringGame
+  - ReachTheTarget
+  - DependenceDetector
+  - BasisOrNot
+  - SpanShrinker
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -17,6 +21,10 @@ widgets_used:
 
 import { LinearCombination } from "../components/widgets/linear-algebra/LinearCombination";
 import { SpanColouringGame } from "../components/widgets/linear-algebra/SpanColouringGame";
+import { ReachTheTarget } from "../components/widgets/linear-algebra/ReachTheTarget";
+import { DependenceDetector } from "../components/widgets/linear-algebra/DependenceDetector";
+import { BasisOrNot } from "../components/widgets/linear-algebra/BasisOrNot";
+import { SpanShrinker } from "../components/widgets/linear-algebra/SpanShrinker";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -105,6 +113,14 @@ Here's where the lesson on matrices and this lesson connect. **The determinant f
   render={(onChange) => <LinearCombination onStateChange={onChange} />}
 />
 
+## Find every dependent pair — recognition as a skill
+
+The verbal definition of dependence is short ("one is a scalar multiple of the other"). Translating that into a visual reflex is what this next widget is for. Seven vectors at a time are drawn on a single canvas — a, b, c, and so on, all rooted at the origin. Some pairs are dependent (colinear through the origin); most aren't. The reader's job is to *find them all*. Click a vector to arm it; click a second vector to mark the pair; iterate; submit when finished.
+
+The grading is two-sided on purpose. **Recall** asks "did you find every dependent pair?" — easy to inflate by selecting everything. **Precision** asks "of the pairs you selected, how many were actually dependent?" — easy to inflate by selecting nothing. Optimising both at once — F1 — is the honest measure of recognition. Watch the canvas redraw on submit: dashed lines run through the origin along every dependent pair, so you can see at a glance which lines were the ones to spot.
+
+<DependenceDetector />
+
 <Misconception belief="Linear dependence is just about the two vectors being identical.">
 
 Dependence is broader. $\mathbf{u}$ and $\mathbf{v}$ are dependent whenever **one is any scalar multiple of the other** — including negative multiples (so $\mathbf{u}$ and $-\mathbf{u}$ are dependent), fractional multiples ($\mathbf{u}$ and $0.5\mathbf{u}$), and the zero-vector edge case ($\mathbf{u}$ and $\mathbf{0}$ are technically dependent because $\mathbf{0} = 0 \cdot \mathbf{u}$). The right phrasing isn't "identical" — it's "they live on the same line through the origin."
@@ -120,6 +136,16 @@ Two things to try. First, drop a dozen test points around the plane while $\math
 Second, toggle the mode to **lattice** (integer coefficients only). The continuous green region disappears; only the integer-lattice intersection points stay green. This previews the difference between *the span* (a continuous region) and *integer combinations* (a discrete lattice) — a distinction that matters for cryptography, error-correcting codes, and any setting where coefficients have to come from a discrete set.
 
 <SpanColouringGame />
+
+## Land on a target — span as something you *steer*
+
+Looking at span is one thing; *aiming* with it is another. The widget above made the span visible; the widget below turns it into a puzzle. A red target T sits at a fixed location. Two basis vectors $\mathbf{u}, \mathbf{v}$ are draggable as before. Your job is to land the green dot $\alpha \mathbf{u} + \beta \mathbf{v}$ exactly on T by adjusting the coefficients.
+
+There's a twist that's the whole pedagogical point. In **integer mode**, $\alpha$ and $\beta$ snap to whole numbers — the reachable set is no longer the full span; it's the *lattice* spanned by $\mathbf{u}$ and $\mathbf{v}$. A lattice is the integer-coefficient analogue of a span: the same generators, but only integer mixes count. Visually, the lattice is a discrete grid of points rather than a continuous region, and most target locations are not on it. To land on T with integer coefficients, you'll often have to drag $\mathbf{u}$ and $\mathbf{v}$ themselves to reshape the lattice until T falls on a node. In **continuous mode**, $\alpha$ and $\beta$ are real numbers and every point in $\text{span}(\mathbf{u}, \mathbf{v})$ is reachable.
+
+This is the distinction between vector spaces and lattices. Vector spaces are what the rest of this course works in — coefficients are real numbers, spans are continuous. Lattices show up the moment coefficients have to come from a discrete set: integer programming, cryptography (LWE, NTRU), error-correcting codes, the geometry of crystal structures. The widget makes it directly tangible: same generators, but the reachable set is either a continuous plane or a discrete grid depending on which kind of coefficient is legal.
+
+<ReachTheTarget />
 
 <Tier level="complete">
 
@@ -138,6 +164,14 @@ $$
 
 is with all $c_i = 0$. Dependence means *some* non-trivial choice of $c_i$'s makes the combination zero — which is just a fancy way of saying *some* combination of all-but-one of the vectors expresses the remaining one. In plain language: at least one of the vectors is redundant, contributing no new direction the others can't already build.
 
+### Redundancy as a puzzle
+
+A spanning set with redundancy hides a question: *which* of the vectors is actually carrying its weight, and which is along for the ride? The widget below makes that question explicit. Start with three vectors. At each turn, pick a vector to remove and predict whether the span will *shrink* (you removed a load-bearing vector) or *stay the same* (the removed vector was already in the span of the others). Wrong predictions cost a life — three lives per round.
+
+The shape of the puzzles is the lesson. In the first puzzle, two of the three vectors are parallel, so removing either of them leaves the third covering everything they did. In a puzzle where all three vectors live on the same line through the origin, no removal can shrink the span until only the zero vector is left — the span is already 1D and the third dimension was never there to lose. In the trickiest case, three pairwise-independent vectors are *jointly* dependent (one is a linear combination of the other two), and the first removal — *any* first removal — preserves the span. That last one is the punchline: "dependent" is a property of the *set*, not of any single vector.
+
+<SpanShrinker />
+
 ## Span and the columns of a matrix
 
 The columns of a $2 \times 2$ matrix $A$ are two vectors in $\mathbb{R}^2$. The set of every vector you can write as $A\mathbf{x}$ for some $\mathbf{x}$ is called the **column space** of $A$ — and the column space is exactly the *span* of $A$'s columns. The connection between this lesson and the matrices lesson is now mechanical:
@@ -150,6 +184,14 @@ Three different vocabularies for the same single fact: linear dependence of colu
 </Tier>
 
 ---
+
+## Build the reflex — basis or not, at speed
+
+Reading dependence off a det calculation works. It also takes several seconds, and the algebraic step doesn't survive into higher dimensions where you can't compute a determinant in your head. The faster path — and the one that scales — is visual recognition: two vectors at a glance, and you already know whether they share a line through the origin.
+
+The widget below is a metronome for that reflex. Ten pairs of vectors are shown, one at a time. For each, hit <kbd>B</kbd> if the pair is a basis (two independent directions, span ℝ²) or <kbd>N</kbd> if it isn't (parallel, opposite, or one is zero). The pairs deliberately mix easy cases with near-misses — two vectors at a 12° angle that look almost colinear but aren't, or decimal-multiple parallel pairs that fool the eye that expects integer relationships. The scorecard at the end breaks accuracy down by category so you can see exactly where your visual gut is calibrated and where it isn't.
+
+<BasisOrNot />
 
 <KnowledgeCheck>
 
