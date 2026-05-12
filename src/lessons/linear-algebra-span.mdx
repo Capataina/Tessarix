@@ -9,6 +9,7 @@ prerequisites:
 widgets_used:
   - LinearCombination
   - SpanColouringGame
+  - ReachTheTarget
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -17,6 +18,7 @@ widgets_used:
 
 import { LinearCombination } from "../components/widgets/linear-algebra/LinearCombination";
 import { SpanColouringGame } from "../components/widgets/linear-algebra/SpanColouringGame";
+import { ReachTheTarget } from "../components/widgets/linear-algebra/ReachTheTarget";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -120,6 +122,16 @@ Two things to try. First, drop a dozen test points around the plane while $\math
 Second, toggle the mode to **lattice** (integer coefficients only). The continuous green region disappears; only the integer-lattice intersection points stay green. This previews the difference between *the span* (a continuous region) and *integer combinations* (a discrete lattice) — a distinction that matters for cryptography, error-correcting codes, and any setting where coefficients have to come from a discrete set.
 
 <SpanColouringGame />
+
+## Land on a target — span as something you *steer*
+
+Looking at span is one thing; *aiming* with it is another. The widget above made the span visible; the widget below turns it into a puzzle. A red target T sits at a fixed location. Two basis vectors $\mathbf{u}, \mathbf{v}$ are draggable as before. Your job is to land the green dot $\alpha \mathbf{u} + \beta \mathbf{v}$ exactly on T by adjusting the coefficients.
+
+There's a twist that's the whole pedagogical point. In **integer mode**, $\alpha$ and $\beta$ snap to whole numbers — the reachable set is no longer the full span; it's the *lattice* spanned by $\mathbf{u}$ and $\mathbf{v}$. A lattice is the integer-coefficient analogue of a span: the same generators, but only integer mixes count. Visually, the lattice is a discrete grid of points rather than a continuous region, and most target locations are not on it. To land on T with integer coefficients, you'll often have to drag $\mathbf{u}$ and $\mathbf{v}$ themselves to reshape the lattice until T falls on a node. In **continuous mode**, $\alpha$ and $\beta$ are real numbers and every point in $\text{span}(\mathbf{u}, \mathbf{v})$ is reachable.
+
+This is the distinction between vector spaces and lattices. Vector spaces are what the rest of this course works in — coefficients are real numbers, spans are continuous. Lattices show up the moment coefficients have to come from a discrete set: integer programming, cryptography (LWE, NTRU), error-correcting codes, the geometry of crystal structures. The widget makes it directly tangible: same generators, but the reachable set is either a continuous plane or a discrete grid depending on which kind of coefficient is legal.
+
+<ReachTheTarget />
 
 <Tier level="complete">
 
