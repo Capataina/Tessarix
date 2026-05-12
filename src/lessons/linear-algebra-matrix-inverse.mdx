@@ -15,6 +15,7 @@ widgets_used:
   - ElementaryMatrixCardGame
   - SingularityWatcher
   - RREFSpeedrun
+  - SystemTriage
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -28,6 +29,7 @@ import { InverseRevealer } from "../components/widgets/linear-algebra/InverseRev
 import { ElementaryMatrixCardGame } from "../components/widgets/linear-algebra/ElementaryMatrixCardGame";
 import { SingularityWatcher } from "../components/widgets/linear-algebra/SingularityWatcher";
 import { RREFSpeedrun } from "../components/widgets/linear-algebra/RREFSpeedrun";
+import { SystemTriage } from "../components/widgets/linear-algebra/SystemTriage";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -258,6 +260,14 @@ The reasoning is exactly the same as for the transpose-of-a-product rule from th
 This pattern — "the inverse reverses the order" — applies to any operation that composes a sequence and then needs to be undone. Inversion and transposition both have it, and so does the adjoint, the dual, and the conjugate transpose in complex-valued matrices. Anything that "reflects" a composition reverses it.
 
 </Misconception>
+
+## Triage — read the signature, don't solve
+
+By the time you're staring at a 2×2 or 3×3 augmented matrix, you should be able to classify the system as **unique**, **infinite**, or **no solution** before you've started row-reducing — just by reading its signature. Proportional rows with mismatched RHS? Inconsistent. Rank-deficient coefficient block, consistent RHS? Free variable. Full-rank coefficient block? Unique. These are the only three outcomes for a linear system, and recognising which one you're in at a glance is the disposition this lesson is supposed to leave you with.
+
+The widget below drills exactly that reflex. Eight systems, five seconds each. You're not trying to *solve* — you're trying to *triage*. The button you tap commits an answer, and every miss surfaces the actual signature so the systems you got wrong become teaching examples rather than just losses on the scoreboard.
+
+<SystemTriage />
 
 <Tier level="complete">
 
