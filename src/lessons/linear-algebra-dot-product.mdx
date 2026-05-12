@@ -9,6 +9,7 @@ prerequisites:
 widgets_used:
   - DotProductGeometry
   - OrthogonalityDartboard
+  - ProjectionTargetGame
   - MultipleChoice
   - PredictThenVerify
   - GoalChain
@@ -18,6 +19,7 @@ widgets_used:
 
 import { DotProductGeometry } from "../components/widgets/linear-algebra/DotProductGeometry";
 import { OrthogonalityDartboard } from "../components/widgets/linear-algebra/OrthogonalityDartboard";
+import { ProjectionTargetGame } from "../components/widgets/linear-algebra/ProjectionTargetGame";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -206,6 +208,16 @@ $$
 Read the formula one factor at a time. The scalar coefficient $\dfrac{\mathbf{a} \cdot \mathbf{b}}{|\mathbf{b}|^2}$ is the *projection scalar* — what the widget above displays as the "projection scalar" when you drag the vectors. Multiplying that scalar by $\mathbf{b}$ converts it into a vector lying on $\mathbf{b}$'s line, with the right length and direction to be the shadow.
 
 Projection is one of those operations that you'll meet again in nearly every direction you go. It underlies **least-squares regression** (where you project the observed data onto the column space of the design matrix). It underlies **Gram-Schmidt orthogonalisation** (which subtracts projections to build an orthonormal basis out of an arbitrary one). It underlies the **singular value decomposition** (which decomposes any matrix into a sequence of rotations and stretches along orthogonal projection directions). Once you've got the projection formula here, all of those downstream operations have one less moving part to learn.
+
+### Predict where the foot lands
+
+The formula is the safe path — it always gives you the right answer, in any dimension, for any pair of vectors. The dangerous path, in the friendly sense, is to predict the foot's position *by eye* before computing it. That's what trains the geometric intuition that lets you spot when an answer is implausible later.
+
+The widget below makes that prediction explicit. Two vectors are drawn; your job is to click where you think the foot of the perpendicular from $\mathbf{a}$'s tip onto $\mathbf{b}$'s line will land. Your click snaps to $\mathbf{b}$'s line — you can't be "off the line," only off along the line. Then the widget reveals the actual foot and scores how close you got. Six rounds, varied configurations, including the two cases readers misjudge most often: when the foot lands *beyond* $\mathbf{b}$'s tip (the projection scalar exceeds 1), and when the foot lands *behind* the origin (the scalar goes negative because the angle is obtuse).
+
+Don't be discouraged if you miss the first one or two. The whole point is to calibrate the eye — by round four or five you should be hitting "close" or "exact" reliably.
+
+<ProjectionTargetGame />
 
 <Misconception belief={"proj_b(a) = proj_a(b) — projection is symmetric, like the dot product."}>
 
