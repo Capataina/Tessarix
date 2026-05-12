@@ -10,6 +10,10 @@ prerequisites:
 widgets_used:
   - MatrixComposition
   - TransformationOrdering
+  - MatrixMultiplicationBuilder
+  - CommutativityBingo
+  - TransposeFlipper
+  - ABversusBAGuesser
   - MultipleChoice
   - GoalChain
   - PredictThenVerify
@@ -19,6 +23,10 @@ widgets_used:
 
 import { MatrixComposition } from "../components/widgets/linear-algebra/MatrixComposition";
 import { TransformationOrdering } from "../components/widgets/linear-algebra/TransformationOrdering";
+import { MatrixMultiplicationBuilder } from "../components/widgets/linear-algebra/MatrixMultiplicationBuilder";
+import { CommutativityBingo } from "../components/widgets/linear-algebra/CommutativityBingo";
+import { TransposeFlipper } from "../components/widgets/linear-algebra/TransposeFlipper";
+import { ABversusBAGuesser } from "../components/widgets/linear-algebra/ABversusBAGuesser";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -74,6 +82,12 @@ The "transpose reverses the order of products" rule looks like a quirk until you
 
 </Tier>
 
+The next widget lets you *be* the transpose. A $3 \times 3$ matrix is shown, with each entry as a button. Click an off-diagonal entry to arm it, then click its mirror across the main diagonal — entry $(j, i)$, if you armed $(i, j)$ — to swap them. The diagonal stays locked: those entries don't move under transposition. Reach the transposed matrix and the puzzle is solved.
+
+There's a small optimality constraint worth noticing. A $3 \times 3$ matrix has exactly three off-diagonal pairs that need swapping — $(1,2) \leftrightarrow (2,1)$, $(1,3) \leftrightarrow (3,1)$, $(2,3) \leftrightarrow (3,2)$ — so the *minimum* number of swaps is three. Anything more means you swapped the same pair twice and silently undid one of your earlier moves. The widget reports your swap count alongside the minimum so you can see whether your sequence was the elegant one or the wandering one. One puzzle in the picker is a *symmetric* matrix — its transpose equals itself, and zero swaps suffice. That's not a trick; it's the defining property of symmetric matrices, and meeting it here is a useful preview of how often symmetric matrices show up later.
+
+<TransposeFlipper />
+
 <Misconception belief={"(AB)^T = A^T B^T — the transpose distributes the same way scalars do."}>
 
 This one trips almost everyone the first time. The transpose of a product **reverses the order**: $(AB)^T = B^T A^T$, not $A^T B^T$. The reason is structural — transposition acts like an *anti-homomorphism* on matrix multiplication, the same way inversion does: $(AB)^{-1} = B^{-1} A^{-1}$. Both operations "undo" or "reflect" a composition, and undoing a composition always reverses its order.
@@ -93,6 +107,12 @@ AB = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} e & f \\ g & h
 $$
 
 Read the top-left entry: it's $ae + bg$, which is the dot product of $A$'s first row $(a, b)$ with $B$'s first column $(e, g)$. The top-right is the first row of $A$ dotted with the second column of $B$. The bottom-left, second row of $A$ with first column of $B$. Bottom-right, second row of $A$ with second column of $B$. Once you've seen the pattern — *row times column*, repeated for every entry of the output — the formula stops looking strange. It's just the inner product taken four times.
+
+The fastest way to internalise an algorithm is to *be* the algorithm, just once, by hand. The widget below makes that explicit. You have two matrices $A$ and $B$, and four empty slots for $AB$'s entries. Each slot needs exactly two ingredients: a *row of $A$* and a *column of $B$*. Click a row chip from $A$'s panel to pick it up; click the slot it belongs in. Same for a column chip from $B$. The widget knows which row and column each entry needs — drop the wrong one and it bounces back red.
+
+The point isn't to test arithmetic; it's to force the index pattern into your fingers. Entry $(i, j)$ of $AB$ wants Row $i$ of $A$ and Column $j$ of $B$. By the time you've solved all four entries by hand, the rule won't feel like a formula you're remembering — it'll feel like a thing you do.
+
+<MatrixMultiplicationBuilder />
 
 **But the geometric meaning is what makes the operation worth defining.** Matrix multiplication is **composition of transformations**. If $A$ and $B$ are both transformations of the plane, then $AB$ is the single transformation that does $B$ first and then $A$. Applying $AB$ to a vector $\mathbf{v}$ gives:
 
@@ -153,6 +173,24 @@ The widget below makes this directly visible. Two $2 \times 2$ matrices $A$ and 
 This is the most common mistake students bring to linear algebra from earlier mathematics. Scalar multiplication is commutative; matrix multiplication is **not**. There exist pairs of matrices that *do* commute (any matrix with itself; any matrix with the identity; any matrix with a scalar multiple of the identity; pairs of rotations around the same axis; pairs of matrices that share an eigenvector basis), but they are the *exception*. The default expectation should be $AB \ne BA$, and the burden of proof falls on whoever wants to claim commutativity in a specific case.
 
 </Misconception>
+
+## Sixteen judgements — when does AB equal BA?
+
+A single MatrixComposition panel is enough to make the *fact* of non-commutativity stick. The harder question is more interesting: *when does it fail*? Which pairs commute, which don't, and is there a pattern? The next widget asks you to judge sixteen pairs in one pass and submit your verdicts.
+
+Half the pairs commute. Half don't. Some commuting pairs are easy: any matrix paired with the identity. Some are sneaky: two upper-triangular matrices with the same diagonal entries, which slip into the commuting camp through a structural coincidence most people miss the first time. The non-commuting pairs are the more important class — they're the default, the rule, the thing your intuition should reach for unless something specific argues otherwise. Trust the visual cues at your peril.
+
+<CommutativityBingo />
+
+The score isn't the point. The point is the patterns the wrong answers expose. If you marked two diagonal matrices as "don't commute" — you've internalised non-commutativity as the *only* rule and stopped looking for exceptions. If you marked a rotation + shear as "commute" — you've over-generalised from the symmetric look of both matrices and missed that the *operation* they encode is order-sensitive. The commuting-pair patterns above (identity, scalar-multiples of identity, diagonal-with-diagonal, same-axis rotations, same-axis shears, same matrix with its own power, upper-triangulars with equal diagonals) cover most of the cases that come up in practice. Memorise that list — the rest of linear algebra runs through it.
+
+## How big is the gap? — predicting one entry at a time
+
+Saying "$AB \ne BA$ in general" is true but bloodless. The harder question is *how different* are they — and the only honest way to develop a feel for that is to predict specific entries and find out where you land. The next widget asks for exactly that. It hands you a pair of matrices, lets you pick one entry of $AB$ and one entry of $BA$, and asks you to compute each by hand — row-dot-column, one number per side — before the reveal.
+
+Your round score is the *better* of your two guesses. The framing is on purpose. The point isn't to punish you for the dot product you got wrong; it's to reward you for the one you got right, while making the gap between $AB$ and $BA$ visible in the entry where you can compare your number to both truths. As the rounds accumulate, the widget tracks the mean $\|AB - BA\|_1$ across the deck — the average size of the gap, in absolute terms. For typical small-integer matrices it sits around 10–40. That's *not small*. One of the rounds is rigged with a commuting pair (you'll spot it from the matrix on the left), and the gap reads zero exactly, which is the only case where the prediction game gets boring.
+
+<ABversusBAGuesser />
 
 ## Ordering puzzle — non-commutativity in your hands
 
