@@ -10,6 +10,7 @@ widgets_used:
   - MatrixTransform
   - MatrixGuessr
   - TransformationLibraryMatch
+  - DeterminantSlider
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -19,6 +20,7 @@ widgets_used:
 import { MatrixTransform } from "../components/widgets/linear-algebra/MatrixTransform";
 import { MatrixGuessr } from "../components/widgets/linear-algebra/MatrixGuessr";
 import { TransformationLibraryMatch } from "../components/widgets/linear-algebra/TransformationLibraryMatch";
+import { DeterminantSlider } from "../components/widgets/linear-algebra/DeterminantSlider";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -125,6 +127,14 @@ Three special cases worth feeling in your hands.
 A determinant of zero means the matrix is **singular** — the transformation collapses the entire plane onto a lower-dimensional subspace (a line, or in the $\mathbf{0}$ matrix case, a single point). All of $\mathbb{R}^2$ now lives in a 1D image. This is a fundamentally different regime from "small effect" — it's an *irreversible* operation. You can't recover the original vector from its image because infinitely many original vectors map to the same image point. Algebraically: singular matrices have no inverse.
 
 </Misconception>
+
+### Singularity is a knife edge
+
+Here's something worth feeling in your hands. The space of $2 \times 2$ matrices is four-dimensional — each matrix is a choice of four numbers $(a, b, c, d)$. Of all those choices, how many produce a singular matrix? The condition is $ad - bc = 0$ — a single equation in four unknowns, which carves out a *three-dimensional* surface inside the four-dimensional ambient space. Singular matrices form a set of measure zero. Pick a random matrix from a continuous distribution and you'll get a non-singular one with probability one.
+
+Said more vividly: singularity is a knife edge. The two columns of $A$ — those basis-vector images $A\hat{\imath}$ and $A\hat{\jmath}$ — have to be *exactly* linearly dependent, one a precise scalar multiple of the other. A hair off in any direction and you're back in the invertible regime. The widget below is the experiential version of that fact. Drag the two basis vectors until $\det A$ drops to zero (within $0.005$). You won't get it on the first try. You'll get close, the "near miss" indicator will flash, then a small adjustment will push you back out. That difficulty *is* the lesson — the singular set is genuinely thin.
+
+<DeterminantSlider />
 
 ## Matrix Guessr — read the matrix off the picture
 
