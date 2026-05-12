@@ -13,6 +13,7 @@ widgets_used:
   - GaussianElimination
   - InverseRevealer
   - ElementaryMatrixCardGame
+  - SingularityWatcher
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -24,6 +25,7 @@ import { MatrixInverse } from "../components/widgets/linear-algebra/MatrixInvers
 import { GaussianElimination } from "../components/widgets/linear-algebra/GaussianElimination";
 import { InverseRevealer } from "../components/widgets/linear-algebra/InverseRevealer";
 import { ElementaryMatrixCardGame } from "../components/widgets/linear-algebra/ElementaryMatrixCardGame";
+import { SingularityWatcher } from "../components/widgets/linear-algebra/SingularityWatcher";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -97,6 +99,12 @@ $$
 The determinant measures how much area the unit square gets scaled by when you apply $A$. If $\det A = 0$, the unit square has been collapsed to something with no area — a line, or a point. There's no information left to invert. Conversely, if $\det A \ne 0$, $A$ preserves the two-dimensionality of the plane, and an inverse exists.
 
 **This is the single most important fact about matrix inversion**: $A^{-1}$ exists if and only if $\det A \ne 0$. Matrices with zero determinant are called **singular**; matrices with non-zero determinant are **non-singular** or **invertible**. The same word "singular" applies in higher dimensions too — a 17-dimensional linear transformation is singular when it collapses some direction, non-singular when it preserves all 17.
+
+There's a subtle point worth dwelling on. Singularity is a *knife-edge* condition — a single equation, $\det A = 0$, separating the invertible regime from the singular regime. The set of singular matrices is *thin* in the space of all matrices, in the same sense that the set of points on the unit circle is thin in $\mathbb{R}^2$. When a matrix depends on a parameter — say one of its entries is a variable $t$ — the singular condition becomes an equation to *solve*: find the values of $t$ that make $A(t)$ singular. This is root-finding in disguise, and it's the same shape of problem you'll see in the eigenvalues lesson, where the eigenvalues are exactly the roots of $\det(A - \lambda I) = 0$.
+
+The widget below makes the hunt physical. Each puzzle gives you a 2×2 matrix with one or two free parameters. Slide them around until the determinant gauge hits zero, then claim the singularity. One of the puzzles has *no* singular value at any allowed parameter — the simplification collapses the determinant to a constant — and the right move there is to spot the impossibility and claim "no singular t exists" instead. The plot to the right of the matrix shows $\det(A)$ as a function of the parameter; you can watch the curve cross zero (or fail to) as you adjust the slider.
+
+<SingularityWatcher />
 
 <PredictThenVerify
   index={1}
@@ -338,6 +346,19 @@ The pattern: any time a piece of mathematics has the structure "solve for $\math
     { id: "d", label: "solve is older API; inv is deprecated." },
   ]}
   correctId="a"
+/>
+
+<MultipleChoice
+  index={9}
+  question="For a 2×2 matrix A, when does A⁻¹ exist?"
+  options={[
+    { id: "a", label: "Always — every square matrix has an inverse." },
+    { id: "b", label: "When all four entries are non-zero." },
+    { id: "c", label: "When det(A) ≠ 0." },
+    { id: "d", label: "When A is symmetric (A = Aᵀ)." },
+    { id: "e", label: "When A's row sums equal 1." },
+  ]}
+  correctId="c"
 />
 
 </Tier>
