@@ -233,6 +233,20 @@ The order matters. $AB \ne BA$ in general. Rotate first and then shear: you get 
   correctId="b"
 />
 
+<MultipleChoice
+  index={8}
+  question="A 2×2 matrix A has det(A) = 0.5. Pick the description that fits A's geometric action."
+  options={[
+    { id: "a", label: "A scales areas by 0.5 — the unit square becomes a parallelogram with HALF the original area, orientation preserved." },
+    { id: "b", label: "A reverses orientation — det > 0 always flips handedness." },
+    { id: "c", label: "A is singular — det < 1 means the matrix has no inverse." },
+    { id: "d", label: "A doubles areas — the determinant gives the inverse area-scaling factor." },
+    { id: "e", label: "A is the identity matrix scaled by 0.5 — only scalar matrices have det in (0, 1)." },
+    { id: "f", label: "A is a rotation by 30° — fractional determinants correspond to small rotations." },
+  ]}
+  correctId="a"
+/>
+
 </Tier>
 
 </KnowledgeCheck>
