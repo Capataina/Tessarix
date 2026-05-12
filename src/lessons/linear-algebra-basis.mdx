@@ -14,6 +14,7 @@ widgets_used:
   - BasisCardTournament
   - EigenbasisHunt
   - GridMorphMatcher
+  - ChangeOfBasisRelay
   - PredictThenVerify
   - GoalChain
   - MultipleChoice
@@ -26,6 +27,7 @@ import { CoordinateTranslator } from "../components/widgets/linear-algebra/Coord
 import { BasisCardTournament } from "../components/widgets/linear-algebra/BasisCardTournament";
 import { EigenbasisHunt } from "../components/widgets/linear-algebra/EigenbasisHunt";
 import { GridMorphMatcher } from "../components/widgets/linear-algebra/GridMorphMatcher";
+import { ChangeOfBasisRelay } from "../components/widgets/linear-algebra/ChangeOfBasisRelay";
 import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
 import { GoalChain } from "../components/assessments/GoalChain";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
@@ -140,6 +142,12 @@ $$
 $$
 
 Memorise the direction of the arrows. Multiplying by $B$ *goes into* the standard basis; multiplying by $B^{-1}$ *leaves* it. The most common mistake students make at this stage is getting $B$ and $B^{-1}$ confused — and the discipline that prevents it is to always carry the "$[\cdot]_{\text{basis}}$" subscript around for a few weeks until the directionality is internalised.
+
+The cleanest way to internalise the composition is to *execute it* once or twice, slowly, on a real pair of bases. The widget below scaffolds the calculation explicitly. You're given $[\mathbf{v}]_{B_1}$ — a coordinate tuple in basis $B_1$ — and you have to find $[\mathbf{v}]_{B_2}$. The relay structure makes the two hops explicit: hop one is $[\mathbf{v}]_{std} = B_1 \cdot [\mathbf{v}]_{B_1}$, hop two is $[\mathbf{v}]_{B_2} = B_2^{-1} \cdot [\mathbf{v}]_{std}$. Each hop has its own input boxes and submit button; the second hop is gated until the first is correct, so you can't back-derive your way out of the structure. $B_2^{-1}$ is precomputed and displayed — you're not being asked to invert $2\times 2$ matrices by hand here, just to apply the composition.
+
+The lesson the relay teaches is structural rather than computational. Watch what the chain becomes once both hops are solved: $[\mathbf{v}]_{B_2} = B_2^{-1} \cdot B_1 \cdot [\mathbf{v}]_{B_1}$. The two matrices $B_2^{-1}$ and $B_1$ multiply once and then act as a *single* matrix on $[\mathbf{v}]_{B_1}$. That product $B_2^{-1} B_1$ is the **direct change-of-basis matrix** from $B_1$ to $B_2$ — and once you have it, every subsequent vector you want to translate between the same two bases costs you only one matrix-vector product, not two. The relay is the long form; the composed matrix is the short form. Both are the same operation; the second is what falls out of doing the first carefully.
+
+<ChangeOfBasisRelay />
 
 <GoalChain
   index={2}
