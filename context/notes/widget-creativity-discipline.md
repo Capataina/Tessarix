@@ -51,7 +51,7 @@ If a widget genuinely has no good alternative to a chart (e.g. visualising a con
 These are the pedagogical-metaphor patterns Tessarix has shipped or planned. New widgets should ask "which of these fits my concept?" *before* "what controls do I need?" Adding a new pattern to this library is normal as authoring progresses.
 
 ### 1. Iterated operation
-**The widget shows the operation being *performed*, step by step.** Examples shipped: ScalarMultiplier's stacking mode (k·v as k copies head-to-tail), the AnswerThread's turn-by-turn reveal. Examples to come: matrix power Aⁿ visualised as n applications, Gram-Schmidt as the literal sequence of orthogonalisation steps.
+**The widget shows the operation being *performed*, step by step.** Examples shipped: ScalarMultiplier's stacking mode (k·v as k copies head-to-tail), the AnswerThread's turn-by-turn reveal, GaussianElimination's full-history step-through (each elementary row operation applied as a discrete move with undo support — the elimination IS the iteration). Examples to come: matrix power Aⁿ visualised as n applications, Gram-Schmidt as the literal sequence of orthogonalisation steps.
 
 When to use: when the operation is defined inductively or as an iteration. Make the iterations visible.
 
@@ -71,9 +71,9 @@ When to use: any linear transformation, change of basis, deformation under stres
 When to use: any time the concept involves a point or vector that can move. Almost always pair with sliders for precision.
 
 ### 5. Dual-state simultaneous display
-**Both the current state AND its comparison shown at once, no mode-flipping.** Shipped: AdapterHeatmap's primary + ghost cursor (the swap-twin), CalibratorComparison's trained + reader curve, MetricComparison's reference + distorted panels, MatrixComposition's side-by-side AB and BA panels (the canonical example — making the non-commutativity of matrix multiplication visible requires showing both orderings simultaneously, never one at a time). The principle is in `interface-affordances.md` §9: mode-flipping is friction.
+**Both the current state AND its comparison shown at once, no mode-flipping.** Shipped: AdapterHeatmap's primary + ghost cursor (the swap-twin), CalibratorComparison's trained + reader curve, MetricComparison's reference + distorted panels, MatrixComposition's side-by-side AB and BA panels (the canonical example — making the non-commutativity of matrix multiplication visible requires showing both orderings simultaneously, never one at a time), MatrixInverse's A-panel + A⁻¹-panel pair (the inverse undoes the forward map by construction; the dual display makes "undo" the *visible* relationship, with a draggable test vector tracked across both panels and a singular-matrix overlay that breaks the symmetry exactly when det = 0). The principle is in `interface-affordances.md` §9: mode-flipping is friction.
 
-When to use: any time there's a "natural pair" — original vs transformed, before vs after, your-answer vs trained-answer, current vs swapped, ordering-A vs ordering-B.
+When to use: any time there's a "natural pair" — original vs transformed, before vs after, your-answer vs trained-answer, current vs swapped, ordering-A vs ordering-B, forward vs undo.
 
 ### 6. Particle field
 **Many particles simultaneously transformed under one operation.** Not yet shipped. Useful for showing the *global* effect of a transformation: rotate a cloud of dots and watch them swirl; apply a singular matrix and watch them collapse onto a line. The strength is showing the operation's effect on *all of space*, not just one chosen vector.
@@ -81,9 +81,9 @@ When to use: any time there's a "natural pair" — original vs transformed, befo
 When to use: linear transformations where the global effect matters more than any single point. Eigenvector visualisation (the particles that don't rotate). Stable manifolds. Phase portraits.
 
 ### 7. Composition timeline
-**Apply A, see the intermediate state, then apply B.** Shipped: MatrixComposition (combines this pattern with §5 — the two orderings AB and BA both shown as fully-composed transformations side-by-side, with a numeric ||AB - BA|| verdict). The pattern is most powerful when paired with §5 — showing one composition in isolation gives you the *result* but loses the "different orderings produce different results" insight.
+**Apply A, see the intermediate state, then apply B.** Shipped: MatrixComposition (combines this pattern with §5 — the two orderings AB and BA both shown as fully-composed transformations side-by-side, with a numeric ||AB - BA|| verdict), GaussianElimination (the timeline here is the *history of row operations* — each operation a discrete step recorded in an undo-able list, the matrix's evolution visible as each step is applied). The pattern is most powerful when paired with §5 — showing one composition in isolation gives you the *result* but loses the "different orderings produce different results" insight.
 
-When to use: any composition of operations. Function composition. Sequential transformations. Pipeline stages (the existing AFinePipeline is a less interactive version of this — each stage of the pipeline is a separate transformation, but the pipeline shows them in a fixed order rather than letting the reader explore alternative orderings).
+When to use: any composition of operations. Function composition. Sequential transformations. Algorithms with a discrete operation set (row reduction, Gram-Schmidt, the simplex method). Pipeline stages (the existing AFinePipeline is a less interactive version of this — each stage of the pipeline is a separate transformation, but the pipeline shows them in a fixed order rather than letting the reader explore alternative orderings).
 
 ### 8. Physical metaphor
 **The visualisation uses a recognisable physical system.** Examples elsewhere in the wild: rubber band stretch (Hooke's law), spring system (linear systems), light cone (special relativity), gravity well (potential energy). Tessarix hasn't shipped one yet. The strength: the reader brings real-world physical intuition that no abstract chart can.

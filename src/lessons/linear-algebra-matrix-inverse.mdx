@@ -1,0 +1,321 @@
+---
+title: "Linear Algebra — Matrix Inverse and Gaussian Elimination"
+tag: "Mathematics"
+last_updated: "2026-05-11"
+tags: ["MATHEMATICS", "LINEAR ALGEBRA", "INVERSE", "GAUSSIAN ELIMINATION", "ROW REDUCTION"]
+estimated_time: "20–45 min depending on tier"
+prerequisites:
+  - linear-algebra-foundations
+  - linear-algebra-matrices
+  - linear-algebra-matrix-operations
+widgets_used:
+  - MatrixInverse
+  - GaussianElimination
+  - PredictThenVerify
+  - GoalChain
+  - MultipleChoice
+  - Misconception
+  - KnowledgeCheck
+---
+
+import { MatrixInverse } from "../components/widgets/MatrixInverse";
+import { GaussianElimination } from "../components/widgets/GaussianElimination";
+import { PredictThenVerify } from "../components/assessments/PredictThenVerify";
+import { GoalChain } from "../components/assessments/GoalChain";
+import { MultipleChoice } from "../components/assessments/MultipleChoice";
+import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
+import { Misconception } from "../components/widgets/Misconception";
+import { Tier } from "../components/Tier";
+import { LessonMeta } from "../components/MDXComponents";
+
+# Linear Algebra — Matrix Inverse and Gaussian Elimination
+
+<LessonMeta tags={["MATHEMATICS", "LINEAR ALGEBRA", "INVERSE", "20–45 MIN"]} />
+
+Imagine you've taken a photograph, and somewhere between camera and screen the image got transformed — rotated, sheared, possibly stretched in one direction and squeezed in another. You have the warped image and you want the original back. The question of *whether* you can recover it, and *how*, is the entire content of this lesson. Some transformations are reversible — there's an operation that, when applied to the warped image, exactly undoes whatever the first transformation did. Other transformations destroy information irrecoverably; once you've applied them, no recipe in the world can recover what you started with. This split between reversible and irreversible — between transformations that have an *inverse* and those that don't — is one of the load-bearing distinctions in linear algebra, and the rest of the subject leans on it heavily.
+
+<Tier level="standard">
+
+**Prerequisites:** [Linear Algebra — Foundations](#/lesson/linear-algebra-foundations), [Linear Algebra — Matrices as Transformations](#/lesson/linear-algebra-matrices), and [Linear Algebra — Matrix Operations](#/lesson/linear-algebra-matrix-operations). The first two give you the picture of a matrix as a transformation and the determinant as area-scaling; the third gives you matrix multiplication, which is the operation that "inverse" is the partial-undo of. If the determinant was just a number on a card to you when you finished the matrices lesson, this is where it stops being a curiosity and becomes the central diagnostic for whether inversion is even possible.
+
+</Tier>
+
+## The undo operation — what an inverse *is*
+
+Take a matrix $A$. It sends vectors to other vectors: $\mathbf{v} \mapsto A\mathbf{v}$. The **inverse** $A^{-1}$ is the matrix that does the opposite — it takes $A\mathbf{v}$ back to $\mathbf{v}$, for every $\mathbf{v}$. Concretely:
+
+$$
+A^{-1} (A \mathbf{v}) = \mathbf{v} \quad \text{for every } \mathbf{v} \in \mathbb{R}^2.
+$$
+
+That's a strong constraint. It says $A^{-1}$ doesn't just undo $A$ on one or two vectors — it undoes $A$ on *every* vector simultaneously. The cleanest way to capture that constraint is to demand that the composition $A^{-1} A$ equals the identity matrix:
+
+$$
+A^{-1} A = I = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}.
+$$
+
+The identity is the matrix that leaves every vector unchanged — exactly what "do nothing" looks like in matrix form. So "$A^{-1}$ undoes $A$" is the same statement as "the composition of $A$ then $A^{-1}$ is the do-nothing transformation." Same idea, two equivalent expressions. (And by symmetry of the requirement, $A A^{-1} = I$ as well — $A$ also undoes $A^{-1}$. The "undo" relationship is reciprocal.)
+
+The widget below shows this directly. The left panel applies $A$ to the unit square — turning a square into a parallelogram. The right panel applies $A^{-1}$ to that parallelogram — turning it back into the unit square. The two operations are partners; one untwists the work of the other.
+
+<MatrixInverse />
+
+Drag the matrix entries around. For most choices, you'll see a parallelogram on the left and the unit square emerging on the right. Drag the test vector — both panels reflect the same vector being pushed and pulled back. The round-trip error displayed in the verdict line is the numerical fingerprint of inversion: $\|A^{-1}A\mathbf{v} - \mathbf{v}\|$ should be essentially zero, modulo floating-point.
+
+But then try the singular presets — *Collapse to a line* or *Zero matrix*. The right panel goes dark, with a "no inverse" overlay. That's the failure mode we have to understand next.
+
+<Tier level="standard">
+
+> **A word on direction.** "$A^{-1}$ exists" is a statement about $A$, not about the composition. The fact that some matrices can be undone and others cannot is a structural property of the transformation $A$, not of the algebra we use to talk about it. The matrices that destroy information cannot be inverted *no matter how clever the algebra is*, and the matrices that preserve information can be inverted *by exactly one operation*. Inversion isn't a clever trick — it's a discovery about which transformations can and cannot be reversed.
+
+</Tier>
+
+## When inversion fails — singular matrices
+
+Some matrices have no inverse. Not "we couldn't figure out the inverse." Not "the inverse is hard to compute." **No inverse exists** — there is no matrix $B$ such that $BA = I$, regardless of what you try.
+
+The geometric reason is the same one you saw flagged in the widget: when $A$ collapses two dimensions into one (or one dimension into zero), the resulting image is *missing information*. The original input had two independent directions to move along; the image has only one. Some other transformation could expand the image back out to two dimensions, but it would have to *invent* the missing information — and a linear map can't invent, only carry.
+
+Make this concrete. The matrix
+
+$$
+A = \begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}
+$$
+
+sends the standard basis vector $\hat{\imath} = (1, 0)$ to $(1, 2)$ and $\hat{\jmath} = (0, 1)$ to $(2, 4)$. Notice that $(2, 4) = 2 \cdot (1, 2)$ — the two image vectors point in the same direction. Whatever input you give this matrix, the output is on the line through $(1, 2)$. The whole plane gets squashed onto a single line. There's no way to undo that — every point on that line has *infinitely many preimages* (every vector in $\mathbb{R}^2$ that gets sent there), so there's no function that picks the right one back.
+
+The algebraic fingerprint is exactly the **determinant**. For a $2 \times 2$ matrix:
+
+$$
+A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}, \quad \det A = ad - bc.
+$$
+
+The determinant measures how much area the unit square gets scaled by when you apply $A$. If $\det A = 0$, the unit square has been collapsed to something with no area — a line, or a point. There's no information left to invert. Conversely, if $\det A \ne 0$, $A$ preserves the two-dimensionality of the plane, and an inverse exists.
+
+**This is the single most important fact about matrix inversion**: $A^{-1}$ exists if and only if $\det A \ne 0$. Matrices with zero determinant are called **singular**; matrices with non-zero determinant are **non-singular** or **invertible**. The same word "singular" applies in higher dimensions too — a 17-dimensional linear transformation is singular when it collapses some direction, non-singular when it preserves all 17.
+
+<PredictThenVerify
+  index={1}
+  question="Which of these 2x2 matrices is invertible?"
+  options={[
+    { id: "a", label: "[[3, 6], [1, 2]] — rows are scalar multiples of each other" },
+    { id: "b", label: "[[2, 0], [0, 3]] — diagonal with non-zero entries" },
+    { id: "c", label: "[[1, 1], [1, 1]] — both rows are (1, 1)" },
+    { id: "d", label: "[[0, 0], [0, 5]] — one row of zeros" },
+  ]}
+  truth="b"
+/>
+
+## The closed-form $2 \times 2$ inverse
+
+For a $2 \times 2$ matrix, the inverse has a closed-form expression — there's a formula you can write down and use. It's worth memorising, both because it's small and because it makes the "$\det A \ne 0$" requirement visible in the formula itself.
+
+If $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ and $\det A = ad - bc \ne 0$, then:
+
+$$
+A^{-1} = \frac{1}{\det A} \begin{pmatrix} d & -b \\ -c & a \end{pmatrix}.
+$$
+
+The pattern is: swap the diagonal entries, negate the off-diagonal entries, and divide everything by the determinant. The division by $\det A$ is the moment of truth — when $\det A = 0$, you'd be dividing by zero, and the formula fails. That's not a quirk of the formula; it's exactly the structural fact that singular matrices have no inverse, made visible.
+
+Verification is mechanical. Compute $A \cdot A^{-1}$:
+
+$$
+\begin{pmatrix} a & b \\ c & d \end{pmatrix} \cdot \frac{1}{ad - bc} \begin{pmatrix} d & -b \\ -c & a \end{pmatrix} = \frac{1}{ad - bc} \begin{pmatrix} ad - bc & -ab + ab \\ cd - cd & -bc + ad \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}.
+$$
+
+The $\frac{1}{\det A}$ factor exactly cancels the determinant in the diagonal entries, and the off-diagonals collapse to zero by happy cancellation. The mechanics are dull; the *fact* that they work out is what makes the formula correct.
+
+<Tier level="standard">
+
+> **Beyond $2 \times 2$.** This closed-form trick doesn't generalise cleanly. For a $3 \times 3$ matrix, you can write $A^{-1}$ as $\frac{1}{\det A}$ times the *adjugate* (the transpose of the matrix of cofactors), and for $n \times n$ matrices an analogous formula exists. But the formula gets exponentially uglier with size, and it's almost never the right way to actually compute an inverse for $n > 3$. The general-purpose algorithm — Gaussian elimination — is more efficient, more numerically stable, and gives you a lot more besides an inverse. That's where the lesson goes next.
+
+</Tier>
+
+## Three lenses on $A\mathbf{x} = \mathbf{b}$
+
+Before we walk into Gaussian elimination, we need to recognise that inverting a matrix and solving a linear system are *the same problem in disguise*. The same algorithm answers both, and the lesson is incomplete without that connection.
+
+A **linear system** of $n$ equations in $n$ unknowns can be written
+
+$$
+A \mathbf{x} = \mathbf{b},
+$$
+
+where $A$ is the $n \times n$ matrix of coefficients, $\mathbf{x}$ is the vector of unknowns we're solving for, and $\mathbf{b}$ is the vector of right-hand-side constants. Three equivalent ways to read this:
+
+| Lens | What it says | When it helps |
+|---|---|---|
+| **Row equation** | The $i$th row of $A$ dotted with $\mathbf{x}$ equals $b_i$. The system is the intersection of $n$ hyperplanes. | Geometric intuition; "where do these planes meet?" |
+| **Column combination** | $\mathbf{b}$ is a linear combination of the columns of $A$, with coefficients $\mathbf{x}$. | Connects to span and column space; "can $\mathbf{b}$ be reached from $A$'s columns?" |
+| **Transformation inverse** | $\mathbf{x}$ is the preimage of $\mathbf{b}$ under the linear map $A$. If $A$ is invertible, $\mathbf{x} = A^{-1}\mathbf{b}$. | Connects to inversion; "where did $\mathbf{b}$ come from before $A$ pushed it?" |
+
+The third lens — $\mathbf{x} = A^{-1}\mathbf{b}$ — is mathematically elegant but practically inefficient. Computing $A^{-1}$ explicitly takes about $n^3$ operations, and then multiplying $A^{-1}\mathbf{b}$ takes another $n^2$. Solving the system directly by elimination takes about $\frac{2}{3} n^3$ — the same order, but less work, and crucially, more numerically stable because it doesn't materialise the inverse as an intermediate object. In practice, **inverting is the slow way to solve**, and you should reach for the inverse only when you actually need it (e.g. to apply the same inverse to many different $\mathbf{b}$'s).
+
+This is also why most numerical libraries (NumPy, MATLAB, Eigen) advise against computing inverses unless you absolutely need them: `np.linalg.solve(A, b)` is faster and more accurate than `np.linalg.inv(A) @ b`. Same answer mathematically; better answer numerically.
+
+## Gaussian elimination — the algorithm that does everything
+
+Gaussian elimination is the workhorse algorithm of linear algebra. It solves linear systems, computes inverses, computes determinants, finds ranks, and decides whether systems are consistent — all using the same three primitive operations, applied to the **augmented matrix** $[A \mid \mathbf{b}]$.
+
+The three primitive operations — the **elementary row operations** — are:
+
+1. **Swap** two rows. Order doesn't change the system; equations can be re-arranged freely.
+2. **Scale** a row by a non-zero scalar. Multiplying both sides of an equation by a non-zero number doesn't change the solution set.
+3. **Add** a scalar multiple of one row to another. Substituting one equation's information into another also preserves the solution set.
+
+Each operation is *invertible* (you can undo it with another operation of the same type), which is what makes them safe: applying any sequence of these operations to an augmented matrix produces a new system with *exactly the same solutions*. The goal is to apply enough of them, in the right order, to reach a form where the solutions can be read off directly.
+
+That form is called **row-echelon form**: every leading non-zero entry of a row is strictly to the right of the leading entry of the row above it. The fully-reduced version — **reduced row-echelon form** (RREF) — additionally requires that each leading entry is 1, and that all other entries in the leading entry's column are 0. In RREF, the solution is just the rightmost column of the augmented matrix; no further work is needed.
+
+The widget below puts the algorithm in your hands. Three operation controls — swap, scale, add-multiple — three preset systems (one with a unique solution, one with a free variable, one that's inconsistent), full undo, full history. The point is to drive the elimination yourself, not just read about it.
+
+<GaussianElimination />
+
+<GoalChain
+  index={2}
+  title="Walk a system through to RREF"
+  steps={[
+    {
+      goal: "Pick the 'Unique solution' preset and reach row-echelon form (zeros below the diagonal). Step count: at least 2 operations.",
+      check: (s) => s.preset === 0 && s.echelon === 1 && s.step_count >= 2,
+      explanation: "Row-echelon form means every leading entry is strictly to the right of the one above. The standard recipe: use R1 to eliminate the entries below R1's pivot, then use R2 to eliminate the entry below R2's pivot. You'll typically need at least two 'add multiple' operations.",
+    },
+    {
+      goal: "Continue to reduced row-echelon form (RREF) — pivots are all 1, and each pivot's column has 0s elsewhere. The widget will report 'Unique solution: x = 2, y = 3, z = -1'.",
+      check: (s) => s.preset === 0 && s.rref === 1,
+      explanation: "RREF is row-echelon + leading 1s + zeros above each pivot. Once you're there, the solution is literally written in the rightmost column. This is why RREF is the canonical output of elimination — no back-substitution needed.",
+    },
+    {
+      goal: "Reset to the 'Free variable' preset and reduce it. The widget will tell you it's under-determined.",
+      check: (s) => s.preset === 1 && s.echelon === 1,
+      explanation: "When a row becomes [0 0 0 | 0] during elimination, you've discovered a redundancy in the system — one equation was a linear combination of the others. The system has fewer independent constraints than unknowns, so the unknowns can't all be pinned down. One or more unknowns becomes a 'free variable' — it can take any value, with the others determined in terms of it.",
+    },
+  ]}
+  render={(onChange) => <GaussianElimination onStateChange={onChange} />}
+/>
+
+<Tier level="standard">
+
+The thing to internalise as you play with the widget: elimination is *mechanical*. There's no creativity involved. The standard recipe — for each column from left to right, find a non-zero pivot, scale it to 1, use it to zero out everything else in its column — is an algorithm a computer can execute without any intuition. The intuition is in the *interpretation*: when elimination produces a row of zeros (under-determined system, free variable) or a row of the form $[0\ 0\ 0\ |\ c]$ with $c \ne 0$ (inconsistent system, no solution), the structure of the original problem has been laid bare. The algorithm is dumb; the *output* of the algorithm tells you everything about whether the system has a unique solution, infinitely many, or none.
+
+</Tier>
+
+## Computing $A^{-1}$ by row reduction — the $[A \mid I]$ trick
+
+Now we can compute matrix inverses using exactly the same machinery. The trick is to row-reduce the augmented matrix $[A \mid I]$ — where $I$ is the identity matrix — into the form $[I \mid B]$. When you've succeeded, $B = A^{-1}$.
+
+The reasoning: every row operation can be represented as multiplication by an elementary matrix on the left. If you apply a sequence of row operations to $[A \mid I]$ and the left half becomes $I$, then the cumulative effect of those operations was multiplication by $A^{-1}$ — that's the matrix that turns $A$ into $I$ when applied from the left. The right half — which started as $I$ and got multiplied by the same sequence — became $A^{-1} \cdot I = A^{-1}$.
+
+In other words: row reduction of $[A \mid I]$ doesn't *compute* $A^{-1}$ by some opaque trick. It *enacts* $A^{-1}$ on $I$, by performing exactly the operations whose composition equals $A^{-1}$. The right block is the answer; the left block is the proof you did it correctly.
+
+When does this fail? When $A$ is singular — when no sequence of row operations can turn $A$ into $I$. That happens exactly when elimination produces a row of zeros on the left, which is exactly when $\det A = 0$, which is exactly the geometric collapse we identified at the start of the lesson. Every diagnostic agrees: **singular ⇔ uninvertible ⇔ $\det = 0$ ⇔ row reduction leaves a zero row on the left ⇔ columns are linearly dependent**. These are all the same property of $A$, viewed through different windows.
+
+## Misconceptions
+
+<Misconception belief="Every square matrix has an inverse — the formula $A^{-1} = (1/\det A) \cdot \text{adjugate}$ always works.">
+
+The formula only works when $\det A \ne 0$. When $\det A = 0$, the formula divides by zero, and the inverse simply doesn't exist. This is the most consequential discrimination in linear algebra: invertible vs singular. About half of the matrices you'll encounter in any practical problem will fail to be invertible at exactly the wrong moment (right when you wanted to solve a system, fit a regression, or compute a covariance), and the discipline is to *check* for invertibility before relying on it. In code: never write `A^-1` without first checking `det(A) != 0` (or, more numerically robust, checking that the smallest singular value of $A$ is comfortably above zero). The check is cheap; the bug from skipping it is silent and catastrophic.
+
+</Misconception>
+
+<Misconception belief={"$(AB)^{-1} = A^{-1} B^{-1}$ — the inverse distributes the same way scalars do."}>
+
+The inverse of a product **reverses the order**: $(AB)^{-1} = B^{-1} A^{-1}$, not $A^{-1} B^{-1}$.
+
+The reasoning is exactly the same as for the transpose-of-a-product rule from the matrix operations lesson. If you apply $B$ first and then $A$ (which is what $AB$ does), the operation that undoes it has to apply $A^{-1}$ first (to undo the last-applied operation) and then $B^{-1}$ (to undo the first-applied operation). That's $A^{-1}$ followed by $B^{-1}$, which is the product $B^{-1} A^{-1}$.
+
+This pattern — "the inverse reverses the order" — applies to any operation that composes a sequence and then needs to be undone. Inversion and transposition both have it, and so does the adjoint, the dual, and the conjugate transpose in complex-valued matrices. Anything that "reflects" a composition reverses it.
+
+</Misconception>
+
+<Tier level="complete">
+
+## What inversion does for you elsewhere in mathematics
+
+Inversion is foundational for an embarrassing number of downstream topics, and it's worth tracking which of them depend on it:
+
+- **Linear systems** ($A\mathbf{x} = \mathbf{b}$). Solving is conceptually $\mathbf{x} = A^{-1}\mathbf{b}$, even when you compute it without explicitly forming $A^{-1}$.
+- **Change of basis**. Coordinates in a new basis are obtained from coordinates in the old basis by multiplying by an inverse change-of-basis matrix. This is forthcoming.
+- **Eigenvalue decomposition**. $A = PDP^{-1}$ writes $A$ as a similarity transformation of a diagonal matrix; the $P^{-1}$ is essential.
+- **Least squares**. The normal equations $A^T A \mathbf{x} = A^T \mathbf{b}$ have a unique solution iff $A^T A$ is invertible, which happens iff $A$ has linearly independent columns. The pseudoinverse $A^+$ generalises $A^{-1}$ to non-square or singular matrices and is the right tool for regression.
+- **Probability / statistics**. The covariance matrix of a multivariate Gaussian must be invertible for the density to be defined (otherwise the distribution is degenerate, supported on a lower-dimensional subspace).
+- **Numerical optimisation**. Newton's method involves $f''(\mathbf{x})^{-1} f'(\mathbf{x})$ at every step; the Hessian must be invertible to take the step.
+
+The pattern: any time a piece of mathematics has the structure "solve for $\mathbf{x}$ in $A\mathbf{x} = \mathbf{b}$", inversion is sitting at the centre, even when the computation never names it. Get fluent with this lesson and you've made the next half of linear algebra (and most of multivariable calculus, probability, and machine learning) accessible.
+
+</Tier>
+
+---
+
+<KnowledgeCheck>
+
+<MultipleChoice
+  index={3}
+  question="Which of these is the most reliable test for whether a 2x2 matrix A has an inverse?"
+  options={[
+    { id: "a", label: "Check whether the entries are all non-zero." },
+    { id: "b", label: "Compute det(A) and check whether it's non-zero." },
+    { id: "c", label: "Check whether A is the identity matrix." },
+    { id: "d", label: "Check whether A is its own transpose." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={4}
+  question="What does it mean geometrically when a 2x2 matrix is singular (det = 0)?"
+  options={[
+    { id: "a", label: "The matrix rotates the plane by 180°." },
+    { id: "b", label: "The matrix collapses the plane onto a line or a point — two independent input directions are mapped to one (or none)." },
+    { id: "c", label: "The matrix is the zero matrix." },
+    { id: "d", label: "The matrix's entries sum to zero." },
+  ]}
+  correctId="b"
+/>
+
+<MultipleChoice
+  index={5}
+  question="When you row-reduce the augmented matrix [A | I] and the LEFT block ends up as I, what is the RIGHT block?"
+  options={[
+    { id: "a", label: "A again — the operations cancelled." },
+    { id: "b", label: "The zero matrix." },
+    { id: "c", label: "A^-1 — the right block is the inverse of A." },
+    { id: "d", label: "The transpose A^T." },
+  ]}
+  correctId="c"
+/>
+
+<Tier level="complete">
+
+<MultipleChoice
+  index={6}
+  question="If A and B are both invertible 2x2 matrices, what is (AB)^-1?"
+  options={[
+    { id: "a", label: "A^-1 B^-1 — the inverse distributes left-to-right" },
+    { id: "b", label: "B^-1 A^-1 — the inverse reverses the order of the product" },
+    { id: "c", label: "(A^-1)(B^-1) (same as option a) — the order doesn't matter for inverses" },
+    { id: "d", label: "(AB)^T — the transpose and inverse of a product are the same thing" },
+  ]}
+  correctId="b"
+/>
+
+</Tier>
+
+</KnowledgeCheck>
+
+---
+
+## Where to read next
+
+This lesson is a hinge — it closes out the "Layer 2: matrices and transformations" portion of the curriculum and unlocks the structural questions that "Layer 3: structure of vector spaces" investigates.
+
+- **Basis and Change of Basis** (forthcoming) — coordinates of a vector depend on the basis you've chosen. Changing basis is multiplication by a change-of-basis matrix and its inverse — exactly the operation this lesson built up.
+- **Rank, Null Space, and Column Space** (forthcoming) — the rank of a matrix is the number of non-zero rows after row reduction; the null space is the set of vectors that get sent to zero. Both are direct consequences of the algorithm you've just learned.
+- **[Linear Algebra — Linear Combinations and Span](#/lesson/linear-algebra-span)** — re-read with the new vocabulary. The condition "the columns of $A$ span $\mathbb{R}^2$" is now the same as "$A$ is invertible" is now the same as "$\det A \ne 0$".
+
+External references:
+
+- **[Strang, "Introduction to Linear Algebra"](https://math.mit.edu/~gs/linearalgebra/)** — Chapter 2 develops elimination and inverses in detail. The treatment of $A = LU$ (LU decomposition as recording the elimination steps) is also there and is worth reading alongside.
+- **[3Blue1Brown — Inverse matrices, column space and null space](https://www.3blue1brown.com/lessons/inverse-matrices-column-space-and-null-space)** — the visual intuition track for this lesson. The video's framing of "what gets undone vs what gets crushed" is the same framing this lesson is built on.
+- **[Trefethen & Bau, "Numerical Linear Algebra"](https://people.maths.ox.ac.uk/trefethen/text.html)** — Lectures 20–22 cover the *numerical* version of these algorithms (LU with partial pivoting, condition number, why explicit inversion is avoided). The right reference once you start hitting floating-point edge cases.

@@ -75,6 +75,8 @@ const linAlgDotProductImport = () => import("./linear-algebra-dot-product.mdx");
 const linAlgSpanImport = () => import("./linear-algebra-span.mdx");
 const linAlgMatrixOpsImport = () =>
   import("./linear-algebra-matrix-operations.mdx");
+const linAlgMatrixInverseImport = () =>
+  import("./linear-algebra-matrix-inverse.mdx");
 
 export const LESSONS: LessonRegistryEntry[] = [
   {
@@ -124,6 +126,14 @@ export const LESSONS: LessonRegistryEntry[] = [
       "Matrix addition, scalar multiplication, transpose, and the operation where everything happens — matrix multiplication. Side-by-side widget shows AB and BA applied to the same unit square, making the non-commutativity of matrix multiplication directly visible with a numerical ||AB − BA|| verdict.",
     Component: lazy(linAlgMatrixOpsImport),
     frontmatter: loadFrontmatter(linAlgMatrixOpsImport),
+  },
+  {
+    slug: "linear-algebra-matrix-inverse",
+    domain: "Mathematics",
+    summary:
+      "When can a linear transformation be undone? Matrix inversion as the partial-undo operation, with paired widgets: the inverse widget shows A and A⁻¹ as side-by-side transformations (parallelogram going back to unit square), and singular matrices visibly fail to invert. Gaussian elimination widget makes row reduction tangible — three elementary row operations, full history, with detection of unique-solution, free-variable, and inconsistent systems.",
+    Component: lazy(linAlgMatrixInverseImport),
+    frontmatter: loadFrontmatter(linAlgMatrixInverseImport),
   },
 ];
 

@@ -18,7 +18,7 @@ The four-tier content architecture (`context/notes/content-architecture.md`) alr
 
 ## Status — what's built
 
-As of 2026-05-11, **five lessons** in the linear-algebra track are authored, all in the canonical voice (`context/notes/lesson-voice.md`):
+As of 2026-05-11, **six lessons** in the linear-algebra track are authored, all in the canonical voice (`context/notes/lesson-voice.md`):
 
 | Slug | Title | Layer | Status |
 |---|---|---|---|
@@ -27,8 +27,9 @@ As of 2026-05-11, **five lessons** in the linear-algebra track are authored, all
 | `linear-algebra-dot-product` | The Dot Product | 1 | ✅ Built |
 | `linear-algebra-span` | Linear Combinations and Span | 3 | ✅ Built |
 | `linear-algebra-matrix-operations` | Matrix Operations | 2 | ✅ Built |
+| `linear-algebra-matrix-inverse` | Matrix Inverse and Gaussian Elimination | 2 | ✅ Built |
 
-The remaining lessons in the 12-lesson recommended track are not yet authored. The next priorities are listed in §Implementation priorities below.
+The remaining lessons in the recommended track are not yet authored. The next priorities are listed in §Implementation priorities below.
 
 **Widgets shipped in support of these lessons** (cross-listed against `widget-creativity-discipline.md`'s metaphor library):
 
@@ -38,6 +39,8 @@ The remaining lessons in the 12-lesson recommended track are not yet authored. T
 - `DotProductGeometry` — pattern §2 (projection/shadow)
 - `LinearCombination` — patterns §10 (constructive build-up) + §6 (particle-field span trail) + §4 (direct manipulation of all three vector handles)
 - `MatrixComposition` — patterns §5 (dual-state simultaneous AB-vs-BA panels) + §7 (composition timeline)
+- `MatrixInverse` — pattern §5 (dual-state: A in left panel, A⁻¹ in right panel) + §3 (deformation/morph) + §4 (draggable test vector tracking the round trip)
+- `GaussianElimination` — pattern §1 (iterated operation: the elimination IS the iteration) + §7 (composition timeline: full history of row ops with undo)
 
 ## Curriculum (6 layers, 28 lessons)
 
@@ -63,8 +66,8 @@ Lessons marked **PRIMER** are the current `linear-algebra.mdx` content (will eve
 | `matrix-multiplication` | AB as composition of transformations; AB ≠ BA | NEXT | MatrixComposition |
 | `matrix-vector-product` | A·v as the action of A on v; matrix-vector mul row-by-row | NEXT | MatrixTransform with test vector |
 | `common-matrices` | Identity, diagonal, rotation, reflection, shear, projection | NEXT — in primer (gallery) | MatrixGallery (using MatrixTransform presets) |
-| `matrix-inverse` | A⁻¹ undoes A; when does it exist; computation by row reduction | LATER | MatrixInverse (new) |
-| `gaussian-elimination` | Row reduction; pivots; rank; back-substitution | LATER | RowReduction (new) |
+| `linear-algebra-matrix-inverse` | A⁻¹ undoes A; when does it exist; computation by row reduction (combined with gaussian-elimination) | ✅ Built | MatrixInverse + GaussianElimination |
+| `gaussian-elimination` | Row reduction; pivots; rank; back-substitution | ✅ Folded into `matrix-inverse` lesson | GaussianElimination |
 
 ### Layer 3 — Structure of vector spaces
 
@@ -167,17 +170,13 @@ char-polynomial   diagonalisation              symmetric-matrices
 **Priority 1 — foundations + matrices + dot-product + span + matrix-operations**. ✅ DONE.
 The current 5 lessons cover the entire foundation layer of the curriculum plus the matrices + matrix-operations entry into Layer 2.
 
-**Priority 2 — Matrix Inverse and Gaussian Elimination**. Next up.
-Covers: when $A^{-1}$ exists, the row-reduction algorithm, the structural correspondence between solving $A\mathbf{x} = \mathbf{b}$, computing inverses, and Gaussian elimination. Cross-references back to the determinant interpretation from `linear-algebra-matrices` and the column-space discussion from `linear-algebra-span`.
+**Priority 2 — Matrix Inverse and Gaussian Elimination**. ✅ DONE.
+Combined into one lesson (`linear-algebra-matrix-inverse`) covering: when $A^{-1}$ exists (det ≠ 0), the closed-form $2 \times 2$ inverse formula, the three lenses on $A\mathbf{x} = \mathbf{b}$ (rows / columns / inverse), Gaussian elimination as the general-purpose row-reduction algorithm, and the $[A \mid I] \to [I \mid A^{-1}]$ trick. Two new widgets shipped: `MatrixInverse` (pattern §5, dual-state with singular-matrix overlay) and `GaussianElimination` (pattern §1 + §7, step-through row reduction with three preset systems — unique solution, free variable, inconsistent).
 
-Widget needs:
-- A `RowReduction` widget that animates the elimination steps on a small matrix, with row-swap and row-scaling operations as discrete moves the reader can drive. Pattern §1 (iterated operation) + §11 (convergence animation).
-- Possibly extending `MatrixTransform` with an "inverse mode" that shows A and $A^{-1}$ side-by-side, with their composed transformation collapsing back to the identity. Pattern §5 (dual-state).
+**Priority 3 — Basis and Change of Basis**. Next up.
+Builds directly on linear combinations, span, and now matrix inversion (the change-of-basis matrix and its inverse). A new widget — `BasisExplorer` — would let the reader set two basis vectors and then see the coordinates of an arbitrary target point in two different bases (the standard basis and the custom one). Pattern §4 (direct manipulation) + §5 (dual-state).
 
-**Priority 3 — Basis and Change of Basis**. After matrix inverse.
-Builds directly on linear combinations and span. A new widget — `BasisExplorer` — would let the reader set two basis vectors and then see the coordinates of an arbitrary target point in two different bases (the standard basis and the custom one). Pattern §4 (direct manipulation) + §5 (dual-state).
-
-**Priority 4 — Rank, Null Space, and the Four Fundamental Subspaces**. Substantial conceptual leap. Needs a widget for visualising the column space and null space of a matrix as geometric subspaces — likely an extension of `LinearCombination` + a new `NullSpaceVisualiser`.
+**Priority 4 — Rank, Null Space, and the Four Fundamental Subspaces**. Substantial conceptual leap. Needs a widget for visualising the column space and null space of a matrix as geometric subspaces — likely an extension of `LinearCombination` + a new `NullSpaceVisualiser`. The Gaussian elimination machinery from Priority 2 underwrites the rank/nullity diagnostics in this lesson.
 
 **Priority 5+ — Eigenvectors, Diagonalisation, SVD**. Layer 4 + 5. Each lesson needs a substantial new widget (`EigenvectorExplorer` for "vectors that don't rotate under A"; `SVDExplorer` for rotation-scaling-rotation decomposition; etc.). Author when the prerequisite layer is fully built and the next-step pedagogical needs are clearer.
 
