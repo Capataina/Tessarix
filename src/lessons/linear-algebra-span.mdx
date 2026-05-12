@@ -10,6 +10,7 @@ widgets_used:
   - LinearCombination
   - SpanColouringGame
   - ReachTheTarget
+  - DependenceDetector
   - MultipleChoice
   - GoalChain
   - Misconception
@@ -19,6 +20,7 @@ widgets_used:
 import { LinearCombination } from "../components/widgets/linear-algebra/LinearCombination";
 import { SpanColouringGame } from "../components/widgets/linear-algebra/SpanColouringGame";
 import { ReachTheTarget } from "../components/widgets/linear-algebra/ReachTheTarget";
+import { DependenceDetector } from "../components/widgets/linear-algebra/DependenceDetector";
 import { MultipleChoice } from "../components/assessments/MultipleChoice";
 import { KnowledgeCheck } from "../components/assessments/KnowledgeCheck";
 import { GoalChain } from "../components/assessments/GoalChain";
@@ -106,6 +108,14 @@ Here's where the lesson on matrices and this lesson connect. **The determinant f
   ]}
   render={(onChange) => <LinearCombination onStateChange={onChange} />}
 />
+
+## Find every dependent pair — recognition as a skill
+
+The verbal definition of dependence is short ("one is a scalar multiple of the other"). Translating that into a visual reflex is what this next widget is for. Seven vectors at a time are drawn on a single canvas — a, b, c, and so on, all rooted at the origin. Some pairs are dependent (colinear through the origin); most aren't. The reader's job is to *find them all*. Click a vector to arm it; click a second vector to mark the pair; iterate; submit when finished.
+
+The grading is two-sided on purpose. **Recall** asks "did you find every dependent pair?" — easy to inflate by selecting everything. **Precision** asks "of the pairs you selected, how many were actually dependent?" — easy to inflate by selecting nothing. Optimising both at once — F1 — is the honest measure of recognition. Watch the canvas redraw on submit: dashed lines run through the origin along every dependent pair, so you can see at a glance which lines were the ones to spot.
+
+<DependenceDetector />
 
 <Misconception belief="Linear dependence is just about the two vectors being identical.">
 
