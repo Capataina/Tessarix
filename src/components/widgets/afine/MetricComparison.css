@@ -1,8 +1,13 @@
+/* Terminal-pane treatment (ANSI house style): a single hairline frame on a
+   surface that blends with the prose, mono labels, no nested cards, canvases
+   capped so the whole widget fits one viewport and the slider's effect stays
+   visible while dragging. */
+
 .metric-comparison {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-5);
+  gap: var(--space-3);
+  padding: var(--space-4);
   background: var(--widget-bg);
   border: 1px solid var(--widget-border);
   border-radius: var(--widget-radius);
@@ -10,10 +15,13 @@
 }
 
 .metric-comparison__title {
-  font-size: 0.9rem;
-  color: var(--widget-text-dim);
-  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--widget-text-muted);
+  letter-spacing: 0.15em;
   text-transform: uppercase;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--widget-border);
 }
 
 .metric-comparison__panels {
@@ -22,66 +30,72 @@
   gap: var(--space-4);
 }
 
+/* Flat labelled region — no inner card. */
 .metric-comparison__panel {
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  background: var(--widget-bg-elevated);
-  border: 1px solid var(--widget-border);
-  border-radius: var(--widget-radius-sm);
-  padding: var(--space-3);
+  align-items: center;
 }
 
 .metric-comparison__panel figcaption {
-  font-size: 0.85rem;
-  color: var(--widget-text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--widget-text-muted);
   text-align: center;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
+/* Canvas capped to keep the pair compact; aspect preserved so no distortion. */
 .metric-comparison__canvas {
-  width: 100%;
-  height: auto;
   display: block;
+  margin: 0 auto;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 190px;
   image-rendering: pixelated;
   border-radius: var(--radius-sm);
+  border: 1px solid var(--widget-border);
   background: var(--bg-base);
 }
 
 .metric-comparison__metrics {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
+/* Flat readout — no inner card; a hairline top rule ties it to the pane. */
 .metric-comparison__metric {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-3);
-  background: var(--widget-bg-elevated);
-  border: 1px solid var(--widget-border);
-  border-radius: var(--widget-radius-sm);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--widget-border);
 }
 
 .metric-comparison__metric-label {
-  font-size: 0.8rem;
-  color: var(--widget-text-dim);
-  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--widget-text-muted);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .metric-comparison__metric-value {
   font-family: var(--font-mono);
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: 500;
   color: var(--widget-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .metric-comparison__metric-bar {
-  height: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  height: 3px;
+  background: var(--widget-bg-soft);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -93,11 +107,11 @@
 }
 
 .metric-comparison__metric--psnr .metric-comparison__metric-fill {
-  background: linear-gradient(90deg, var(--widget-chart-1), var(--widget-chart-1));
+  background: var(--widget-chart-1);
 }
 
 .metric-comparison__metric--ssim .metric-comparison__metric-fill {
-  background: linear-gradient(90deg, var(--widget-success), var(--widget-success));
+  background: var(--widget-success);
 }
 
 .metric-comparison__sliders {
@@ -108,21 +122,23 @@
 
 .metric-comparison__slider-row {
   display: grid;
-  grid-template-columns: 7.5rem 1fr 3.5rem;
+  grid-template-columns: 8.5rem 1fr 3.5rem;
   align-items: center;
   gap: var(--space-3);
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
 }
 
 .metric-comparison__slider-label {
   color: var(--widget-text-dim);
+  letter-spacing: 0.02em;
 }
 
 .metric-comparison__slider {
   width: 100%;
   appearance: none;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 3px;
+  background: var(--widget-bg-soft);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -130,28 +146,27 @@
 
 .metric-comparison__slider::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
-  background: var(--widget-text);
+  width: 13px;
+  height: 13px;
+  background: var(--widget-accent);
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid var(--widget-bg-elevated);
+  border: 2px solid var(--widget-bg);
 }
 
 .metric-comparison__slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--widget-text);
+  width: 13px;
+  height: 13px;
+  background: var(--widget-accent);
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid var(--widget-bg-elevated);
+  border: 2px solid var(--widget-bg);
 }
 
 .metric-comparison__slider-value {
   text-align: right;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
   color: var(--widget-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .metric-comparison__presets {
@@ -164,26 +179,18 @@
   appearance: none;
   background: transparent;
   border: 1px solid var(--widget-border-strong);
-  color: var(--widget-text);
-  padding: 0.45rem 0.85rem;
-  font-size: 0.85rem;
+  color: var(--widget-text-dim);
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
   border-radius: var(--widget-radius-sm);
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
 
 .metric-comparison__preset:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
-}
-
-.metric-comparison__caption {
-  margin: 0;
-  padding: var(--space-3);
-  background: var(--widget-bg-elevated);
-  border-left: 2px solid var(--widget-accent);
-  border-radius: var(--widget-radius-sm);
-  font-size: 0.92rem;
-  color: var(--widget-text-dim);
-  line-height: 1.55;
+  background: var(--widget-bg-soft);
+  color: var(--widget-text);
 }

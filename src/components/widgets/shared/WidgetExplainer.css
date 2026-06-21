@@ -22,9 +22,10 @@
 }
 
 .widget-explainer__label {
-  font-size: 0.72rem;
-  color: var(--widget-text-dim);
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--widget-text-muted);
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
@@ -73,7 +74,7 @@
 
 .widget-explainer__ask-trigger:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: var(--widget-bg-soft);
 }
 
 .widget-explainer__question {
@@ -104,7 +105,7 @@
 }
 
 .widget-explainer__close:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--widget-bg-soft);
   color: var(--widget-text);
 }
 
@@ -122,7 +123,7 @@
 }
 
 .widget-explainer__turn--user {
-  background: rgba(0, 212, 255, 0.12);
+  background: rgba(201, 162, 107, 0.14);
   border-left: 2px solid var(--widget-chart-1);
   color: var(--widget-text);
   align-self: flex-end;
@@ -130,7 +131,7 @@
 }
 
 .widget-explainer__turn--assistant {
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.07);
   border-left: 2px solid var(--widget-accent);
   color: var(--widget-text);
 }

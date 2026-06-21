@@ -1,35 +1,39 @@
+/* Terminal-pane treatment (ANSI house style): hairline frame on a prose-
+   blended surface, mono labels, no nested cards. The two embedding panels sit
+   side by side (dual-state) and the canvases are capped so the morph delta is
+   visible while the slider drags, and the whole widget fits one viewport. */
+
 .embedding-heatmap {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-5);
+  gap: var(--space-3);
+  padding: var(--space-4);
   background: var(--widget-bg);
   border: 1px solid var(--widget-border);
   border-radius: var(--widget-radius);
   margin: var(--space-5) 0;
 }
 
+/* Side by side, not stacked — reference and morphed visible at once. */
 .embedding-heatmap__panels {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
 }
 
+/* Flat labelled region — no inner card. */
 .embedding-heatmap__panel {
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-3);
-  background: var(--widget-bg-elevated);
-  border: 1px solid var(--widget-border);
-  border-radius: var(--widget-radius-sm);
 }
 
 .embedding-heatmap__panel figcaption {
-  font-size: 0.85rem;
-  color: var(--widget-text-dim);
-  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--widget-text-muted);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -37,37 +41,42 @@
   width: 100%;
   max-width: 100%;
   height: auto;
+  max-height: 150px;
+  object-fit: contain;
   display: block;
   border-radius: var(--radius-sm);
+  border: 1px solid var(--widget-border);
   image-rendering: pixelated;
 }
 
 .embedding-heatmap__metrics {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
+/* Flat readout — hairline top rule instead of a card. */
 .embedding-heatmap__metric {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-3);
-  background: var(--widget-bg-elevated);
-  border: 1px solid var(--widget-border);
-  border-radius: var(--widget-radius-sm);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--widget-border);
 }
 
 .embedding-heatmap__metric-label {
-  font-size: 0.8rem;
-  color: var(--widget-text-dim);
-  letter-spacing: 0.02em;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--widget-text-muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .embedding-heatmap__metric-value {
   font-family: var(--font-mono);
   font-size: 1.4rem;
   color: var(--widget-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .embedding-heatmap__slider-row {
@@ -75,7 +84,8 @@
   grid-template-columns: 14rem 1fr 3rem;
   align-items: center;
   gap: var(--space-3);
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
 }
 
 .embedding-heatmap__slider-label {
@@ -85,8 +95,8 @@
 .embedding-heatmap__slider {
   width: 100%;
   appearance: none;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 3px;
+  background: var(--widget-bg-soft);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -94,37 +104,36 @@
 
 .embedding-heatmap__slider::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
-  background: var(--widget-text);
+  width: 13px;
+  height: 13px;
+  background: var(--widget-accent);
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid var(--widget-bg-elevated);
+  border: 2px solid var(--widget-bg);
 }
 
 .embedding-heatmap__slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--widget-text);
+  width: 13px;
+  height: 13px;
+  background: var(--widget-accent);
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid var(--widget-bg-elevated);
+  border: 2px solid var(--widget-bg);
 }
 
 .embedding-heatmap__slider-value {
   text-align: right;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
   color: var(--widget-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .embedding-heatmap__caption {
   margin: 0;
   padding: var(--space-3);
-  background: var(--widget-bg-elevated);
+  background: var(--widget-bg-soft);
   border-left: 2px solid var(--widget-accent);
   border-radius: var(--widget-radius-sm);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--widget-text-dim);
   line-height: 1.55;
 }
