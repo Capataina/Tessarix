@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { divergingColor } from "../../../styles";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./EmbeddingHeatmap.css";
 
@@ -87,29 +88,6 @@ function fidelityRatio(a: Float32Array, b: Float32Array): number {
   const num = (2 * muA * muB + c1) * (2 * cov + c2);
   const den = (muA * muA + muB * muB + c1) * (vA + vB + c2);
   return num / den;
-}
-
-/**
- * Map a signed value v in [-vmax, vmax] to an RGB color, all shades of brown.
- * Positive values warm toward tan, negative toward rust, zero is dark espresso
- * — two distinguishable warm hues so the embedding structure stays readable
- * while sitting in the page's palette.
- */
-function divergingColor(v: number, vmax: number): [number, number, number] {
-  const t = Math.max(-1, Math.min(1, v / (vmax || 1e-9)));
-  if (t >= 0) {
-    // Espresso → tan
-    const r = 26 + (194 - 26) * t;
-    const g = 20 + (168 - 20) * t;
-    const b = 15 + (120 - 15) * t;
-    return [r, g, b];
-  }
-  // Espresso → rust
-  const u = -t;
-  const r = 26 + (168 - 26) * u;
-  const g = 20 + (99 - 20) * u;
-  const b = 15 + (63 - 15) * u;
-  return [r, g, b];
 }
 
 interface HeatmapProps {

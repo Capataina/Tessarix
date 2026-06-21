@@ -1,170 +1,14 @@
 /* ===========================================================================
- * Tessarix — Design Tokens
- * Chocolate-luxe aesthetic, refined dark: deep near-black espresso surfaces,
- * muted stone text, a single restrained tan accent, and a muted "dried-pigment"
- * chart palette. Terminal-grade structure (monospace labels, hairline frames)
- * sits on top. Reference: the ANSI-terminal house style of the A-FINE article
- * on capataina-website.
+ * Tessarix — base + structural CSS
  *
- * The neon-era token names (--accent-cyan / -magenta / -yellow / -green /
- * -violet / -red and the --glow-* set) are RETAINED as legacy aliases that now
- * point at warm hues. A second legacy namespace used by SettingsPanel /
- * GoalChain (--surface-1/2, --text-1/2, --accent) is defined here too, so those
- * components stop falling back to their cold navy literals. New code should
- * prefer the semantic warm names (--accent-camel, --accent-rust, ...).
+ * Design TOKENS (colours, fonts, sizes, radii, shadows, motion) are no longer
+ * defined here. They live in `src/styles/tokens.ts` (the single source of
+ * truth) and are written to :root as CSS custom properties by
+ * injectDesignTokens() at boot. This file holds only the reset, base
+ * typography, ambient background, film grain, and scrollbar/selection/focus
+ * chrome — all consuming var(--token).
  * =========================================================================== */
 
-:root {
-  /* Backgrounds — deep, warm, layered. Near-black with a brown undertone so the
-     scheme reads premium rather than milk-chocolate. */
-  --bg-base: #0f0c09;
-  --bg-surface: #15110d;
-  --bg-elevated: #1b1611;
-  --bg-overlay: #251e17;
-
-  /* Borders — warm hairline to strong */
-  --border-subtle: #241c15;
-  --border-strong: #362a20;
-  --border-accent: rgba(194, 168, 120, 0.26);
-
-  /* Text — warm stone, never cold grey */
-  --text-primary: #ece5d9;
-  --text-secondary: #ab9e8c;
-  --text-muted: #73685a;
-  --text-disabled: #4f463a;
-
-  /* ---------------------------------------------------------------
-   * Warm accent palette (semantic — the source of truth)
-   * Tan is the single brand accent, muted for a premium read; the rest
-   * form the "pigment box" used by charts and heatmaps so visualisations
-   * read as painted in the same pigments as the page.
-   * --------------------------------------------------------------- */
-  --accent-camel: #c2a878;
-  --accent-tobacco: #8e7550;
-  --accent-rust: #a8633f;
-  --accent-ochre: #bd8e48;
-  --accent-sage: #7e8a5c;
-  --accent-eucalyptus: #62807a;
-  --accent-mauve: #9a7384;
-  --accent-brick: #a85044;
-
-  /* Legacy neon-era aliases → warm successors. Existing references repaint
-     untouched. Prefer the semantic names above in new code. */
-  --accent-cyan: var(--accent-camel);
-  --accent-cyan-dim: var(--accent-tobacco);
-  --accent-magenta: var(--accent-rust);
-  --accent-yellow: var(--accent-ochre);
-  --accent-green: var(--accent-sage);
-  --accent-red: var(--accent-brick);
-  --accent-violet: var(--accent-mauve);
-
-  /* Legacy namespace consumed by SettingsPanel / GoalChain — define so they
-     never hit their cold navy fallbacks. */
-  --surface-1: var(--bg-surface);
-  --surface-2: var(--bg-elevated);
-  --text-1: var(--text-primary);
-  --text-2: var(--text-secondary);
-  --accent: var(--accent-camel);
-
-  /* Emphasis tints (replace the old neon "glows"). Faint warm washes for
-     hover/selected states — no luminous halos. */
-  --glow-cyan: rgba(194, 168, 120, 0.18);
-  --glow-magenta: rgba(168, 99, 63, 0.16);
-  --glow-yellow: rgba(189, 142, 72, 0.16);
-  --glow-green: rgba(126, 138, 92, 0.16);
-
-  /* Typography
-   * Body / heading: Satoshi — geometric humanist sans for prose and headings.
-   * Mono: JetBrains Mono — carries the terminal-grade structure (widget
-   * labels, numeric readouts, frames, code), leaned on heavily so the
-   * interactive surfaces read as terminal panes, not foreign cards. */
-  --font-body: "Satoshi", "Inter", system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
-
-  /* Sizes */
-  --text-xs: 12px;
-  --text-sm: 13px;
-  --text-base: 15px;
-  --text-md: 16px;
-  --text-lg: 18px;
-  --text-xl: 22px;
-  --text-2xl: 28px;
-  --text-3xl: 36px;
-  --text-4xl: 44px;
-
-  /* Spacing (4px base) */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-20: 80px;
-
-  /* Radii — tightened; small corners read as "terminal pane", not "app card". */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
-
-  /* Shadows — warm-tinted (deep umber, never pure black) for depth on the dark
-     chocolate surfaces, plus a faint warm inner top-highlight to catch light. */
-  --shadow-card: 0 1px 0 rgba(255, 244, 228, 0.025) inset,
-    0 6px 16px rgba(8, 5, 2, 0.55);
-  --shadow-elevated: 0 1px 0 rgba(255, 244, 228, 0.04) inset,
-    0 14px 34px rgba(6, 4, 2, 0.66);
-  --shadow-glow-cyan: 0 0 0 1px var(--border-accent),
-    0 10px 28px -12px var(--glow-cyan);
-
-  /* Transitions */
-  --t-fast: 120ms ease;
-  --t-base: 180ms ease;
-  --t-slow: 280ms ease;
-
-  /* ---------------------------------------------------------------
-   * Widget kit aliases
-   * Tuned to BLEND: the widget surface sits barely above the page, the
-   * elevated step is near-flat (kills the card-in-card pop), the radius
-   * is small, and the border is a single hairline — the ANSI-pane look.
-   * No widget should pick its own hex codes.
-   * --------------------------------------------------------------- */
-  --widget-bg: #14100c;
-  --widget-bg-elevated: #1a1510;
-  --widget-bg-soft: rgba(194, 168, 120, 0.04);
-  --widget-border: var(--border-subtle);
-  --widget-border-strong: var(--border-strong);
-  --widget-text: var(--text-primary);
-  --widget-text-dim: var(--text-secondary);
-  --widget-text-muted: var(--text-muted);
-  --widget-accent: var(--accent-camel);
-  --widget-accent-dim: var(--accent-tobacco);
-  --widget-accent-glow: var(--glow-cyan);
-  --widget-success: var(--accent-sage);
-  --widget-warn: var(--accent-ochre);
-  --widget-danger: var(--accent-brick);
-  /* Categorical "pigment box" — tan, terracotta, eucalyptus, sage, mauve.
-     One cool note (eucalyptus) among warm earths; all desaturated. */
-  --widget-chart-1: var(--accent-camel);
-  --widget-chart-2: var(--accent-rust);
-  --widget-chart-3: var(--accent-eucalyptus);
-  --widget-chart-4: var(--accent-sage);
-  --widget-chart-5: var(--accent-mauve);
-  /* Card shadow + radius shared across every widget */
-  --widget-radius: var(--radius-md);
-  --widget-radius-sm: var(--radius-sm);
-  --widget-shadow: var(--shadow-card);
-  --widget-shadow-elevated: var(--shadow-elevated);
-  /* Sizing discipline: canvases cap to this so a widget fits one viewport and
-     the slider's effect stays visible while dragging. */
-  --widget-canvas-max-h: min(52vh, 360px);
-}
-
-/* Reset + base */
 *,
 *::before,
 *::after {
@@ -209,8 +53,8 @@ body {
   font-feature-settings: "ss01", "cv01", "calt", "liga", "kern", "lnum";
   font-variant-numeric: lining-nums proportional-nums;
 
-  /* Warm ambient depth: a low tan glow from above and a deeper umber pool
-     bottom-right, over the espresso base. Fixed so it stays put on scroll. */
+  /* Warm ambient depth: a low tan glow from above, a deeper umber pool bottom-
+     right, over the espresso base. Fixed so it stays put while content scrolls. */
   background-image:
     radial-gradient(
       ellipse 1200px 820px at 50% -12%,

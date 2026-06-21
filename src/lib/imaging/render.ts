@@ -5,28 +5,30 @@
  * The image is deliberately textured rather than uniform — it includes flat
  * gradients (where PSNR-style metrics behave well), sharp edges (where SSIM's
  * structural term matters), high-frequency hatching (which blur destroys
- * obviously), and saturated colour patches (where brightness shifts show up
+ * obviously), and solid colour patches (where brightness shifts show up
  * visually before they show up in either metric).
+ *
+ * Every colour comes from `refImage` in the design system (computed from the
+ * base tokens), so the test image stays in the page's palette automatically.
  */
+
+import { refImage } from "../../styles";
 
 export function drawReference(
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
 ): void {
-  // Diagonal multi-stop gradient background — gives PSNR something to chew on
-  // when brightness shifts.
+  // Warm coffee → chestnut → tan → cream diagonal gradient — gives PSNR
+  // something to chew on when brightness shifts.
   const grad = ctx.createLinearGradient(0, 0, w, h);
-  grad.addColorStop(0, "#241a12");
-  grad.addColorStop(0.45, "#6b4a2e");
-  grad.addColorStop(0.85, "#a8784a");
-  grad.addColorStop(1, "#d8c2a0");
+  for (const [stop, c] of refImage.gradientStops) grad.addColorStop(stop, c);
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
 
   // Diagonal hatching across the lower half — SSIM-sensitive structure.
   ctx.save();
-  ctx.strokeStyle = "rgba(236, 229, 217, 0.4)";
+  ctx.strokeStyle = refImage.hatch;
   ctx.lineWidth = 1.2;
   for (let i = -h; i < w + h; i += 6) {
     ctx.beginPath();
@@ -37,18 +39,18 @@ export function drawReference(
   ctx.restore();
 
   // Ochre horizontal bar — easy visual anchor for translation.
-  ctx.fillStyle = "#bd8e48";
+  ctx.fillStyle = refImage.bar;
   ctx.fillRect(0, Math.round(h * 0.66), w, Math.max(3, Math.round(h * 0.035)));
 
   // Terracotta circle — solid, slightly translucent so blur shows up clearly.
-  ctx.fillStyle = "#b8704a";
+  ctx.fillStyle = refImage.circle;
   ctx.beginPath();
   ctx.arc(w * 0.28, h * 0.33, w * 0.13, 0, Math.PI * 2);
   ctx.fill();
 
   // Eucalyptus square — second solid region, no anti-aliased edge alignment
   // with the circle so SSIM can see two different structures.
-  ctx.fillStyle = "#62807a";
+  ctx.fillStyle = refImage.square;
   ctx.fillRect(
     Math.round(w * 0.55),
     Math.round(h * 0.18),
@@ -58,6 +60,6 @@ export function drawReference(
 
   // Slim dark stripe across the very top — gives translation an obvious failure
   // mode on the right edge (the band disappears when shifted past the canvas).
-  ctx.fillStyle = "rgba(12, 9, 6, 0.6)";
+  ctx.fillStyle = refImage.topStripe;
   ctx.fillRect(0, 0, w, Math.max(2, Math.round(h * 0.025)));
 }
