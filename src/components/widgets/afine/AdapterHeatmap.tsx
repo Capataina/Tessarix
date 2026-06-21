@@ -6,6 +6,7 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { sequentialWarm } from "../../../styles";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./AdapterHeatmap.css";
 
@@ -24,30 +25,6 @@ function adapterScore(
 ): number {
   const blend = k * sNatR + (1 - k);
   return blend * sFid + (1 - blend) * sNatD;
-}
-
-function viridisLike(t: number): [number, number, number] {
-  const tt = Math.max(0, Math.min(1, t));
-  const stops: [number, [number, number, number]][] = [
-    [0.0, [40, 22, 78]],
-    [0.25, [44, 76, 142]],
-    [0.5, [37, 144, 142]],
-    [0.75, [110, 195, 102]],
-    [1.0, [253, 231, 37]],
-  ];
-  for (let i = 0; i < stops.length - 1; i++) {
-    const [a, ca] = stops[i];
-    const [b, cb] = stops[i + 1];
-    if (tt <= b) {
-      const u = (tt - a) / (b - a);
-      return [
-        ca[0] + u * (cb[0] - ca[0]),
-        ca[1] + u * (cb[1] - ca[1]),
-        ca[2] + u * (cb[2] - ca[2]),
-      ];
-    }
-  }
-  return stops[stops.length - 1][1];
 }
 
 interface SliderProps {
@@ -101,7 +78,7 @@ export function AdapterHeatmap({ onStateChange }: AdapterHeatmapProps = {}) {
       for (let px = 0; px < HEATMAP_SIZE; px++) {
         const sNatRLocal = px / (HEATMAP_SIZE - 1);
         const score = adapterScore(sNatD, sNatRLocal, sFidLocal, k);
-        const [r, g, b] = viridisLike(score);
+        const [r, g, b] = sequentialWarm(score);
         const idx = (py * HEATMAP_SIZE + px) * 4;
         img.data[idx] = r;
         img.data[idx + 1] = g;

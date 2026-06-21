@@ -80,3 +80,27 @@ export function divergingColor(v: number, vmax: number): RGB {
   const u = Math.abs(t);
   return [0, 1, 2].map((i) => ESPRESSO[i] + (pole[i] - ESPRESSO[i]) * u) as unknown as RGB;
 }
+
+/**
+ * Sequential warm colormap for score fields (low → high), all shades of the
+ * palette: deep coffee → tobacco → tan → cream. Replaces off-palette perceptual
+ * ramps (viridis etc.) so 2D heatmaps sit in the page's scheme. The numeric
+ * readout carries the precision; the colour just shows the surface shape.
+ */
+const SEQ_STOPS: RGB[] = [
+  hexToRgb(mix(color.bgBase, color.tobacco, 0.35)),
+  hexToRgb(color.tobacco),
+  hexToRgb(color.camel),
+  hexToRgb(mix(color.camel, color.textPrimary, 0.6)),
+];
+
+export function sequentialWarm(t: number): RGB {
+  const tt = Math.max(0, Math.min(1, t));
+  const n = SEQ_STOPS.length - 1;
+  const x = tt * n;
+  const i = Math.min(n - 1, Math.floor(x));
+  const u = x - i;
+  const a = SEQ_STOPS[i];
+  const b = SEQ_STOPS[i + 1];
+  return [a[0] + u * (b[0] - a[0]), a[1] + u * (b[1] - a[1]), a[2] + u * (b[2] - a[2])] as RGB;
+}
