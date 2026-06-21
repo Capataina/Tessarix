@@ -17,16 +17,16 @@ export function drawReference(
   // Diagonal multi-stop gradient background — gives PSNR something to chew on
   // when brightness shifts.
   const grad = ctx.createLinearGradient(0, 0, w, h);
-  grad.addColorStop(0, "#3a2e8a");
-  grad.addColorStop(0.45, "#a23fb0");
-  grad.addColorStop(0.85, "#2bb39a");
-  grad.addColorStop(1, "#7be6c0");
+  grad.addColorStop(0, "#241a12");
+  grad.addColorStop(0.45, "#6b4a2e");
+  grad.addColorStop(0.85, "#a8784a");
+  grad.addColorStop(1, "#d8c2a0");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
 
   // Diagonal hatching across the lower half — SSIM-sensitive structure.
   ctx.save();
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+  ctx.strokeStyle = "rgba(236, 229, 217, 0.4)";
   ctx.lineWidth = 1.2;
   for (let i = -h; i < w + h; i += 6) {
     ctx.beginPath();
@@ -36,19 +36,19 @@ export function drawReference(
   }
   ctx.restore();
 
-  // Yellow horizontal bar — easy visual anchor for translation.
-  ctx.fillStyle = "#c7d65f";
+  // Ochre horizontal bar — easy visual anchor for translation.
+  ctx.fillStyle = "#bd8e48";
   ctx.fillRect(0, Math.round(h * 0.66), w, Math.max(3, Math.round(h * 0.035)));
 
-  // Orange circle — solid, slightly translucent so blur shows up clearly.
-  ctx.fillStyle = "#e8825c";
+  // Terracotta circle — solid, slightly translucent so blur shows up clearly.
+  ctx.fillStyle = "#b8704a";
   ctx.beginPath();
   ctx.arc(w * 0.28, h * 0.33, w * 0.13, 0, Math.PI * 2);
   ctx.fill();
 
-  // Cyan square — second solid region, no anti-aliased edge alignment with the
-  // circle so SSIM can see two different structures.
-  ctx.fillStyle = "#5dc3d9";
+  // Eucalyptus square — second solid region, no anti-aliased edge alignment
+  // with the circle so SSIM can see two different structures.
+  ctx.fillStyle = "#62807a";
   ctx.fillRect(
     Math.round(w * 0.55),
     Math.round(h * 0.18),
@@ -58,6 +58,6 @@ export function drawReference(
 
   // Slim dark stripe across the very top — gives translation an obvious failure
   // mode on the right edge (the band disappears when shifted past the canvas).
-  ctx.fillStyle = "rgba(20, 18, 36, 0.55)";
+  ctx.fillStyle = "rgba(12, 9, 6, 0.6)";
   ctx.fillRect(0, 0, w, Math.max(2, Math.round(h * 0.025)));
 }

@@ -13,7 +13,7 @@
 }
 
 .settings-trigger:hover {
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
   border-color: var(--border-strong, rgba(239, 231, 218, 0.22));
   background: rgba(239, 231, 218, 0.04);
 }
@@ -21,7 +21,7 @@
 .settings-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(8, 8, 16, 0.55);
+  background: rgba(12, 9, 6, 0.55);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: 100;
@@ -44,7 +44,7 @@
 .settings-panel {
   width: 100%;
   max-width: 560px;
-  background: var(--surface-1, #131321);
+  background: var(--surface-1, #15110d);
   border: 1px solid var(--border-strong, rgba(239, 231, 218, 0.16));
   border-radius: var(--radius-lg, 14px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
@@ -66,7 +66,7 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 500;
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
   letter-spacing: 0.01em;
 }
 
@@ -83,7 +83,7 @@
 
 .settings-panel__close:hover {
   background: rgba(239, 231, 218, 0.07);
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
 }
 
 .settings-panel__body {
@@ -109,7 +109,7 @@
 .settings-group__label {
   font-size: 0.92rem;
   font-weight: 500;
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
 }
 
 .settings-group__description {
@@ -124,7 +124,7 @@
 
 .settings-segmented {
   display: inline-flex;
-  background: var(--surface-2, #1a1a2c);
+  background: var(--surface-2, #1b1611);
   border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.08));
   border-radius: var(--radius-sm, 8px);
   padding: 3px;
@@ -146,13 +146,13 @@
 }
 
 .settings-segmented__option:hover:not(.settings-segmented__option--active) {
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
   background: rgba(239, 231, 218, 0.04);
 }
 
 .settings-segmented__option--active {
-  background: var(--accent, #c8a35a);
-  color: #1a1a2c;
+  background: var(--accent, #c2a878);
+  color: #1b1611;
   font-weight: 500;
 }
 
@@ -170,7 +170,7 @@
   appearance: none;
   width: 36px;
   height: 20px;
-  background: var(--surface-2, #1a1a2c);
+  background: var(--surface-2, #1b1611);
   border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.18));
   border-radius: 11px;
   position: relative;
@@ -192,13 +192,13 @@
 }
 
 .settings-toggle input[type="checkbox"]:checked {
-  background: var(--accent, #c8a35a);
-  border-color: var(--accent, #c8a35a);
+  background: var(--accent, #c2a878);
+  border-color: var(--accent, #c2a878);
 }
 
 .settings-toggle input[type="checkbox"]:checked::after {
   transform: translateX(16px);
-  background: #1a1a2c;
+  background: #1b1611;
 }
 
 .settings-panel__foot {
@@ -222,15 +222,15 @@
 }
 
 .settings-panel__reset:hover {
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
   border-color: var(--border-strong, rgba(239, 231, 218, 0.22));
 }
 
 .settings-panel__done {
   appearance: none;
-  background: var(--accent, #c8a35a);
+  background: var(--accent, #c2a878);
   border: none;
-  color: #1a1a2c;
+  color: #1b1611;
   font-weight: 600;
   padding: 0.5rem 1.1rem;
   font-size: 0.88rem;

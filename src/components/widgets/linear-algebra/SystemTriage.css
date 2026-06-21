@@ -195,7 +195,7 @@
 
 .st__choice--infinite:hover:not(:disabled) {
   border-color: var(--widget-chart-5);
-  background: rgba(154, 116, 255, 0.07);
+  background: rgba(154, 115, 132, 0.07);
 }
 
 .st__choice--none:hover:not(:disabled) {

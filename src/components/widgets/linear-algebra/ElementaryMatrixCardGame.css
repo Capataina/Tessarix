@@ -182,7 +182,7 @@
 }
 
 .emcg__history-card--scale {
-  background: rgba(154, 116, 255, 0.08);
+  background: rgba(154, 115, 132, 0.08);
   border-color: var(--widget-chart-5);
   color: var(--widget-chart-5);
 }

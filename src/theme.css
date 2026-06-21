@@ -1,54 +1,55 @@
 /* ===========================================================================
  * Tessarix — Design Tokens
- * Chocolate-luxe aesthetic: warm espresso/cocoa surfaces, parchment text, a
- * single camel accent, and a muted "dried-pigment" chart palette. Terminal-
- * grade structure (monospace labels, hairline frames) sits on top. Reference:
- * the ANSI-terminal house style of the A-FINE article on capataina-website.
+ * Chocolate-luxe aesthetic, refined dark: deep near-black espresso surfaces,
+ * muted stone text, a single restrained tan accent, and a muted "dried-pigment"
+ * chart palette. Terminal-grade structure (monospace labels, hairline frames)
+ * sits on top. Reference: the ANSI-terminal house style of the A-FINE article
+ * on capataina-website.
  *
  * The neon-era token names (--accent-cyan / -magenta / -yellow / -green /
- * -violet / -red and the --glow-* set) are RETAINED as legacy aliases that
- * now point at warm hues, so the ~170 references and 52 widgets that consume
- * them repaint without edits. New code should prefer the semantic warm names
- * (--accent-camel, --accent-rust, --accent-sage, ...).
+ * -violet / -red and the --glow-* set) are RETAINED as legacy aliases that now
+ * point at warm hues. A second legacy namespace used by SettingsPanel /
+ * GoalChain (--surface-1/2, --text-1/2, --accent) is defined here too, so those
+ * components stop falling back to their cold navy literals. New code should
+ * prefer the semantic warm names (--accent-camel, --accent-rust, ...).
  * =========================================================================== */
 
 :root {
-  /* Backgrounds — warm, layered from base to elevated. Each step warms AND
-     lightens slightly so elevation reads as light catching material. */
-  --bg-base: #15110d;
-  --bg-surface: #1c1611;
-  --bg-elevated: #241c16;
-  --bg-overlay: #2e251d;
+  /* Backgrounds — deep, warm, layered. Near-black with a brown undertone so the
+     scheme reads premium rather than milk-chocolate. */
+  --bg-base: #0f0c09;
+  --bg-surface: #15110d;
+  --bg-elevated: #1b1611;
+  --bg-overlay: #251e17;
 
   /* Borders — warm hairline to strong */
-  --border-subtle: #2a201a;
-  --border-strong: #3b2e25;
-  --border-accent: rgba(201, 162, 107, 0.28);
+  --border-subtle: #241c15;
+  --border-strong: #362a20;
+  --border-accent: rgba(194, 168, 120, 0.26);
 
-  /* Text — warm creams, never cold grey */
-  --text-primary: #efe7da;
-  --text-secondary: #bbad9a;
-  --text-muted: #897b69;
-  --text-disabled: #5c5144;
+  /* Text — warm stone, never cold grey */
+  --text-primary: #ece5d9;
+  --text-secondary: #ab9e8c;
+  --text-muted: #73685a;
+  --text-disabled: #4f463a;
 
   /* ---------------------------------------------------------------
    * Warm accent palette (semantic — the source of truth)
-   * Camel is the single brand accent; the rest form the muted
-   * "pigment box" used by charts, heatmaps, and bars so visualisations
+   * Tan is the single brand accent, muted for a premium read; the rest
+   * form the "pigment box" used by charts and heatmaps so visualisations
    * read as painted in the same pigments as the page.
    * --------------------------------------------------------------- */
-  --accent-camel: #c9a26b;
-  --accent-tobacco: #9e7c4e;
-  --accent-rust: #b56a47;
-  --accent-ochre: #c99a4e;
-  --accent-sage: #87976a;
-  --accent-eucalyptus: #6e8c84;
-  --accent-mauve: #a6788c;
-  --accent-brick: #b5544a;
+  --accent-camel: #c2a878;
+  --accent-tobacco: #8e7550;
+  --accent-rust: #a8633f;
+  --accent-ochre: #bd8e48;
+  --accent-sage: #7e8a5c;
+  --accent-eucalyptus: #62807a;
+  --accent-mauve: #9a7384;
+  --accent-brick: #a85044;
 
-  /* Legacy neon-era aliases → warm successors. Retained so existing
-     references (App.css, assessments, several widgets) repaint untouched.
-     Prefer the semantic names above in new code. */
+  /* Legacy neon-era aliases → warm successors. Existing references repaint
+     untouched. Prefer the semantic names above in new code. */
   --accent-cyan: var(--accent-camel);
   --accent-cyan-dim: var(--accent-tobacco);
   --accent-magenta: var(--accent-rust);
@@ -57,19 +58,25 @@
   --accent-red: var(--accent-brick);
   --accent-violet: var(--accent-mauve);
 
+  /* Legacy namespace consumed by SettingsPanel / GoalChain — define so they
+     never hit their cold navy fallbacks. */
+  --surface-1: var(--bg-surface);
+  --surface-2: var(--bg-elevated);
+  --text-1: var(--text-primary);
+  --text-2: var(--text-secondary);
+  --accent: var(--accent-camel);
+
   /* Emphasis tints (replace the old neon "glows"). Faint warm washes for
      hover/selected states — no luminous halos. */
-  --glow-cyan: rgba(201, 162, 107, 0.2);
-  --glow-magenta: rgba(181, 106, 71, 0.18);
-  --glow-yellow: rgba(201, 154, 78, 0.18);
-  --glow-green: rgba(135, 151, 106, 0.18);
+  --glow-cyan: rgba(194, 168, 120, 0.18);
+  --glow-magenta: rgba(168, 99, 63, 0.16);
+  --glow-yellow: rgba(189, 142, 72, 0.16);
+  --glow-green: rgba(126, 138, 92, 0.16);
 
   /* Typography
-   * Body / heading: Satoshi (Indian Type Foundry), a geometric humanist
-   * sans with sharp open counters and excellent on-screen rendering at
-   * UI sizes. Used for prose and headings.
+   * Body / heading: Satoshi — geometric humanist sans for prose and headings.
    * Mono: JetBrains Mono — carries the terminal-grade structure (widget
-   * labels, numeric readouts, frames, code). Leaned on heavily so the
+   * labels, numeric readouts, frames, code), leaned on heavily so the
    * interactive surfaces read as terminal panes, not foreign cards. */
   --font-body: "Satoshi", "Inter", system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -99,19 +106,18 @@
   --space-16: 64px;
   --space-20: 80px;
 
-  /* Radii — tightened. Smaller corners read as "terminal pane" rather than
-     "app card". */
+  /* Radii — tightened; small corners read as "terminal pane", not "app card". */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 10px;
   --radius-xl: 14px;
 
-  /* Shadows — warm-tinted (brown, never pure black) for depth on chocolate
-     surfaces, plus a faint warm inner top-highlight to catch light. */
-  --shadow-card: 0 1px 0 rgba(255, 244, 228, 0.03) inset,
-    0 6px 16px rgba(10, 6, 3, 0.5);
-  --shadow-elevated: 0 1px 0 rgba(255, 244, 228, 0.045) inset,
-    0 14px 34px rgba(8, 5, 2, 0.62);
+  /* Shadows — warm-tinted (deep umber, never pure black) for depth on the dark
+     chocolate surfaces, plus a faint warm inner top-highlight to catch light. */
+  --shadow-card: 0 1px 0 rgba(255, 244, 228, 0.025) inset,
+    0 6px 16px rgba(8, 5, 2, 0.55);
+  --shadow-elevated: 0 1px 0 rgba(255, 244, 228, 0.04) inset,
+    0 14px 34px rgba(6, 4, 2, 0.66);
   --shadow-glow-cyan: 0 0 0 1px var(--border-accent),
     0 10px 28px -12px var(--glow-cyan);
 
@@ -122,15 +128,14 @@
 
   /* ---------------------------------------------------------------
    * Widget kit aliases
-   * Surface, text, accent, and chart tokens that every widget uses.
    * Tuned to BLEND: the widget surface sits barely above the page, the
    * elevated step is near-flat (kills the card-in-card pop), the radius
    * is small, and the border is a single hairline — the ANSI-pane look.
    * No widget should pick its own hex codes.
    * --------------------------------------------------------------- */
-  --widget-bg: #1a140f;
-  --widget-bg-elevated: #221a13;
-  --widget-bg-soft: rgba(201, 162, 107, 0.04);
+  --widget-bg: #14100c;
+  --widget-bg-elevated: #1a1510;
+  --widget-bg-soft: rgba(194, 168, 120, 0.04);
   --widget-border: var(--border-subtle);
   --widget-border-strong: var(--border-strong);
   --widget-text: var(--text-primary);
@@ -142,7 +147,7 @@
   --widget-success: var(--accent-sage);
   --widget-warn: var(--accent-ochre);
   --widget-danger: var(--accent-brick);
-  /* Categorical "pigment box" — camel, terracotta, eucalyptus, sage, mauve.
+  /* Categorical "pigment box" — tan, terracotta, eucalyptus, sage, mauve.
      One cool note (eucalyptus) among warm earths; all desaturated. */
   --widget-chart-1: var(--accent-camel);
   --widget-chart-2: var(--accent-rust);
@@ -175,14 +180,11 @@ body,
 }
 
 html {
-  /* Settings-driven base font size. Defaults to the previous fixed value;
-     SettingsContext rewrites this CSS variable on every preference change. */
+  /* Settings-driven base font size. SettingsContext rewrites this variable. */
   font-size: var(--app-font-size, 16px);
 }
 
-/* Settings-driven reduced-motion: kills every transition + animation across
-   the app. The SettingsContext sets `data-reduced-motion="true"` on <html>
-   when the user toggles the preference. */
+/* Settings-driven reduced-motion: kills every transition + animation. */
 html[data-reduced-motion="true"] *,
 html[data-reduced-motion="true"] *::before,
 html[data-reduced-motion="true"] *::after {
@@ -194,10 +196,7 @@ html[data-reduced-motion="true"] *::after {
 body {
   font-family: var(--font-body);
   font-size: 1rem;
-  /* Base body weight is Satoshi Medium (500), one notch above the default
-     Regular (400). Satoshi reads slightly thin on dark backgrounds at
-     small sizes; the Medium cut keeps the geometry of the font while
-     adding enough stroke weight for comfortable on-screen reading. */
+  /* Satoshi Medium base weight: reads slightly thin on dark at small sizes. */
   font-weight: 500;
   line-height: 1.65;
   color: var(--text-primary);
@@ -207,30 +206,26 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-  /* Lining numerals for UI consistency; contextual alternates + standard
-     ligatures on. Tabular-figures is opted-in per-component (numeric
-     readouts, tables) rather than enforced globally. */
   font-feature-settings: "ss01", "cv01", "calt", "liga", "kern", "lnum";
   font-variant-numeric: lining-nums proportional-nums;
 
-  /* Warm ambient depth: a low amber glow from above and a deeper umber pool
-     bottom-right, over the espresso base. Replaces the old cyan/magenta
-     radials. Fixed so it stays put while content scrolls. */
+  /* Warm ambient depth: a low tan glow from above and a deeper umber pool
+     bottom-right, over the espresso base. Fixed so it stays put on scroll. */
   background-image:
     radial-gradient(
       ellipse 1200px 820px at 50% -12%,
-      rgba(201, 162, 107, 0.05),
+      rgba(194, 168, 120, 0.045),
       transparent 60%
     ),
     radial-gradient(
       ellipse 900px 700px at 100% 108%,
-      rgba(120, 72, 40, 0.06),
+      rgba(110, 66, 36, 0.06),
       transparent 62%
     );
   background-attachment: fixed;
 }
 
-/* Film-grain overlay — a faint tactile noise so the dark surfaces feel like
+/* Film-grain overlay — faint tactile noise so the dark surfaces feel like
    material rather than flat fill. SVG fractal noise, very low opacity, fixed,
    pointer-events-none so it never intercepts interaction. */
 body::before {
@@ -239,7 +234,7 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.025;
+  opacity: 0.022;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
 }
@@ -269,7 +264,7 @@ body::before {
 
 /* Selection */
 ::selection {
-  background: rgba(201, 162, 107, 0.28);
+  background: rgba(194, 168, 120, 0.26);
   color: var(--text-primary);
 }
 

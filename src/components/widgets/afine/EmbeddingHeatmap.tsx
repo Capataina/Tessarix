@@ -90,22 +90,25 @@ function fidelityRatio(a: Float32Array, b: Float32Array): number {
 }
 
 /**
- * Map a signed value v in [-vmax, vmax] to an RGB color. Positive values are
- * cool (cyan-ish), negative are warm (orange-ish), zero is dark slate.
+ * Map a signed value v in [-vmax, vmax] to an RGB color, all shades of brown.
+ * Positive values warm toward tan, negative toward rust, zero is dark espresso
+ * — two distinguishable warm hues so the embedding structure stays readable
+ * while sitting in the page's palette.
  */
 function divergingColor(v: number, vmax: number): [number, number, number] {
   const t = Math.max(-1, Math.min(1, v / (vmax || 1e-9)));
   if (t >= 0) {
-    // Slate → cyan
-    const r = 26 + (93 - 26) * t;
-    const g = 26 + (195 - 26) * t;
-    const b = 44 + (217 - 44) * t;
+    // Espresso → tan
+    const r = 26 + (194 - 26) * t;
+    const g = 20 + (168 - 20) * t;
+    const b = 15 + (120 - 15) * t;
     return [r, g, b];
   }
+  // Espresso → rust
   const u = -t;
-  const r = 26 + (232 - 26) * u;
-  const g = 26 + (130 - 26) * u;
-  const b = 44 + (92 - 44) * u;
+  const r = 26 + (168 - 26) * u;
+  const g = 20 + (99 - 20) * u;
+  const b = 15 + (63 - 15) * u;
   return [r, g, b];
 }
 

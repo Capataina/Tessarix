@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--space-4, 1rem);
   padding: var(--space-5, 1.25rem);
-  background: var(--surface-1, #131321);
+  background: var(--surface-1, #15110d);
   border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.08));
   border-radius: var(--radius-md, 12px);
   margin: var(--space-5, 1.25rem) 0;
@@ -20,7 +20,7 @@
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   padding: 0.2rem 0.5rem;
-  background: var(--surface-2, #1a1a2c);
+  background: var(--surface-2, #1b1611);
   border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.1));
   border-radius: 4px;
   color: var(--text-2, rgba(239, 231, 218, 0.7));
@@ -35,7 +35,7 @@
 
 .goal-chain__title {
   font-size: 0.95rem;
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
 }
 
 .goal-chain__progress {
@@ -55,14 +55,14 @@
 }
 
 .goal-chain__dot--solved {
-  background: #58dab7;
-  border-color: #58dab7;
+  background: #7e8a5c;
+  border-color: #7e8a5c;
 }
 
 .goal-chain__dot--active {
-  background: var(--accent, #c8a35a);
-  border-color: var(--accent, #c8a35a);
-  box-shadow: 0 0 0 2px rgba(200, 163, 90, 0.18);
+  background: var(--accent, #c2a878);
+  border-color: var(--accent, #c2a878);
+  box-shadow: 0 0 0 2px rgba(194, 168, 120, 0.18);
 }
 
 .goal-chain__dot--locked {
@@ -82,8 +82,8 @@
   flex-direction: column;
   gap: var(--space-2, 0.5rem);
   padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
-  background: var(--surface-2, #1a1a2c);
-  border-left: 2px solid var(--accent, #c8a35a);
+  background: var(--surface-2, #1b1611);
+  border-left: 2px solid var(--accent, #c2a878);
   border-radius: var(--radius-sm, 8px);
 }
 
@@ -110,7 +110,7 @@
 }
 
 .goal-chain__step-icon {
-  color: var(--accent, #c8a35a);
+  color: var(--accent, #c2a878);
 }
 
 .goal-chain__step-status {
@@ -120,33 +120,33 @@
 }
 
 .goal-chain__step-status--solved {
-  color: #58dab7;
+  color: #7e8a5c;
 }
 
 .goal-chain__step-goal {
   margin: 0;
   font-size: 0.95rem;
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
   line-height: 1.55;
 }
 
 .goal-chain__step-explanation {
   margin: 0;
   padding: var(--space-3, 0.75rem);
-  background: rgba(88, 218, 183, 0.08);
-  border-left: 2px solid #58dab7;
+  background: rgba(126, 138, 92, 0.08);
+  border-left: 2px solid #7e8a5c;
   border-radius: 6px;
   font-size: 0.88rem;
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
   line-height: 1.55;
 }
 
 .goal-chain__advance {
   align-self: flex-start;
   appearance: none;
-  background: var(--accent, #c8a35a);
+  background: var(--accent, #c2a878);
   border: none;
-  color: #1a1a2c;
+  color: #1b1611;
   padding: 0.5rem 1rem;
   font-size: 0.88rem;
   font-weight: 600;
@@ -171,16 +171,16 @@
 }
 
 .goal-chain__retry:hover {
-  color: var(--text-1, #f0f0f5);
+  color: var(--text-1, #ece5d9);
   border-color: var(--border-strong, rgba(239, 231, 218, 0.22));
 }
 
 .goal-chain__complete {
   padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
-  background: rgba(88, 218, 183, 0.1);
-  border: 1px solid #58dab7;
+  background: rgba(126, 138, 92, 0.1);
+  border: 1px solid #7e8a5c;
   border-radius: var(--radius-sm, 8px);
-  color: #58dab7;
+  color: #7e8a5c;
   font-size: 0.95rem;
 }
 

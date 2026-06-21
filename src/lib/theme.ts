@@ -51,7 +51,7 @@ export function resolveColor(value: string): string {
  * a base accent at variable transparency.
  *
  *   resolveColorAlpha("var(--widget-chart-1)", 0.18)
- *   → "rgba(0, 212, 255, 0.18)" (assuming chart-1 maps to #00d4ff)
+ *   → "rgba(194, 168, 120, 0.18)" (assuming chart-1 maps to #c2a878)
  */
 export function resolveColorAlpha(value: string, alpha: number): string {
   const c = resolveColor(value);

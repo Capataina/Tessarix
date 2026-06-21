@@ -254,8 +254,8 @@
 }
 
 .gauss__verdict--echelon {
-  background: rgba(255, 198, 86, 0.06);
-  border-color: rgba(255, 198, 86, 0.4);
+  background: rgba(189, 142, 72, 0.06);
+  border-color: rgba(189, 142, 72, 0.4);
 }
 
 .gauss__verdict--rref {

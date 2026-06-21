@@ -14,11 +14,18 @@
   margin: var(--space-5) 0;
 }
 
-/* Side by side, not stacked — reference and morphed visible at once. */
+/* Three panels in one row (reference / morphed / distorted), all visible at
+   once for honest comparison. Stacks on narrow viewports. */
 .embedding-heatmap__panels {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+@media (max-width: 820px) {
+  .embedding-heatmap__panels {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Flat labelled region — no inner card. */
