@@ -274,8 +274,7 @@ export function LineChart({
                 cx={sx(xs[hoverIdx])}
                 cy={sy(s.ys[hoverIdx])}
                 r={3.5}
-                style={{ fill: s.color }}
-                stroke="#0c0c18"
+                style={{ fill: s.color, stroke: "var(--bg-base)" }}
                 strokeWidth={1.5}
               />
             ))}

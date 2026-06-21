@@ -1,4 +1,5 @@
 import { useState, useMemo, useId, useEffect } from "react";
+import { resolveColor } from "../../../lib/theme";
 import "./FunctionGrapher.css";
 
 export interface SliderSpec {
@@ -31,11 +32,13 @@ interface FunctionGrapherProps {
   onParamsChange?: (params: Record<string, number>) => void;
 }
 
-const ACCENT_COLOURS: Record<NonNullable<FunctionGrapherProps["accent"]>, string> = {
-  cyan: "#00d4ff",
-  magenta: "#ff44aa",
-  yellow: "#ffd633",
-  green: "#3eff8e",
+/** Accent keys map to warm semantic tokens; resolved to concrete colours at
+ *  render so they work in SVG gradient stops (which don't expand var()). */
+const ACCENT_TOKENS: Record<NonNullable<FunctionGrapherProps["accent"]>, string> = {
+  cyan: "var(--accent-camel)",
+  magenta: "var(--accent-rust)",
+  yellow: "var(--accent-ochre)",
+  green: "var(--accent-sage)",
 };
 
 export function FunctionGrapher({
@@ -59,7 +62,9 @@ export function FunctionGrapher({
     onParamsChange?.(params);
   }, [params, onParamsChange]);
 
-  const colour = ACCENT_COLOURS[accent];
+  const colour = resolveColor(ACCENT_TOKENS[accent]);
+  const gridColour = resolveColor("var(--border-subtle)");
+  const axisColour = resolveColor("var(--text-muted)");
 
   const path = useMemo(() => {
     const [x0, x1] = xDomain;
@@ -129,7 +134,7 @@ export function FunctionGrapher({
               y1={32}
               x2={32 + (i / 4) * 576}
               y2={248}
-              stroke="#1c2434"
+              stroke={gridColour}
               strokeWidth="1"
             />
           ))}
@@ -140,7 +145,7 @@ export function FunctionGrapher({
               y1={32 + (i / 4) * 216}
               x2={608}
               y2={32 + (i / 4) * 216}
-              stroke="#1c2434"
+              stroke={gridColour}
               strokeWidth="1"
             />
           ))}
@@ -154,7 +159,7 @@ export function FunctionGrapher({
               textAnchor="middle"
               fontSize="10"
               fontFamily="JetBrains Mono, monospace"
-              fill="#6b7689"
+              fill={axisColour}
             >
               {formatTick(tx)}
             </text>
@@ -167,7 +172,7 @@ export function FunctionGrapher({
               textAnchor="end"
               fontSize="10"
               fontFamily="JetBrains Mono, monospace"
-              fill="#6b7689"
+              fill={axisColour}
             >
               {formatTick(ty)}
             </text>
