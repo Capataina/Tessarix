@@ -24,20 +24,6 @@ Three motivating examples — each one a concept the author has already invested
 
 The bet is that authoring lessons in this richer mode is worth the cost — and that a small, well-chosen component library is the leverage point that makes per-lesson authoring cheap once the substrate is built.
 
-### 1.1 The second bet: teach the lineage, not just the latest version
-
-The first bet is about *how* to teach (interactive, not prose). The second is about *what* to teach: a concept is the **surviving answer to a question someone once couldn't answer**, and the polished final form the reader meets is the last frame of a film — the winner of an argument, with the argument deleted. Rendering only that final frame teaches *what the thing is* while silently withholding *why it is that way*, which is the part that actually transfers.
-
-So every lesson owes the reader the concept's lineage, not just its snapshot:
-
-| Face of a concept | What the snapshot omits |
-|---|---|
-| **Genealogy** (past) | Why it came to be, the naive first attempt, the alternatives that were tried, and why each one lost. The corpse of a rejected approach names the constraint that shaped the survivor. |
-| **Boundary** | Where it stops being true — the hypotheses, edge cases, and counterexamples. A concept is only understood at its edges. |
-| **Leverage** | What having it makes *easy* that was hard before; what it unifies. The payoff that justifies the abstraction. |
-
-The determinant taught as "the area-scaling factor" is an inert fact; taught as "people needed to know when a linear system has a unique solution, and a single number falls out that is zero exactly when the columns collapse" it is something the reader can reconstruct from its purpose. Purpose survives; definitions decay. This is the gap a reader feels when they can describe a system's final state but cannot say why any of its pieces came to be — and closing it is a first-class authoring obligation, codified in [`context/notes/lineage-over-snapshot.md`](context/notes/lineage-over-snapshot.md).
-
 ---
 
 ## 2. Inspirations (a deliberate blend, not a clone)
@@ -90,7 +76,33 @@ The artefact the system produces over time is the per-session adaptive trajector
 
 ---
 
-## 4. Architecture
+## 4. How learning happens — the lesson philosophy
+
+Sections 1 and 3 set up *how* Tessarix teaches (interactive, not prose) and the three modes a concept is offered in. This section is the layer beneath both: the **content philosophy** that governs how every lesson is authored. Two bets sit at the root —
+
+- **How we teach** — interactive, manipulable, visual. Calibration transfers through the reader's hands, not through description.
+- **What we teach** — the *lineage* of an idea, not just its polished final form. A concept is the surviving answer to a question; teach the question, the dead alternatives, and where the answer breaks.
+
+Every principle below follows from those two bets. Each is a hard authoring discipline with a full note in [`context/notes/`](context/notes/) — the table is the index; the notes are the contract. A lesson that violates one is a first draft, not a finished lesson.
+
+| Principle | Why it exists | What it does for the reader | The failure it prevents |
+|---|---|---|---|
+| **[Interactive over prose](context/notes/visualisation-over-prose.md)** | A static formula plus a paragraph is the job a textbook already does better; the product's whole differentiator is manipulation. | The reader *feels* how fast a metric collapses under a 2px shift, at what threshold, by how much — calibration, not just the stated fact. | A visualisable concept rendered as prose: the reader is *told* a phenomenon exists but never *sees* it. A textbook clone. |
+| **[Lineage over snapshot](context/notes/lineage-over-snapshot.md)** | A concept is the surviving answer to a question someone couldn't answer; the *why* transfers, the bare definition decays. | The reader can reconstruct the idea from its purpose, and knows the dead alternatives, the boundary where it breaks, and what it buys. | "I understand what the final version looks like, but not why any of it came to be." The argument deleted, only the winner shown. |
+| **[Creative widgets, never a default chart](context/notes/widget-creativity-discipline.md)** | A chart shows an operation's *output* without embodying its *meaning*; a two-draft rule forces a metaphor before any widget is built. | The reader experiences what the operation *is* — stacking, projecting, deforming, racing a clock — not just a response curve. | Every widget collapsing to slider-left / chart-right, the path of least resistance, leaving the differentiator on the floor. |
+| **[Explanations adapt to state](context/notes/explanations-must-adapt-to-state.md)** | Once a widget is interactive, a hardcoded caption cannot describe the state the reader actually produced; the LLM can. | The reader always knows *what they are seeing*, grounded in their exact values, and can ask a question scoped to the current state. | The "multiple things changed — try isolating one at a time" dead caption: interactivity wasted because the words can't keep up. |
+| **[Test understanding, not memory](context/notes/assessment-design.md)** | An assessment answerable by recalling the prose tests attention, not understanding; each question shape probes a different cognitive demand. | The reader has to *use* the mechanism — reach a target state, predict-then-verify, spot the bug — which is impossible without a real model of it. | MCQ-everywhere: a one-dimensional signal that rewards retrieval and never finds out whether the reader can reason. |
+| **[Authored questions, adaptive help](context/notes/assessment-design.md)** | A small local model will happily write a question whose "correct" answer is wrong; the hard craft is the plausible-but-wrong distractor. | Questions grade cleanly and reproducibly with author-grade traps, while hints and per-pick explanations still personalise via the LLM. | Outsourcing the assessment surface to the model: silent wrong answers, toothless distractors, no reviewer control. |
+| **[Reader controls the depth](context/notes/interface-affordances.md)** | One reader wants the elevator pitch, another the full edge-case tour; same source MDX, three rendering depths (essential / standard / complete). | The reader shapes the lesson to their need instead of being handed one fixed length and told to cope. | One-size lessons: too shallow for the committed learner, too long for the one who only wants orientation. |
+| **[Direct manipulation everywhere](context/notes/interface-affordances.md)** | The first instinct on seeing a dot on a field is to grab it; mode-flipping is friction, showing both states at once is clarity. | The reader reaches straight for the diagram, and sees both halves of a pair (A and A⁻¹, AB and BA) at the same time. | Slider-only widgets that force an unnatural loop; swap-toggles that make the reader hold the old state in their head. |
+| **[Canonical voice](context/notes/lesson-voice.md)** | Voice is what makes content a *lesson* and not a wiki entry: a warm, commanding lecturer who makes the obvious sound striking. | The reader is carried by one recognisable author whose register shifts to the moment — story, definition, trap, aside. | Robotic encyclopedia prose, YouTube-intro hype, or precious wonder — three ways a lesson stops sounding like a person. |
+| **[Lessons are living documents](context/notes/lessons-as-living-documents.md)** | The widget kit and the author's understanding both grow; a lesson should absorb new primitives without a rewrite, and link out rather than bloat. | The reader walks a connected hypertext graph — cross-page links, a glossary, a chat safety-net — and old lessons keep getting better. | Monolithic lessons that teach their whole lineage inline, and permanent quality variance between the first lesson and the tenth. |
+
+The throughline across all ten: **wherever a runtime capability — a widget, the LLM, or the reader's own hand — can do better than a static authored artefact, use it; and wherever understanding depends on the *why*, teach the history, not just the latest version.**
+
+---
+
+## 5. Architecture
 
 Tauri 2 shell wraps a Vite + React 19 + TypeScript frontend. The frontend reads MDX lessons and typed question banks; a TSX component library renders interactive widgets; a SQLite database holds spaced-repetition state; the Claude API powers the optional sync-learning authoring agent and the interview-view grader.
 
@@ -115,7 +127,7 @@ Tauri 2 shell wraps a Vite + React 19 + TypeScript frontend. The frontend reads 
 +----------------------------------------------------------+
 ```
 
-### 4.1 Content shape
+### 5.1 Content shape
 
 ```
 lessons/<topic-slug>.mdx              # narrative + embedded widgets + inline assessments
@@ -129,7 +141,7 @@ components/                           # the TSX component library
 
 A single concept is `lessons/<slug>.mdx` + `lessons/<slug>.questions.ts` + optionally one or more `playgrounds/<slug>/`. The MDX file embeds widgets directly; the question bank is shared by quiz and interview views.
 
-### 4.2 Component library (grows opportunistically)
+### 5.2 Component library (grows opportunistically)
 
 The library is the **residue of authoring real lessons**, not a pre-built upfront monolith. Each new lesson reuses primitives + occasionally adds one.
 
@@ -149,7 +161,7 @@ The library is the **residue of authoring real lessons**, not a pre-built upfron
 - `<FillInTheBlank />`, `<MultipleChoice />`, `<TrueFalse />` — simpler shapes.
 - `<FreeResponse rubric="..." />` — interview-only; pipes answer + rubric to the Claude API for graded feedback.
 
-### 4.3 Playground engine: semi-generic, not fully generic
+### 5.3 Playground engine: semi-generic, not fully generic
 
 Fully-generic (parse arbitrary algorithm code, infer data structures from runtime, polymorphic visualisation across all types) is essentially building a small visualisation IDE — months of work for marginal gain at the self-audience quality bar.
 
@@ -170,7 +182,7 @@ Fully-generic can graduate from semi-generic later if patterns repeat enough to 
 
 ---
 
-## 5. The sync-learning agent (autonomous AI authoring layer)
+## 6. The sync-learning agent (autonomous AI authoring layer)
 
 The vision: Tessarix reads the personal `Learning/` archive, semantically decides what's new versus what's already covered, and emits structured lesson scaffolds + question-bank entries. This is an AI authoring layer, not a copy operation.
 
@@ -188,7 +200,7 @@ The earlier "read note → generate quiz cards" agent is the **quiz-side equival
 
 ---
 
-## 6. The adaptive scheduler
+## 7. The adaptive scheduler
 
 The quiz pillar is where adaptive-spaced-repetition lives. It is deliberately more than an Anki/SM-2 clone.
 
@@ -204,7 +216,7 @@ The naive "got it right → harder, got it wrong → easier" loop converges on a
 
 ---
 
-## 7. Stack
+## 8. Stack
 
 | Layer | Choice | Reason |
 |---|---|---|
@@ -223,7 +235,7 @@ The naive "got it right → harder, got it wrong → easier" loop converges on a
 
 ---
 
-## 8. Milestones
+## 9. Milestones
 
 No timeframes attached. Each milestone is a deliverable, not a deadline.
 
@@ -264,7 +276,7 @@ If by Milestone 4 the per-algorithm playground code shows obvious repetition tha
 
 ---
 
-## 9. Why this is interesting
+## 10. Why this is interesting
 
 | Angle | Why it matters |
 |---|---|
@@ -273,7 +285,7 @@ If by Milestone 4 the per-algorithm playground code shows obvious repetition tha
 | **Eats its own dogfood** | The author has a real `Learning/` archive (159+ files post-Nyquestro upkeep-learning run). The tool solves a problem present today, on content already authored. |
 | **Stacks Rust + Tauri + LLM-agent skills** | Rust backend orchestrates LLM agents (question generation), Tauri + React frontend handles the UI, SQLite holds session history + per-topic mastery. Reuses architectural patterns proven in adjacent projects. |
 
-## 10. Why it might be hard
+## 11. Why it might be hard
 
 - **Question-generation quality is load-bearing.** Bad LLM-generated questions (ambiguous wording, multiple-correct-answer MC, fill-in-blank with multiple plausible answers) collapse the experience. The generator needs calibration + a verification step (LLM-as-judge that rejects bad questions before they reach the user).
 - **Adaptive difficulty is harder than it looks.** The naive loop converges on a single difficulty band fast. Real adaptive systems use multi-dimensional models (per-topic mastery, per-question-shape competence, freshness × difficulty bands). The design must avoid both Anki-clone simplicity and overfit-to-recent-mistakes bouncing.
@@ -283,7 +295,7 @@ If by Milestone 4 the per-algorithm playground code shows obvious repetition tha
 
 ---
 
-## 11. Open questions (deliberately deferred)
+## 12. Open questions (deliberately deferred)
 
 | Question | Status |
 |---|---|
@@ -295,7 +307,7 @@ If by Milestone 4 the per-algorithm playground code shows obvious repetition tha
 
 ---
 
-## 12. Develop and build
+## 13. Develop and build
 
 ```sh
 pnpm install
@@ -313,13 +325,13 @@ Prerequisites: Node 20+, pnpm 9+, Rust toolchain (stable), and the Tauri 2 syste
 
 ---
 
-## 13. Status
+## 14. Status
 
 Pre-Milestone 1. Repository was scaffolded on 2026-05-11 via `create-tauri-app` (Tauri 2 + Vite + React 19 + TypeScript). MDX content layer, component library, and SQLite layer are not yet wired up. The next concrete step is Milestone 1 as scoped above: the substrate + the A-FINE lesson + all three views rendering.
 
 ---
 
-## 14. References and related work
+## 15. References and related work
 
 - **LifeOS `Learning/` archive** — content source the sync-learning agent will consume.
 - **`upkeep-learning` skill** — produces the `Learning/` archive content this tool consumes.
