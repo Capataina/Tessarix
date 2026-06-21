@@ -24,6 +24,20 @@ Three motivating examples — each one a concept the author has already invested
 
 The bet is that authoring lessons in this richer mode is worth the cost — and that a small, well-chosen component library is the leverage point that makes per-lesson authoring cheap once the substrate is built.
 
+### 1.1 The second bet: teach the lineage, not just the latest version
+
+The first bet is about *how* to teach (interactive, not prose). The second is about *what* to teach: a concept is the **surviving answer to a question someone once couldn't answer**, and the polished final form the reader meets is the last frame of a film — the winner of an argument, with the argument deleted. Rendering only that final frame teaches *what the thing is* while silently withholding *why it is that way*, which is the part that actually transfers.
+
+So every lesson owes the reader the concept's lineage, not just its snapshot:
+
+| Face of a concept | What the snapshot omits |
+|---|---|
+| **Genealogy** (past) | Why it came to be, the naive first attempt, the alternatives that were tried, and why each one lost. The corpse of a rejected approach names the constraint that shaped the survivor. |
+| **Boundary** | Where it stops being true — the hypotheses, edge cases, and counterexamples. A concept is only understood at its edges. |
+| **Leverage** | What having it makes *easy* that was hard before; what it unifies. The payoff that justifies the abstraction. |
+
+The determinant taught as "the area-scaling factor" is an inert fact; taught as "people needed to know when a linear system has a unique solution, and a single number falls out that is zero exactly when the columns collapse" it is something the reader can reconstruct from its purpose. Purpose survives; definitions decay. This is the gap a reader feels when they can describe a system's final state but cannot say why any of its pieces came to be — and closing it is a first-class authoring obligation, codified in [`context/notes/lineage-over-snapshot.md`](context/notes/lineage-over-snapshot.md).
+
 ---
 
 ## 2. Inspirations (a deliberate blend, not a clone)
