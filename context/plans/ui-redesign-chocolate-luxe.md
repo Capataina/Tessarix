@@ -56,6 +56,17 @@ no edits. New code uses the semantic names.
       object-fit cap would break pointer-to-canvas coordinate mapping. Do
       per-widget, carefully, where genuinely oversized.
 
+## Status — 2026-06-21
+
+The redesign progressed well past the original checklist:
+
+- Palette / depth / neon-eradication: done app-wide (commits `1f387c9`, `2421a90`, `d5c8d66`).
+- **Single-source styling system** (`src/styles/`): built — tokens → injected CSS vars + a typed API for canvas widgets (commit `f72e259`). Canonical doc: [`../systems/styling-system.md`](../systems/styling-system.md).
+- **Chrome redesign + motion**: tesseract logo, command-bar topbar, depth-gauge tier control, pillar underline, boot-cascade motion (commit `5eb1a3a`). Identity note: [`../notes/visual-identity.md`](../notes/visual-identity.md).
+- Verified end-to-end via headless-Chrome render (tokens injected on `<html>`, chrome + widgets render, zero runtime errors). Version bumped to 0.3.0; all pushed to origin.
+
+**Remaining (optional polish):** the catalog ledger restyle; the full per-widget terminal-pane chrome flatten across the ~44 linear-algebra widgets; the per-widget sizing audit beyond the two screenshotted offenders.
+
 ## Notes
 
 - Keep Satoshi (body) + JetBrains Mono (terminal chrome) for v1 — zero font risk.

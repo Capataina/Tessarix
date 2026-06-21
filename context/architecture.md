@@ -4,13 +4,16 @@
 
 This document is the top-down structural map of the Tessarix repository. It describes what the project currently is, how the codebase is shaped, which subsystems exist today, how they depend on each other, and the major execution flow that runs when the app starts. It is the entry point for anyone (engineer or agent) trying to orient before opening source files.
 
-Tessarix is in **scaffold state**. The product vision in `README.md` (multi-modal hypertext learning substrate, three-pillar Teach/Quiz/Interview model, MDX content layer, adaptive scheduler, sync-learning agent, Claude-API grader) describes the *intent*. This `architecture.md` describes *what is implemented in the repository today*. Where the two diverge, this file follows the code; `README.md` is the directional truth.
+Tessarix has a **substantial working frontend** (83 commits as of 2026-06-21): a Tauri 2 desktop shell wrapping a React 19 + TypeScript app with 8 MDX lessons, ~50 interactive widgets, a local-LLM integration layer, a telemetry layer, a complexity-tier + three-pillar reading shell, a catalog with an AI recommender, and a single-source styling system. The Rust host side remains thin. The product vision in `README.md` (adaptive scheduler, SQLite spaced-repetition, sync-learning agent, Claude-API grader, the Quiz/Interview pillars) describes *intent* not yet built. This file follows the code; `README.md` is the directional truth.
+
+> [!note] Documentation drift (2026-06-21 upkeep)
+> The 2026-06-21 upkeep pass focused on the new **styling system** and the **chrome redesign**, and corrected the most-misleading scaffold-era framing below. Several frontend-internals sections (telemetry, LLM, content/registry, the IPC/host claims) still carry accumulated drift from the M1→present period and were only partially re-verified. See `_staleness-report.md` for per-file verdicts and the deferred deep-verification.
 
 ## Repository Overview
 
-Tessarix is a desktop application built on Tauri 2. A native Rust host process wraps a WebView; the WebView loads a Vite-built React 19 + TypeScript frontend. The current implementation is the `create-tauri-app` scaffold (Tauri 2 + Vite + React 19 + TypeScript template), cleaned of demo content. There is no domain code yet: no MDX content layer, no spaced-repetition state, no Claude API integration, no IPC commands beyond the framework defaults, no SQLite database, no playgrounds, no component library.
+Tessarix is a desktop application built on Tauri 2. A native Rust host process wraps a WebView; the WebView loads a Vite-built React 19 + TypeScript frontend. Nearly all the implemented behaviour lives in the frontend: an MDX content layer (8 lessons under `src/lessons/`, indexed by `registry.ts`), a component library of ~50 interactive widgets (`src/components/widgets/`, split afine / linear-algebra / shared), assessment components, a local-LLM layer (`src/lib/llm/`, Ollama-backed — powers the right-pane chatbot, the catalog recommender, state-aware widget explanations, and tiered hints), a telemetry layer (`src/lib/telemetry/`), the reading shell (`src/components/Layout.tsx` plus the catalog, TOC, tier control, settings, chatbot), client state contexts (`src/state/`), and the single-source styling system (`src/styles/`).
 
-The repository is small and deliberately so. The next milestone (M1 per `README.md`) is "substrate proven via one hand-authored lesson" — landing the MDX + KaTeX + Monaco content layer and the first widget primitives.
+The Rust host is thin but not empty: `src-tauri/src/` has an `llm/` module (a reqwest-backed streaming client + Tauri commands, talking to **local Ollama**) and a `telemetry/` module (commands + a JSONL writer), both registered via `invoke_handler` in `lib.rs`. There is still no SQLite, no spaced-repetition store, and no Claude-API client (the README still names the Claude API; the shipped LLM features use Ollama). The planned host-side substrate (SQLite spaced-repetition, the adaptive scheduler, the Claude-API grader, the sync-learning agent) is not yet built.
 
 ## Repository Structure
 
@@ -29,11 +32,21 @@ Tessarix/
 ├── .vscode/                           # Recommended extensions for contributors
 │   └── extensions.json
 ├── public/                            # Static assets served at "/" (empty)
-├── src/                               # React frontend source
-│   ├── App.tsx                        # Root component; placeholder "Tessarix" heading
-│   ├── App.css                        # Minimal base typography + dark-scheme
-│   ├── main.tsx                       # ReactDOM root mount under StrictMode
-│   └── vite-env.d.ts                  # Vite/TS ambient types reference
+├── src/                               # React frontend source (the bulk of the app)
+│   ├── main.tsx                       # Mount; calls injectDesignTokens() before render
+│   ├── App.tsx                        # Root: hash routing (catalog ↔ lesson), telemetry, providers
+│   ├── App.css                        # Shell + lesson typography (consumes injected tokens)
+│   ├── theme.css                      # Structural CSS only (design tokens moved to src/styles/)
+│   ├── glossary.mdx                   # Glossary content
+│   ├── styles/                        # Single-source design system → systems/styling-system.md
+│   │   └── …                          #   tokens.ts (source) · derived.ts · inject.ts · motion.css · index.ts
+│   ├── components/                    # Layout, Catalog, TierControl, TesseractMark, SettingsPanel, LessonTOC …
+│   │   ├── assessments/               #   MultipleChoice, KnowledgeCheck, GoalChain, PredictThenVerify, …
+│   │   ├── chatbot/                   #   AskAboutLesson (right-pane LLM chat)
+│   │   └── widgets/                   #   afine/ (~9 widgets) + linear-algebra/ (~44) + shared/
+│   ├── lessons/                       # 8 MDX lessons + registry.ts (slug → lazy component map)
+│   ├── lib/                           # imaging/ (canvas render + metrics) · llm/ (Ollama client) · telemetry/
+│   └── state/                         # TierContext, SettingsContext (React context providers)
 ├── context/                           # This memory layer
 └── src-tauri/                         # Rust host crate (Tauri 2)
     ├── Cargo.toml                     # crate "tessarix"; lib "tessarix_lib"
@@ -54,11 +67,12 @@ Tessarix/
 
 | Subsystem | Canonical file | Responsibility | Maturity | Stability |
 |---|---|---|---|---|
-| **frontend-shell** | [`systems/frontend-shell.md`](systems/frontend-shell.md) | React/TS WebView half; renders the UI; consumes Tauri IPC. Currently a placeholder. | stub | volatile (M1 lands here) |
-| **tauri-host** | [`systems/tauri-host.md`](systems/tauri-host.md) | Rust process; hosts the WebView, defines window/identifier, will own IPC commands + SQLite + Claude API client. Currently an empty `Builder` with the `opener` plugin. | stub | volatile (M1+M3+M4 lands here) |
+| **frontend-shell** | [`systems/frontend-shell.md`](systems/frontend-shell.md) | The React/TS WebView app: reading shell (Layout, catalog, TOC, tier control, chatbot), MDX content layer, the ~50-widget component library, assessments, LLM features, telemetry, client state. The bulk of the app. | working (doc carries M1→present drift) | unstable |
+| **styling-system** | [`systems/styling-system.md`](systems/styling-system.md) | Single source of truth for all design values (`src/styles/`): tokens → injected CSS custom properties + a typed API consumed by canvas widgets. Introduced 2026-06-21. | comprehensive | unstable |
+| **tauri-host** | [`systems/tauri-host.md`](systems/tauri-host.md) | Rust process: hosts the WebView; `llm/` (reqwest→Ollama streaming client + commands) and `telemetry/` (commands + JSONL writer) modules registered via `invoke_handler`. No SQLite / spaced-rep / Claude-API yet. | working (doc may carry drift) | unstable |
 | **build-pipeline** | [`systems/build-pipeline.md`](systems/build-pipeline.md) | Layered build chain: pnpm → Vite → Cargo → tauri-build → tauri-cli. The two halves are coupled through `tauri.conf.json` build hooks and a fixed dev-server port. | working | stable |
 
-Architecturally there are exactly two runtime processes — the Rust host and the WebView — plus the build pipeline that produces them. Everything else (MDX content layer, SQLite, Claude API client, component library, sync-learning skill) is planned but not yet implemented; it will land inside `frontend-shell` and `tauri-host` as new internal modules rather than as new top-level subsystems.
+Architecturally there are two runtime processes — the Rust host and the WebView — plus the build pipeline. The frontend (`frontend-shell` + `styling-system`) is where almost all the behaviour lives; it has grown internal areas (content/registry, the widget library, `lib/llm`, `lib/telemetry`) substantial enough that some may warrant their own system docs in a future pass (flagged as a coverage gap in `_staleness-report.md`). The host-side substrate (SQLite, Claude-API client, sync-learning) is still planned and will land in `tauri-host` and new `src/lib/` modules.
 
 ## Dependency Direction
 
@@ -147,11 +161,11 @@ Specific change-impact notes:
 
 ## Structural Notes / Current Reality
 
-- **The Tauri IPC seam is empty.** `lib.rs` calls `tauri::Builder::default()` with the `opener` plugin and no `invoke_handler`. There are no app-specific commands registered. The first piece of M1 work will add an `invoke_handler` and the corresponding JS-side `invoke(...)` calls.
-- **`@tauri-apps/plugin-opener` is installed but unused.** It was added by `create-tauri-app` to demonstrate the plugin pattern. Keeping it costs almost nothing and it may be useful when lessons link to external references. Removing it later is a config-only change.
-- **No domain dependencies installed yet.** None of the planned content-layer libraries (MDX, KaTeX, Shiki, Monaco, react-flow / xyflow, Konva) are in `package.json`. None of the planned host-side libraries (SQLite via rusqlite/sqlx, async HTTP via reqwest, Claude SDK client) are in `Cargo.toml`. M1 lands the frontend ones; M2/M3/M4 land the host-side ones.
-- **`src-tauri/gen/` is generated, not source.** It is committed (typical for Tauri 2 scaffolds) but should not be hand-edited; `tauri_build::build()` rewrites it from `tauri.conf.json` + `capabilities/`.
-- **The repository has two commits on `main`.** `7a3add7` (scaffold) and `bc3d9e6` (CLAUDE.md + README expansion). The README rewrite captured the design intent in detail; CLAUDE.md captured the Claude Code personality / collaboration contract.
+- **The Tauri IPC seam is live.** `lib.rs` registers an `invoke_handler` exposing the `llm/` and `telemetry/` commands; the JS side calls them via `@tauri-apps/api/core::invoke` (the hooks in `src/lib/llm/` and the telemetry layer in `src/lib/telemetry/`). This bullet read "empty" in the scaffold era; that is no longer true.
+- **`@tauri-apps/plugin-opener` is installed.** Added by `create-tauri-app`; low cost, potentially useful when lessons link to external references.
+- **Content-layer and HTTP dependencies are installed; persistence is not.** MDX (`@mdx-js/*`) + KaTeX drive the lesson pipeline; `reqwest` + `tokio` + `futures-util` back the Ollama client. Still absent: Monaco / playground libraries (playgrounds unbuilt), and any SQLite / persistence crate (spaced-repetition unbuilt).
+- **`src-tauri/gen/` is generated, not source.** Committed (typical for Tauri 2) but never hand-edited; `tauri_build::build()` rewrites it from `tauri.conf.json` + `capabilities/`.
+- **The repository has 83 commits on `main`** (as of 2026-06-21). Arc: scaffold (2026-05-11) → M1 substrate + A-FINE lesson + Ollama-backed LLM features → a 44-widget linear-algebra push (2026-05-11/12) → the chocolate-luxe redesign + single-source styling system (2026-06-21). The bulk of the code is the linear-algebra widget library plus the afine lesson.
 
 ## Reading Guide
 

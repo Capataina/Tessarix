@@ -6,7 +6,9 @@
 
 The frontend shell is the React/TypeScript half of the Tauri 2 application. It is the code that runs inside the WebView and will eventually render all three pillars of the product (Teach / Quiz / Interview), the lesson narrative, the embedded interactive widgets, the spaced-repetition UI, and the routing surface.
 
-Today it is a placeholder: a single `<App />` component that renders the word "Tessarix" in a centered heading. The substrate (MDX content loader, component library, routing, widget primitives, scheduler UI, IPC calls to the host) is not yet implemented.
+It is now a substantial app: hash routing (catalog ↔ lesson), 8 MDX lessons, a ~50-widget component library (afine + linear-algebra + shared), assessment components, the complexity-tier reading shell, a catalog with an AI recommender, an Ollama-backed LLM layer (right-pane chatbot, recommender, state-aware widget explanations, tiered hints), a telemetry layer, and the single-source styling system. The scheduler UI and host-side SQLite persistence remain unbuilt.
+
+> [!note] This system doc carries M1→present drift. The file inventory and entry sequence below describe roughly the early-M1 state (a handful of widgets, the neon theme) and predate the 44-widget linear-algebra push and the 2026-06-21 styling system + redesign. Design values now live in the styling system — its canonical doc is [`styling-system.md`](styling-system.md). A full re-inventory of this doc is deferred (see `../_staleness-report.md`).
 
 ## Boundaries / Ownership
 
@@ -101,7 +103,7 @@ There are no other artefacts (no static lessons, no question banks, no service w
 
 ## Partial / In Progress
 
-None. The frontend is in scaffold state — every M1 feature is "missing" rather than "partial".
+- The chrome redesign (tesseract logo, command-bar topbar, depth-gauge tier control, pillar underline, boot-cascade motion) shipped 2026-06-21 on the new [styling system](styling-system.md). The **catalog ledger restyle** and the **per-widget terminal-pane chrome flatten** across the ~44 linear-algebra widgets remain — tracked in [`../plans/ui-redesign-chocolate-luxe.md`](../plans/ui-redesign-chocolate-luxe.md).
 
 ## Planned / Missing / Likely Changes
 
