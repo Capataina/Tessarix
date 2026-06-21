@@ -19,7 +19,7 @@
 .bct--won {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 28px -8px rgba(62, 255, 142, 0.35);
+    0 0 28px -8px rgba(135, 151, 106, 0.35);
 }
 
 .bct--lost {
@@ -104,12 +104,12 @@
 
 .bct__btn--yes:hover:not(:disabled) {
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.08);
+  background: rgba(135, 151, 106, 0.08);
 }
 
 .bct__btn--no:hover:not(:disabled) {
   border-color: var(--widget-danger);
-  background: rgba(255, 90, 90, 0.08);
+  background: rgba(181, 84, 74, 0.08);
 }
 
 .bct__btn-mark {
@@ -148,21 +148,21 @@
 }
 
 .bct__verdict--playing {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .bct__verdict--correct {
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
   border-color: var(--widget-success);
 }
 
 .bct__verdict--won {
-  background: rgba(62, 255, 142, 0.1);
+  background: rgba(135, 151, 106, 0.1);
   border-color: var(--widget-success);
 }
 
 .bct__verdict--lost {
-  background: rgba(255, 90, 90, 0.08);
+  background: rgba(181, 84, 74, 0.08);
   border-color: var(--widget-danger);
 }
 

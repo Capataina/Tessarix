@@ -3,7 +3,7 @@
   padding: var(--space-4) var(--space-5);
   background: linear-gradient(
     180deg,
-    rgba(179, 102, 255, 0.06),
+    rgba(166, 120, 140, 0.06),
     transparent 60%
   ), var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -79,20 +79,20 @@
 }
 
 .wat__entry--user .wat__entry-body {
-  background: rgba(0, 212, 255, 0.04);
-  border-color: rgba(0, 212, 255, 0.15);
+  background: rgba(201, 162, 107, 0.04);
+  border-color: rgba(201, 162, 107, 0.15);
   color: var(--text-primary);
 }
 
 .wat__entry--error .wat__entry-body {
-  background: rgba(255, 90, 90, 0.05);
-  border-color: rgba(255, 90, 90, 0.2);
+  background: rgba(181, 84, 74, 0.05);
+  border-color: rgba(181, 84, 74, 0.2);
   color: var(--accent-red);
 }
 
 .wat__entry--streaming .wat__entry-body {
-  background: rgba(179, 102, 255, 0.04);
-  border-color: rgba(179, 102, 255, 0.18);
+  background: rgba(166, 120, 140, 0.04);
+  border-color: rgba(166, 120, 140, 0.18);
 }
 
 .wat__cursor {
@@ -136,7 +136,7 @@
 
 .wat__textarea:focus {
   border-color: var(--accent-violet);
-  box-shadow: 0 0 0 3px rgba(179, 102, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(166, 120, 140, 0.12);
 }
 
 .wat__textarea::placeholder {
@@ -170,13 +170,13 @@
 }
 
 .wat__btn--primary {
-  background: rgba(179, 102, 255, 0.1);
+  background: rgba(166, 120, 140, 0.1);
   border-color: var(--accent-violet);
   color: var(--accent-violet);
 }
 
 .wat__btn--primary:hover:not(:disabled) {
-  background: rgba(179, 102, 255, 0.18);
+  background: rgba(166, 120, 140, 0.18);
 }
 
 .wat__btn--ghost {

@@ -13,7 +13,7 @@
 .dd--solved {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.32);
+    0 0 32px -8px rgba(135, 151, 106, 0.32);
 }
 
 .dd__head {
@@ -87,7 +87,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
   border: 1px solid var(--widget-accent);
   color: var(--widget-accent);
   padding: 0.28rem 0.6rem;
@@ -99,20 +99,20 @@
 }
 
 .dd__chip--neutral:hover {
-  background: rgba(255, 90, 90, 0.12);
+  background: rgba(181, 84, 74, 0.12);
   border-color: var(--widget-danger);
   color: var(--widget-danger);
 }
 
 .dd__chip--correct {
-  background: rgba(62, 255, 142, 0.1);
+  background: rgba(135, 151, 106, 0.1);
   border-color: var(--widget-success);
   color: var(--widget-success);
   cursor: default;
 }
 
 .dd__chip--wrong {
-  background: rgba(255, 90, 90, 0.12);
+  background: rgba(181, 84, 74, 0.12);
   border-color: var(--widget-danger);
   color: var(--widget-danger);
   cursor: default;
@@ -143,7 +143,7 @@
 }
 
 .dd__submit:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.85);
+  background: rgba(201, 162, 107, 0.85);
 }
 
 .dd__submit:disabled {
@@ -165,7 +165,7 @@
 
 .dd__btn:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
   color: var(--widget-text);
 }
 
@@ -194,7 +194,7 @@
 
 .dd__round-pick--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }
 
@@ -208,12 +208,12 @@
 }
 
 .dd__verdict--win {
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   border-color: var(--widget-success);
 }
 
 .dd__verdict--partial {
-  background: rgba(255, 214, 51, 0.07);
+  background: rgba(201, 154, 78, 0.07);
   border-color: var(--widget-warn);
 }
 

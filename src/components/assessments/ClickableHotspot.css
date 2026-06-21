@@ -19,7 +19,7 @@
   font-size: var(--text-xs);
   letter-spacing: 0.1em;
   color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
   border: 1px solid var(--border-accent);
   padding: 3px 8px;
   border-radius: var(--radius-sm);
@@ -95,13 +95,13 @@
 .hotspot__option--correct,
 .hotspot__option--correct-shown {
   border-color: var(--accent-green);
-  background: rgba(62, 255, 142, 0.08);
+  background: rgba(135, 151, 106, 0.08);
   color: var(--accent-green);
 }
 
 .hotspot__option--wrong {
   border-color: var(--accent-red);
-  background: rgba(255, 90, 90, 0.08);
+  background: rgba(181, 84, 74, 0.08);
   color: var(--accent-red);
 }
 

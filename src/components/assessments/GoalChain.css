@@ -4,7 +4,7 @@
   gap: var(--space-4, 1rem);
   padding: var(--space-5, 1.25rem);
   background: var(--surface-1, #131321);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.08));
   border-radius: var(--radius-md, 12px);
   margin: var(--space-5, 1.25rem) 0;
 }
@@ -21,9 +21,9 @@
   letter-spacing: 0.08em;
   padding: 0.2rem 0.5rem;
   background: var(--surface-2, #1a1a2c);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.1));
   border-radius: 4px;
-  color: var(--text-2, rgba(255, 255, 255, 0.7));
+  color: var(--text-2, rgba(239, 231, 218, 0.7));
 }
 
 .goal-chain__header-text {
@@ -43,7 +43,7 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.75rem;
-  color: var(--text-2, rgba(255, 255, 255, 0.55));
+  color: var(--text-2, rgba(239, 231, 218, 0.55));
   letter-spacing: 0.04em;
 }
 
@@ -51,7 +51,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(239, 231, 218, 0.18);
 }
 
 .goal-chain__dot--solved {
@@ -89,7 +89,7 @@
 
 .goal-chain__step--locked {
   opacity: 0.55;
-  border-left-color: rgba(255, 255, 255, 0.15);
+  border-left-color: rgba(239, 231, 218, 0.15);
 }
 
 .goal-chain__step-head {
@@ -106,7 +106,7 @@
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-2, rgba(255, 255, 255, 0.6));
+  color: var(--text-2, rgba(239, 231, 218, 0.6));
 }
 
 .goal-chain__step-icon {
@@ -115,7 +115,7 @@
 
 .goal-chain__step-status {
   font-size: 0.8rem;
-  color: var(--text-2, rgba(255, 255, 255, 0.55));
+  color: var(--text-2, rgba(239, 231, 218, 0.55));
   font-family: var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
 }
 
@@ -162,8 +162,8 @@
   align-self: flex-start;
   appearance: none;
   background: transparent;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
-  color: var(--text-2, rgba(255, 255, 255, 0.65));
+  border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.12));
+  color: var(--text-2, rgba(239, 231, 218, 0.65));
   padding: 0.35rem 0.85rem;
   font-size: 0.8rem;
   border-radius: var(--radius-sm, 8px);
@@ -172,7 +172,7 @@
 
 .goal-chain__retry:hover {
   color: var(--text-1, #f0f0f5);
-  border-color: var(--border-strong, rgba(255, 255, 255, 0.22));
+  border-color: var(--border-strong, rgba(239, 231, 218, 0.22));
 }
 
 .goal-chain__complete {

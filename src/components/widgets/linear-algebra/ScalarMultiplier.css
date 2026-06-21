@@ -143,13 +143,13 @@
   letter-spacing: 0.08em;
   padding: 0.18rem 0.55rem;
   border-radius: 999px;
-  background: rgba(255, 68, 170, 0.15);
+  background: rgba(181, 106, 71, 0.15);
   color: var(--widget-chart-2);
   border: 1px solid var(--widget-chart-2);
 }
 
 .scalar-mult__k-flag--zero {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(239, 231, 218, 0.08);
   color: var(--widget-text-dim);
   border-color: var(--widget-border-strong);
 }
@@ -158,7 +158,7 @@
   appearance: none;
   width: 100%;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(239, 231, 218, 0.1);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -208,7 +208,7 @@
 
 .scalar-mult__preset--active {
   border-color: var(--widget-warn);
-  background: rgba(255, 214, 51, 0.1);
+  background: rgba(201, 154, 78, 0.1);
   color: var(--widget-warn);
 }
 

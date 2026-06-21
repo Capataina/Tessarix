@@ -13,19 +13,19 @@
 .cp--perfect {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 28px -10px rgba(62, 255, 142, 0.4);
+    0 0 28px -10px rgba(135, 151, 106, 0.4);
 }
 
 .cp--good {
   border-color: var(--widget-accent);
   box-shadow: 0 0 0 1px var(--widget-accent),
-    0 0 24px -10px rgba(0, 212, 255, 0.3);
+    0 0 24px -10px rgba(201, 162, 107, 0.3);
 }
 
 .cp--rough {
   border-color: var(--widget-danger);
   box-shadow: 0 0 0 1px var(--widget-danger),
-    0 0 22px -10px rgba(255, 90, 90, 0.3);
+    0 0 22px -10px rgba(181, 84, 74, 0.3);
 }
 
 .cp__head {
@@ -83,7 +83,7 @@
 .cp__corner-tag {
   display: inline-block;
   font-family: var(--font-mono);
-  background: rgba(255, 214, 51, 0.12);
+  background: rgba(201, 154, 78, 0.12);
   border: 1px solid var(--widget-warn);
   color: var(--widget-warn);
   padding: 0.05rem 0.35rem;
@@ -111,7 +111,7 @@
 
 .cp__action:hover:not(:disabled) {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
 }
 
 .cp__action:disabled {
@@ -132,7 +132,7 @@
 }
 
 .cp__action--primary:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.85);
+  background: rgba(201, 162, 107, 0.85);
 }
 
 .cp__verdict {
@@ -146,21 +146,21 @@
 
 .cp__verdict--working,
 .cp__verdict--revealed {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .cp__verdict--perfect {
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   border-color: var(--widget-success);
 }
 
 .cp__verdict--good {
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
   border-color: var(--widget-accent);
 }
 
 .cp__verdict--rough {
-  background: rgba(255, 90, 90, 0.07);
+  background: rgba(181, 84, 74, 0.07);
   border-color: var(--widget-danger);
 }
 
@@ -214,6 +214,6 @@
 
 .cp__puzzle-pick--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }

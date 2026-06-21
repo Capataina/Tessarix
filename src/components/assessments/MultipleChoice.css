@@ -16,7 +16,7 @@
   font-size: var(--text-xs);
   letter-spacing: 0.1em;
   color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
   border: 1px solid var(--border-accent);
   padding: 3px 8px;
   border-radius: var(--radius-sm);
@@ -85,37 +85,37 @@
 
 .mc__option--selected {
   border-color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
   color: var(--text-primary);
 }
 
 .mc__option--selected .mc__option-marker {
   border-color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.15);
+  background: rgba(201, 162, 107, 0.15);
   color: var(--accent-cyan);
 }
 
 .mc__option--correct {
   border-color: var(--accent-green);
-  background: rgba(62, 255, 142, 0.05);
+  background: rgba(135, 151, 106, 0.05);
   color: var(--text-primary);
 }
 
 .mc__option--correct .mc__option-marker {
   border-color: var(--accent-green);
-  background: rgba(62, 255, 142, 0.15);
+  background: rgba(135, 151, 106, 0.15);
   color: var(--accent-green);
 }
 
 .mc__option--wrong {
   border-color: var(--accent-red);
-  background: rgba(255, 90, 90, 0.05);
+  background: rgba(181, 84, 74, 0.05);
   color: var(--text-primary);
 }
 
 .mc__option--wrong .mc__option-marker {
   border-color: var(--accent-red);
-  background: rgba(255, 90, 90, 0.15);
+  background: rgba(181, 84, 74, 0.15);
   color: var(--accent-red);
 }
 
@@ -147,13 +147,13 @@
 }
 
 .mc__btn--primary {
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
 }
 
 .mc__btn--primary:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.18);
+  background: rgba(201, 162, 107, 0.18);
 }
 
 .mc__btn:disabled {

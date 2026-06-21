@@ -1,8 +1,8 @@
 .settings-trigger {
   appearance: none;
   background: transparent;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
-  color: var(--text-2, rgba(255, 255, 255, 0.7));
+  border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.1));
+  color: var(--text-2, rgba(239, 231, 218, 0.7));
   padding: 0.4rem;
   border-radius: var(--radius-sm, 8px);
   cursor: pointer;
@@ -14,8 +14,8 @@
 
 .settings-trigger:hover {
   color: var(--text-1, #f0f0f5);
-  border-color: var(--border-strong, rgba(255, 255, 255, 0.22));
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-strong, rgba(239, 231, 218, 0.22));
+  background: rgba(239, 231, 218, 0.04);
 }
 
 .settings-overlay {
@@ -45,7 +45,7 @@
   width: 100%;
   max-width: 560px;
   background: var(--surface-1, #131321);
-  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.16));
+  border: 1px solid var(--border-strong, rgba(239, 231, 218, 0.16));
   border-radius: var(--radius-lg, 14px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
   display: flex;
@@ -59,7 +59,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-4, 1rem) var(--space-5, 1.25rem);
-  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  border-bottom: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.06));
 }
 
 .settings-panel__title {
@@ -74,7 +74,7 @@
   appearance: none;
   background: transparent;
   border: none;
-  color: var(--text-2, rgba(255, 255, 255, 0.6));
+  color: var(--text-2, rgba(239, 231, 218, 0.6));
   font-size: 1rem;
   cursor: pointer;
   padding: 0.25rem 0.55rem;
@@ -82,7 +82,7 @@
 }
 
 .settings-panel__close:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(239, 231, 218, 0.07);
   color: var(--text-1, #f0f0f5);
 }
 
@@ -114,7 +114,7 @@
 
 .settings-group__description {
   font-size: 0.82rem;
-  color: var(--text-2, rgba(255, 255, 255, 0.55));
+  color: var(--text-2, rgba(239, 231, 218, 0.55));
   line-height: 1.5;
 }
 
@@ -125,7 +125,7 @@
 .settings-segmented {
   display: inline-flex;
   background: var(--surface-2, #1a1a2c);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.08));
   border-radius: var(--radius-sm, 8px);
   padding: 3px;
   gap: 2px;
@@ -137,7 +137,7 @@
   appearance: none;
   background: transparent;
   border: none;
-  color: var(--text-2, rgba(255, 255, 255, 0.65));
+  color: var(--text-2, rgba(239, 231, 218, 0.65));
   font-size: 0.85rem;
   padding: 0.45rem 0.8rem;
   border-radius: 5px;
@@ -147,7 +147,7 @@
 
 .settings-segmented__option:hover:not(.settings-segmented__option--active) {
   color: var(--text-1, #f0f0f5);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(239, 231, 218, 0.04);
 }
 
 .settings-segmented__option--active {
@@ -161,7 +161,7 @@
   align-items: center;
   gap: 0.55rem;
   font-size: 0.88rem;
-  color: var(--text-2, rgba(255, 255, 255, 0.7));
+  color: var(--text-2, rgba(239, 231, 218, 0.7));
   cursor: pointer;
   user-select: none;
 }
@@ -171,7 +171,7 @@
   width: 36px;
   height: 20px;
   background: var(--surface-2, #1a1a2c);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.18));
+  border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.18));
   border-radius: 11px;
   position: relative;
   cursor: pointer;
@@ -187,7 +187,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--text-2, rgba(255, 255, 255, 0.6));
+  background: var(--text-2, rgba(239, 231, 218, 0.6));
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
@@ -206,15 +206,15 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-3, 0.75rem) var(--space-5, 1.25rem);
-  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  border-top: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.06));
   gap: var(--space-3, 0.75rem);
 }
 
 .settings-panel__reset {
   appearance: none;
   background: transparent;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
-  color: var(--text-2, rgba(255, 255, 255, 0.65));
+  border: 1px solid var(--border-subtle, rgba(239, 231, 218, 0.12));
+  color: var(--text-2, rgba(239, 231, 218, 0.65));
   padding: 0.45rem 0.85rem;
   font-size: 0.85rem;
   border-radius: var(--radius-sm, 8px);
@@ -223,7 +223,7 @@
 
 .settings-panel__reset:hover {
   color: var(--text-1, #f0f0f5);
-  border-color: var(--border-strong, rgba(255, 255, 255, 0.22));
+  border-color: var(--border-strong, rgba(239, 231, 218, 0.22));
 }
 
 .settings-panel__done {

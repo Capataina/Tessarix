@@ -140,7 +140,7 @@
 
 .adapter-heatmap__readout-row--accent {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
 }
 
 .adapter-heatmap__readout-label {
@@ -168,7 +168,7 @@
 .adapter-heatmap__readout-note code {
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(239, 231, 218, 0.06);
   padding: 0.05rem 0.35rem;
   border-radius: 3px;
   color: var(--widget-text);
@@ -196,7 +196,7 @@
   width: 100%;
   appearance: none;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(239, 231, 218, 0.1);
   border-radius: 2px;
   outline: none;
   cursor: pointer;

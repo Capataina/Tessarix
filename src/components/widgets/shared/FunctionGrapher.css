@@ -21,7 +21,7 @@
   background:
     radial-gradient(
       ellipse 400px 200px at 50% 50%,
-      rgba(0, 212, 255, 0.04),
+      rgba(201, 162, 107, 0.04),
       transparent 70%
     );
   border-radius: var(--radius-md);
@@ -92,25 +92,25 @@
   background: var(--accent-cyan);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.15),
-    0 0 12px rgba(0, 212, 255, 0.6);
+  box-shadow: 0 0 0 4px rgba(201, 162, 107, 0.15),
+    0 0 12px rgba(201, 162, 107, 0.6);
   transition: box-shadow var(--t-fast);
 }
 
 .grapher--magenta .grapher__slider input[type="range"]::-webkit-slider-thumb {
   background: var(--accent-magenta);
-  box-shadow: 0 0 0 4px rgba(255, 68, 170, 0.15),
-    0 0 12px rgba(255, 68, 170, 0.6);
+  box-shadow: 0 0 0 4px rgba(181, 106, 71, 0.15),
+    0 0 12px rgba(181, 106, 71, 0.6);
 }
 .grapher--yellow .grapher__slider input[type="range"]::-webkit-slider-thumb {
   background: var(--accent-yellow);
-  box-shadow: 0 0 0 4px rgba(255, 214, 51, 0.15),
-    0 0 12px rgba(255, 214, 51, 0.6);
+  box-shadow: 0 0 0 4px rgba(201, 154, 78, 0.15),
+    0 0 12px rgba(201, 154, 78, 0.6);
 }
 .grapher--green .grapher__slider input[type="range"]::-webkit-slider-thumb {
   background: var(--accent-green);
-  box-shadow: 0 0 0 4px rgba(62, 255, 142, 0.15),
-    0 0 12px rgba(62, 255, 142, 0.6);
+  box-shadow: 0 0 0 4px rgba(135, 151, 106, 0.15),
+    0 0 12px rgba(135, 151, 106, 0.6);
 }
 
 .grapher__slider input[type="range"]::-moz-range-thumb {
@@ -120,8 +120,8 @@
   border-radius: 50%;
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.15),
-    0 0 12px rgba(0, 212, 255, 0.6);
+  box-shadow: 0 0 0 4px rgba(201, 162, 107, 0.15),
+    0 0 12px rgba(201, 162, 107, 0.6);
 }
 
 .grapher__caption {

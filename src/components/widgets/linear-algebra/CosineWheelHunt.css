@@ -13,7 +13,7 @@
 .cwh--hit {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.32);
+    0 0 32px -8px rgba(135, 151, 106, 0.32);
 }
 
 .cwh__head {
@@ -248,5 +248,5 @@
 }
 
 .cwh__btn--primary:hover:not(:disabled) {
-  background: rgba(62, 255, 142, 0.08);
+  background: rgba(135, 151, 106, 0.08);
 }

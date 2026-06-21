@@ -13,7 +13,7 @@
 .sw--on-target {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.35);
+    0 0 32px -8px rgba(135, 151, 106, 0.35);
 }
 
 .sw__head {
@@ -134,11 +134,11 @@
 }
 
 .sw__det--off {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .sw__det--ok {
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   border-color: var(--widget-success);
 }
 
@@ -258,7 +258,7 @@
 }
 
 .sw__claim:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.85);
+  background: rgba(201, 162, 107, 0.85);
 }
 
 .sw__claim:disabled {
@@ -280,7 +280,7 @@
 
 .sw__action:hover:not(:disabled) {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
 }
 
 .sw__action--impossible {
@@ -289,7 +289,7 @@
 }
 
 .sw__action--impossible:hover:not(:disabled) {
-  background: rgba(255, 214, 51, 0.07);
+  background: rgba(201, 154, 78, 0.07);
 }
 
 .sw__action--primary {
@@ -299,7 +299,7 @@
 }
 
 .sw__action--primary:hover {
-  background: rgba(255, 214, 51, 0.07);
+  background: rgba(201, 154, 78, 0.07);
 }
 
 .sw__action:disabled {
@@ -317,16 +317,16 @@
 }
 
 .sw__verdict--idle {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .sw__verdict--win {
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   border-color: var(--widget-success);
 }
 
 .sw__verdict--miss {
-  background: rgba(255, 90, 90, 0.07);
+  background: rgba(181, 84, 74, 0.07);
   border-color: var(--widget-danger);
 }
 
@@ -376,6 +376,6 @@
 
 .sw__puzzle-pick--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }

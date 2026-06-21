@@ -73,7 +73,7 @@
   width: 100%;
   appearance: none;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(239, 231, 218, 0.1);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -119,7 +119,7 @@
 .ratio-demo__caption code {
   font-family: var(--font-mono);
   font-size: 0.85rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(239, 231, 218, 0.06);
   padding: 0.05rem 0.4rem;
   border-radius: 3px;
   color: var(--widget-text);

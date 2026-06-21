@@ -19,5 +19,5 @@
   );
   transform-origin: left center;
   transition: transform 80ms linear;
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 8px rgba(201, 162, 107, 0.5);
 }

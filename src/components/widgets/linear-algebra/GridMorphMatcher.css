@@ -13,7 +13,7 @@
 .gmm--solved {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.3);
+    0 0 32px -8px rgba(135, 151, 106, 0.3);
 }
 
 .gmm__head {
@@ -81,16 +81,16 @@
 }
 
 .gmm__verdict--working {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .gmm__verdict--close {
-  background: rgba(255, 214, 51, 0.06);
+  background: rgba(201, 154, 78, 0.06);
   border-color: var(--widget-warn);
 }
 
 .gmm__verdict--solved {
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
   border-color: var(--widget-success);
 }
 
@@ -143,7 +143,7 @@
 
 .gmm__btn--on {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }
 
@@ -172,6 +172,6 @@
 
 .gmm__puzzle-pick--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }

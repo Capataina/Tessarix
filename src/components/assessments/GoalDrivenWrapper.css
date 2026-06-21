@@ -29,7 +29,7 @@
   font-size: var(--text-xs);
   letter-spacing: 0.1em;
   color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
   border: 1px solid var(--border-accent);
   padding: 3px 8px;
   border-radius: var(--radius-sm);
@@ -83,7 +83,7 @@
 .gdw__status--solved {
   color: var(--accent-green);
   border-color: var(--accent-green);
-  background: rgba(62, 255, 142, 0.08);
+  background: rgba(135, 151, 106, 0.08);
 }
 
 .gdw__widget {
@@ -142,7 +142,7 @@
 
 /* Level 1 — subtle, cyan */
 .gdw__hint--level-1 {
-  background: rgba(0, 212, 255, 0.04);
+  background: rgba(201, 162, 107, 0.04);
   border-left-color: var(--accent-cyan);
 }
 .gdw__hint--level-1 .gdw__hint-level {
@@ -151,7 +151,7 @@
 
 /* Level 2 — more direct, yellow */
 .gdw__hint--level-2 {
-  background: rgba(255, 214, 51, 0.05);
+  background: rgba(201, 154, 78, 0.05);
   border-left-color: var(--accent-yellow);
 }
 .gdw__hint--level-2 .gdw__hint-level {
@@ -160,7 +160,7 @@
 
 /* Level 3 — practically the answer, magenta */
 .gdw__hint--level-3 {
-  background: rgba(255, 68, 170, 0.06);
+  background: rgba(181, 106, 71, 0.06);
   border-left-color: var(--accent-magenta);
 }
 .gdw__hint--level-3 .gdw__hint-level {
@@ -169,7 +169,7 @@
 
 /* Static fallback hint (only used when no llmContext provided) */
 .gdw__hint--static {
-  background: rgba(255, 214, 51, 0.04);
+  background: rgba(201, 154, 78, 0.04);
   border-left-color: var(--accent-yellow);
 }
 .gdw__hint--static .gdw__hint-level {
@@ -196,7 +196,7 @@
 .gdw__hint-error {
   padding: var(--space-2) var(--space-3);
   margin-bottom: var(--space-2);
-  background: rgba(255, 90, 90, 0.05);
+  background: rgba(181, 84, 74, 0.05);
   border-left: 3px solid var(--accent-red);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-size: var(--text-xs);

@@ -103,7 +103,7 @@
 .mat-trans__entry-slider {
   appearance: none;
   height: 3px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(239, 231, 218, 0.12);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -186,7 +186,7 @@
 
 .mat-trans__preset:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
 }
 
 @media (max-width: 880px) {

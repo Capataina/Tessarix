@@ -13,7 +13,7 @@
 .tlm--perfect {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.35);
+    0 0 32px -8px rgba(135, 151, 106, 0.35);
 }
 
 .tlm__head {
@@ -73,7 +73,7 @@
 
 .tlm__action:hover:not(:disabled) {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
 }
 
 .tlm__action--primary {
@@ -82,7 +82,7 @@
 }
 
 .tlm__action--primary:hover {
-  background: rgba(255, 214, 51, 0.06);
+  background: rgba(201, 154, 78, 0.06);
 }
 
 .tlm__action:disabled {
@@ -136,7 +136,7 @@
 
 .tlm__chip:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.07);
+  background: rgba(201, 162, 107, 0.07);
 }
 
 .tlm__chip--name {
@@ -165,7 +165,7 @@
 
 .tlm__chip--selected {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.12);
+  background: rgba(201, 162, 107, 0.12);
   box-shadow: 0 0 0 1px var(--widget-accent);
 }
 
@@ -176,7 +176,7 @@
 
 .tlm__chip--correct {
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
 }
 
 .tlm__chip--correct .tlm__chip-port {
@@ -186,7 +186,7 @@
 
 .tlm__chip--wrong {
   border-color: var(--widget-danger);
-  background: rgba(255, 90, 90, 0.06);
+  background: rgba(181, 84, 74, 0.06);
 }
 
 .tlm__chip--wrong .tlm__chip-port {
@@ -257,16 +257,16 @@
 }
 
 .tlm__verdict--working {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .tlm__verdict--review {
-  background: rgba(255, 214, 51, 0.06);
+  background: rgba(201, 154, 78, 0.06);
   border-color: var(--widget-warn);
 }
 
 .tlm__verdict--perfect {
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   border-color: var(--widget-success);
 }
 

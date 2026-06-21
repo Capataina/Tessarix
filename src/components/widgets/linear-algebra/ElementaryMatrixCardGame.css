@@ -13,7 +13,7 @@
 .emcg--solved {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.35);
+    0 0 32px -8px rgba(135, 151, 106, 0.35);
 }
 
 .emcg__head {
@@ -124,13 +124,13 @@
 .emcg__cell--match {
   border-color: var(--widget-success);
   color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
 }
 
 .emcg__matrix--ok .emcg__cell {
   border-color: var(--widget-success);
   color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.05);
+  background: rgba(135, 151, 106, 0.05);
 }
 
 .emcg__history {
@@ -170,13 +170,13 @@
   border-radius: var(--widget-radius-sm);
   font-family: var(--font-mono);
   font-size: 0.78rem;
-  background: rgba(0, 212, 255, 0.07);
+  background: rgba(201, 162, 107, 0.07);
   border: 1px solid var(--widget-accent);
   color: var(--widget-accent);
 }
 
 .emcg__history-card--swap {
-  background: rgba(255, 214, 51, 0.08);
+  background: rgba(201, 154, 78, 0.08);
   border-color: var(--widget-warn);
   color: var(--widget-warn);
 }
@@ -230,7 +230,7 @@
 
 .emcg__deck-tab--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }
 
@@ -321,7 +321,7 @@
 }
 
 .emcg__play:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.85);
+  background: rgba(201, 162, 107, 0.85);
 }
 
 .emcg__play:disabled {
@@ -343,7 +343,7 @@
 
 .emcg__action:hover:not(:disabled) {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
 }
 
 .emcg__action:disabled {
@@ -361,11 +361,11 @@
 }
 
 .emcg__verdict--working {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .emcg__verdict--solved {
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   border-color: var(--widget-success);
 }
 
@@ -411,6 +411,6 @@
 
 .emcg__puzzle-pick--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }

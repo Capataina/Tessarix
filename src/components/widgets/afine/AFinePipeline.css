@@ -73,28 +73,28 @@
 
 .afine-pipeline__stage--active.afine-pipeline__stage--cyan {
   border-color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
   box-shadow: 0 0 0 1px var(--accent-cyan), 0 0 16px -4px var(--glow-cyan);
 }
 .afine-pipeline__stage--active.afine-pipeline__stage--magenta {
   border-color: var(--accent-magenta);
-  background: rgba(255, 68, 170, 0.06);
+  background: rgba(181, 106, 71, 0.06);
   box-shadow: 0 0 0 1px var(--accent-magenta), 0 0 16px -4px var(--glow-magenta);
 }
 .afine-pipeline__stage--active.afine-pipeline__stage--yellow {
   border-color: var(--accent-yellow);
-  background: rgba(255, 214, 51, 0.06);
+  background: rgba(201, 154, 78, 0.06);
   box-shadow: 0 0 0 1px var(--accent-yellow), 0 0 16px -4px var(--glow-yellow);
 }
 .afine-pipeline__stage--active.afine-pipeline__stage--green {
   border-color: var(--accent-green);
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
   box-shadow: 0 0 0 1px var(--accent-green), 0 0 16px -4px var(--glow-green);
 }
 .afine-pipeline__stage--active.afine-pipeline__stage--violet {
   border-color: var(--accent-violet);
-  background: rgba(179, 102, 255, 0.06);
-  box-shadow: 0 0 0 1px var(--accent-violet), 0 0 16px -4px rgba(179, 102, 255, 0.35);
+  background: rgba(166, 120, 140, 0.06);
+  box-shadow: 0 0 0 1px var(--accent-violet), 0 0 16px -4px rgba(166, 120, 140, 0.35);
 }
 
 .afine-pipeline__stage-index {
@@ -203,7 +203,7 @@
 .afine-pipeline__nav-btn:hover:not(:disabled) {
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
 }
 
 .afine-pipeline__nav-btn:disabled {

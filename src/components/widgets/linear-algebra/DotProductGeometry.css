@@ -60,12 +60,12 @@
 }
 
 .dotprod__compat--positive {
-  background: rgba(62, 255, 142, 0.08);
+  background: rgba(135, 151, 106, 0.08);
   border-color: var(--widget-success);
 }
 
 .dotprod__compat--negative {
-  background: rgba(255, 90, 90, 0.08);
+  background: rgba(181, 84, 74, 0.08);
   border-color: var(--widget-danger);
 }
 
@@ -159,7 +159,7 @@
 
 .dotprod__preset:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
 }
 
 @media (max-width: 880px) {

@@ -77,7 +77,7 @@
   right: 0;
   top: 50%;
   height: 1px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(239, 231, 218, 0.18);
 }
 
 .fhc__cell-bar {
@@ -121,7 +121,7 @@
 
 .fhc__preset:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
 }
 
 .fhc__formula {

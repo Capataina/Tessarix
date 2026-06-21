@@ -61,12 +61,12 @@
 }
 
 .lincomb__dependence--indep {
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
   border-color: var(--widget-success);
 }
 
 .lincomb__dependence--dep {
-  background: rgba(255, 90, 90, 0.06);
+  background: rgba(181, 84, 74, 0.06);
   border-color: var(--widget-danger);
 }
 
@@ -131,7 +131,7 @@
   appearance: none;
   width: 100%;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(239, 231, 218, 0.1);
   border-radius: 2px;
   outline: none;
   cursor: pointer;

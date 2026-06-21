@@ -3,7 +3,7 @@
   padding: var(--space-4) var(--space-5);
   background: linear-gradient(
     180deg,
-    rgba(255, 214, 51, 0.04),
+    rgba(201, 154, 78, 0.04),
     transparent 60%
   ), var(--bg-surface);
   border: 1px solid var(--border-subtle);

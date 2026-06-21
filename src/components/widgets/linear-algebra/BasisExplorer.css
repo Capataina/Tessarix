@@ -29,7 +29,7 @@
 
 .basis__preset:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
 }
 
 .basis__plots {

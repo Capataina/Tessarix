@@ -29,12 +29,12 @@
 
 .gauss__preset:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
 }
 
 .gauss__preset--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.12);
+  background: rgba(201, 162, 107, 0.12);
   color: var(--widget-accent);
 }
 
@@ -107,7 +107,7 @@
 .gauss__cell--rhs {
   border-left: 1px solid var(--widget-border);
   margin-left: 0.4rem;
-  background: rgba(0, 212, 255, 0.04);
+  background: rgba(201, 162, 107, 0.04);
   color: var(--widget-accent);
 }
 
@@ -187,13 +187,13 @@
 }
 
 .gauss__apply:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
 }
 
 .gauss__undo:hover:not(:disabled),
 .gauss__reset:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
 }
 
 .gauss__apply:disabled,
@@ -250,7 +250,7 @@
 }
 
 .gauss__verdict--working {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .gauss__verdict--echelon {
@@ -259,7 +259,7 @@
 }
 
 .gauss__verdict--rref {
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
   border-color: var(--widget-success);
 }
 

@@ -88,7 +88,7 @@
 .mat-comp__entry-slider {
   appearance: none;
   height: 3px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(239, 231, 218, 0.1);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -133,7 +133,7 @@
 
 .mat-comp__preset:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
 }
 
 .mat-comp__plots {
@@ -203,12 +203,12 @@
 }
 
 .mat-comp__verdict--commute {
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
   border-color: var(--widget-success);
 }
 
 .mat-comp__verdict--no-commute {
-  background: rgba(255, 90, 90, 0.06);
+  background: rgba(181, 84, 74, 0.06);
   border-color: var(--widget-danger);
 }
 

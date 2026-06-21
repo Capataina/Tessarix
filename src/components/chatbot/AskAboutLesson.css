@@ -145,19 +145,19 @@
 }
 
 .ask-panel__msg--user .ask-panel__msg-body {
-  background: rgba(255, 68, 170, 0.05);
-  border-color: rgba(255, 68, 170, 0.15);
+  background: rgba(181, 106, 71, 0.05);
+  border-color: rgba(181, 106, 71, 0.15);
   color: var(--text-primary);
 }
 
 .ask-panel__msg--streaming .ask-panel__msg-body {
-  background: rgba(0, 212, 255, 0.04);
-  border-color: rgba(0, 212, 255, 0.2);
+  background: rgba(201, 162, 107, 0.04);
+  border-color: rgba(201, 162, 107, 0.2);
 }
 
 .ask-panel__msg--error .ask-panel__msg-body {
-  background: rgba(255, 90, 90, 0.06);
-  border-color: rgba(255, 90, 90, 0.2);
+  background: rgba(181, 84, 74, 0.06);
+  border-color: rgba(181, 84, 74, 0.2);
   color: var(--accent-red);
   font-family: var(--font-mono);
 }
@@ -232,7 +232,7 @@
 
 .ask-panel__textarea:focus {
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(201, 162, 107, 0.1);
 }
 
 .ask-panel__textarea:disabled {
@@ -260,7 +260,7 @@
 
 .ask-panel__send {
   padding: var(--space-2) var(--space-4);
-  background: rgba(0, 212, 255, 0.12);
+  background: rgba(201, 162, 107, 0.12);
   border: 1px solid var(--accent-cyan);
   border-radius: var(--radius-sm);
   color: var(--accent-cyan);
@@ -274,7 +274,7 @@
 }
 
 .ask-panel__send:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.2);
+  background: rgba(201, 162, 107, 0.2);
 }
 
 .ask-panel__send:disabled {

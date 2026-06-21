@@ -13,13 +13,13 @@
 .ds--near {
   border-color: var(--widget-warn);
   box-shadow: 0 0 0 1px var(--widget-warn),
-    0 0 24px -10px rgba(255, 214, 51, 0.45);
+    0 0 24px -10px rgba(201, 154, 78, 0.45);
 }
 
 .ds--solved {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.45);
+    0 0 32px -8px rgba(135, 151, 106, 0.45);
 }
 
 .ds__head {
@@ -92,7 +92,7 @@
 
 .ds__action:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
 }
 
 .ds__action--primary {
@@ -101,7 +101,7 @@
 }
 
 .ds__action--primary:hover {
-  background: rgba(255, 214, 51, 0.08);
+  background: rgba(201, 154, 78, 0.08);
 }
 
 .ds__meter {
@@ -124,7 +124,7 @@
 .ds__meter-track {
   position: relative;
   height: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(239, 231, 218, 0.04);
   border: 1px solid var(--widget-border);
   border-radius: 8px;
   overflow: hidden;
@@ -214,16 +214,16 @@
 }
 
 .ds__verdict--working {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .ds__verdict--near {
-  background: rgba(255, 214, 51, 0.07);
+  background: rgba(201, 154, 78, 0.07);
   border-color: var(--widget-warn);
 }
 
 .ds__verdict--solved {
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   border-color: var(--widget-success);
 }
 

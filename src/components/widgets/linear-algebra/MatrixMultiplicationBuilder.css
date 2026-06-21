@@ -13,7 +13,7 @@
 .mmb--solved {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.35);
+    0 0 32px -8px rgba(135, 151, 106, 0.35);
 }
 
 .mmb__head {
@@ -141,8 +141,8 @@
 .mmb__matrix--row .mmb__matrix-grid {
   background: linear-gradient(
     180deg,
-    rgba(0, 212, 255, 0.06) 0%,
-    rgba(0, 212, 255, 0.06) 49%,
+    rgba(201, 162, 107, 0.06) 0%,
+    rgba(201, 162, 107, 0.06) 49%,
     transparent 49%,
     transparent 51%,
     rgba(255, 90, 232, 0.06) 51%,
@@ -155,8 +155,8 @@
 .mmb__matrix--col .mmb__matrix-grid {
   background: linear-gradient(
     90deg,
-    rgba(0, 212, 255, 0.06) 0%,
-    rgba(0, 212, 255, 0.06) 49%,
+    rgba(201, 162, 107, 0.06) 0%,
+    rgba(201, 162, 107, 0.06) 49%,
     transparent 49%,
     transparent 51%,
     rgba(255, 90, 232, 0.06) 51%,
@@ -200,7 +200,7 @@
 
 .mmb__chip:hover {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
   transform: translateY(-1px);
 }
 
@@ -218,9 +218,9 @@
 
 .mmb__chip--selected {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.18);
+  background: rgba(201, 162, 107, 0.18);
   box-shadow: 0 0 0 1px var(--widget-accent),
-    0 0 20px -8px rgba(0, 212, 255, 0.7);
+    0 0 20px -8px rgba(201, 162, 107, 0.7);
 }
 
 .mmb__chip--selected .mmb__chip-name {
@@ -269,7 +269,7 @@
 .mmb__slot--done {
   border-style: solid;
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.08);
+  background: rgba(135, 151, 106, 0.08);
 }
 
 .mmb__slot-label {
@@ -318,14 +318,14 @@
 .mmb__subtarget--armed {
   border-color: var(--widget-accent);
   color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.08);
+  background: rgba(201, 162, 107, 0.08);
   animation: mmbPulse 1.2s ease-in-out infinite;
 }
 
 .mmb__subtarget--filled {
   border-color: var(--widget-accent);
   color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.12);
+  background: rgba(201, 162, 107, 0.12);
 }
 
 .mmb__subtarget-name {
@@ -341,7 +341,7 @@
 /* Rejection animation: the slot keys-off rejectKey to retrigger this. */
 @keyframes mmbReject {
   0% {
-    background: rgba(255, 90, 90, 0.35);
+    background: rgba(181, 84, 74, 0.35);
     border-color: var(--widget-danger);
   }
   100% {
@@ -352,10 +352,10 @@
 
 @keyframes mmbPulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0);
+    box-shadow: 0 0 0 0 rgba(201, 162, 107, 0);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.18);
+    box-shadow: 0 0 0 3px rgba(201, 162, 107, 0.18);
   }
 }
 
@@ -402,16 +402,16 @@
 }
 
 .mmb__verdict--idle {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .mmb__verdict--armed {
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
   border-color: var(--widget-accent);
 }
 
 .mmb__verdict--solved {
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
   border-color: var(--widget-success);
 }
 
@@ -462,7 +462,7 @@
 
 .mmb__puzzle-pick--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }
 
@@ -481,5 +481,5 @@
 .mmb__reset:hover {
   border-color: var(--widget-warn);
   color: var(--widget-warn);
-  background: rgba(255, 214, 51, 0.06);
+  background: rgba(201, 154, 78, 0.06);
 }

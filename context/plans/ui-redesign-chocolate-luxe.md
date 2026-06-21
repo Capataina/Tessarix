@@ -39,17 +39,22 @@ no edits. New code uses the semantic names.
       blockquote, link underline, pillar/tag tints → warm.
 - [x] Fix 4 hardcoded-hex stragglers: `shared/FunctionGrapher.tsx` (#00d4ff…),
       `shared/LineChart.tsx` (#0c0c18) → consume tokens via `resolveColor`.
-- [ ] `shared/WidgetExplainer.css` — restyle (sits under every widget; blends globally).
-- [ ] afine widgets (flagship + the two screenshotted offenders): full AnsiBox
-      terminal-pane treatment + sizing fix. `MetricComparison`, `EmbeddingHeatmap`
-      (oversized), `AdapterHeatmap`, `GeluComparison`, `CalibratorComparison`,
-      `AFinePipeline`, `FidelityHeadCalculator`, `RatioCollapseDemo`,
-      `TranslationVsBlurPlot`.
-- [ ] Verify build: `pnpm tsc --noEmit`, `pnpm build` (vite). Commit checkpoint.
-- [ ] Sweep 44 LA widgets to the terminal-pane chrome (token shift gives them
-      colour/depth/blend free; this pass aligns chrome + caps canvas height).
-      Parallelisable via subagents in batches.
-- [ ] frontend-design skill log at first build checkpoint.
+- [x] `shared/WidgetExplainer.css` — warmed neon leaks + mono label header.
+- [x] Global neon-rgba sweep (perl, alpha-preserving): 456 hardcoded
+      cyan/magenta/green/white rgba across 64 CSS files → warm camel/rust/sage/
+      ochre/mauve/parchment. Zero neon rgba remain anywhere in src.
+- [x] `MetricComparison` + `EmbeddingHeatmap`: full terminal-pane treatment +
+      sizing fix (the two screenshotted offenders).
+- [x] Verify build green at each checkpoint (`pnpm build`).
+- [ ] REMAINING (optional polish, best after a visual checkpoint with the user):
+      full terminal-pane CHROME flatten (drop card-in-card, mono headers) on the
+      other ~7 afine + 44 LA widgets. They already read warm/blended via the
+      token shift + neon sweep; this is structural polish. Use MetricComparison
+      /EmbeddingHeatmap as templates; parallelise via subagents in batches.
+- [ ] REMAINING: per-widget sizing audit for any other oversized widgets. NOT a
+      blanket canvas cap — many LA canvases are drag-interactive and a global
+      object-fit cap would break pointer-to-canvas coordinate mapping. Do
+      per-widget, carefully, where genuinely oversized.
 
 ## Notes
 

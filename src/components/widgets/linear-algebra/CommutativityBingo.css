@@ -69,13 +69,13 @@
 .cb__legend-chip--commute {
   color: var(--widget-success);
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
 }
 
 .cb__legend-chip--nope {
   color: var(--widget-danger);
   border-color: var(--widget-danger);
-  background: rgba(255, 90, 90, 0.06);
+  background: rgba(181, 84, 74, 0.06);
 }
 
 .cb__grid {
@@ -110,17 +110,17 @@
 
 .cb__cell--commute {
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.05);
+  background: rgba(135, 151, 106, 0.05);
 }
 
 .cb__cell--nope {
   border-color: var(--widget-danger);
-  background: rgba(255, 90, 90, 0.05);
+  background: rgba(181, 84, 74, 0.05);
 }
 
 .cb__cell--correct {
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.12);
+  background: rgba(135, 151, 106, 0.12);
   box-shadow: 0 0 0 1px var(--widget-success);
   cursor: default;
 }
@@ -131,7 +131,7 @@
 
 .cb__cell--wrong {
   border-color: var(--widget-danger);
-  background: rgba(255, 90, 90, 0.12);
+  background: rgba(181, 84, 74, 0.12);
   box-shadow: 0 0 0 1px var(--widget-danger);
   cursor: default;
 }
@@ -170,13 +170,13 @@
 .cb__cell-mark--commute {
   color: var(--widget-success);
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.08);
+  background: rgba(135, 151, 106, 0.08);
 }
 
 .cb__cell-mark--nope {
   color: var(--widget-danger);
   border-color: var(--widget-danger);
-  background: rgba(255, 90, 90, 0.08);
+  background: rgba(181, 84, 74, 0.08);
 }
 
 .cb__cell-pair {
@@ -289,16 +289,16 @@
 }
 
 .cb__verdict--idle {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .cb__verdict--win {
-  background: rgba(62, 255, 142, 0.06);
+  background: rgba(135, 151, 106, 0.06);
   border-color: var(--widget-success);
 }
 
 .cb__verdict--mixed {
-  background: rgba(255, 214, 51, 0.05);
+  background: rgba(201, 154, 78, 0.05);
   border-color: var(--widget-warn);
 }
 

@@ -100,7 +100,7 @@
 
 .bon__answer:hover:not(:disabled) {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
   transform: translateY(-1px);
 }
 
@@ -144,12 +144,12 @@
 
 .bon__answer--flash-correct {
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.1);
+  background: rgba(135, 151, 106, 0.1);
 }
 
 .bon__answer--flash-truth {
   border-color: var(--widget-warn);
-  background: rgba(255, 214, 51, 0.08);
+  background: rgba(201, 154, 78, 0.08);
 }
 
 .bon__feedback {
@@ -162,12 +162,12 @@
 
 .bon__feedback--ok {
   color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.05);
+  background: rgba(135, 151, 106, 0.05);
 }
 
 .bon__feedback--bad {
   color: var(--widget-danger);
-  background: rgba(255, 90, 90, 0.05);
+  background: rgba(181, 84, 74, 0.05);
 }
 
 .bon__scorecard {
@@ -224,7 +224,7 @@
 
 .bon__breakdown-bar {
   height: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(239, 231, 218, 0.08);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -254,7 +254,7 @@
 }
 
 .bon__restart:hover {
-  background: rgba(0, 212, 255, 0.85);
+  background: rgba(201, 162, 107, 0.85);
 }
 
 .bon__instructions {
@@ -270,7 +270,7 @@
 .bon__instructions kbd {
   font-family: var(--font-mono);
   font-size: 0.82rem;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(239, 231, 218, 0.08);
   border: 1px solid var(--widget-border-strong);
   padding: 0.05rem 0.4rem;
   border-radius: 3px;

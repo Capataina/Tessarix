@@ -13,7 +13,7 @@
 .ir--solved {
   border-color: var(--widget-success);
   box-shadow: 0 0 0 1px var(--widget-success),
-    0 0 32px -8px rgba(62, 255, 142, 0.35);
+    0 0 32px -8px rgba(135, 151, 106, 0.35);
 }
 
 .ir__head {
@@ -71,7 +71,7 @@
 
 .ir__diff-btn--active {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(201, 162, 107, 0.1);
   color: var(--widget-accent);
 }
 
@@ -193,13 +193,13 @@
 
 .ir__input--correct {
   border-color: var(--widget-success);
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   color: var(--widget-success);
 }
 
 .ir__input--wrong {
   border-color: var(--widget-danger);
-  background: rgba(255, 90, 90, 0.07);
+  background: rgba(181, 84, 74, 0.07);
   color: var(--widget-danger);
 }
 
@@ -241,7 +241,7 @@
 }
 
 .ir__submit:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.85);
+  background: rgba(201, 162, 107, 0.85);
 }
 
 .ir__submit:disabled {
@@ -263,7 +263,7 @@
 
 .ir__action:hover:not(:disabled) {
   border-color: var(--widget-accent);
-  background: rgba(0, 212, 255, 0.06);
+  background: rgba(201, 162, 107, 0.06);
 }
 
 .ir__action--singular {
@@ -272,7 +272,7 @@
 }
 
 .ir__action--singular:hover:not(:disabled) {
-  background: rgba(255, 90, 90, 0.08);
+  background: rgba(181, 84, 74, 0.08);
   border-color: var(--widget-danger);
 }
 
@@ -283,7 +283,7 @@
 }
 
 .ir__action--primary:hover {
-  background: rgba(255, 214, 51, 0.06);
+  background: rgba(201, 154, 78, 0.06);
 }
 
 .ir__action:disabled {
@@ -335,21 +335,21 @@
 }
 
 .ir__verdict--idle {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(239, 231, 218, 0.02);
 }
 
 .ir__verdict--win {
-  background: rgba(62, 255, 142, 0.07);
+  background: rgba(135, 151, 106, 0.07);
   border-color: var(--widget-success);
 }
 
 .ir__verdict--wrong {
-  background: rgba(255, 90, 90, 0.07);
+  background: rgba(181, 84, 74, 0.07);
   border-color: var(--widget-danger);
 }
 
 .ir__verdict--revealed {
-  background: rgba(255, 214, 51, 0.07);
+  background: rgba(201, 154, 78, 0.07);
   border-color: var(--widget-warn);
 }
 

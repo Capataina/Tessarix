@@ -127,7 +127,7 @@
 
 .enn__table-row--truth span {
   color: var(--widget-text);
-  background: rgba(62, 255, 142, 0.04);
+  background: rgba(135, 151, 106, 0.04);
 }
 
 .enn__controls {
@@ -164,5 +164,5 @@
 }
 
 .enn__btn--primary:hover:not(:disabled) {
-  background: rgba(62, 255, 142, 0.08);
+  background: rgba(135, 151, 106, 0.08);
 }
