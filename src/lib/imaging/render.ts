@@ -19,12 +19,15 @@ export function drawReference(
   w: number,
   h: number,
 ): void {
-  // Warm coffee → chestnut → tan → cream diagonal gradient — gives PSNR
-  // something to chew on when brightness shifts.
-  const grad = ctx.createLinearGradient(0, 0, w, h);
-  for (const [stop, c] of refImage.gradientStops) grad.addColorStop(stop, c);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, w, h);
+  // Flat horizontal palette bands instead of a smooth gradient — reads as a
+  // terminal diagram, not a photo. Hard edges between bands give SSIM
+  // structure; the uniform fills give PSNR / brightness a clean target.
+  for (let i = 0; i < refImage.bands.length; i++) {
+    const [yFrac, c] = refImage.bands[i];
+    const yEnd = i + 1 < refImage.bands.length ? refImage.bands[i + 1][0] : 1;
+    ctx.fillStyle = c;
+    ctx.fillRect(0, Math.round(yFrac * h), w, Math.ceil((yEnd - yFrac) * h));
+  }
 
   // Diagonal hatching across the lower half — SSIM-sensitive structure.
   ctx.save();

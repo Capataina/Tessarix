@@ -42,22 +42,27 @@ export function mix(a: string, b: string, t: number): string {
 }
 
 /**
- * Reference test-image palette (MetricComparison). A warm coffee → tan → cream
- * diagonal gradient plus on-palette shape colours, all derived from tokens so
- * the procedural image sits in the page's scheme.
+ * Reference test-image palette (MetricComparison). Flat horizontal palette
+ * BANDS (not a smooth gradient) plus on-palette flat shapes, all derived from
+ * tokens, so the procedural image reads as a flat terminal-style diagram rather
+ * than a photograph dropped into the UI. Hard band edges also make blur and
+ * translation more legible than a smooth gradient would. Reusable as the
+ * "sample raster" style for any widget that needs flat structured pixels.
  */
 export const refImage = {
-  gradientStops: [
-    [0, mix(color.bgBase, color.tobacco, 0.4)],
-    [0.45, color.tobacco],
-    [0.85, color.camel],
-    [1, mix(color.camel, color.textPrimary, 0.5)],
+  // Each entry is [top y-fraction, fill]; each band runs down to the next
+  // band's top (the last runs to the bottom).
+  bands: [
+    [0, mix(color.bgBase, color.tobacco, 0.5)],
+    [0.32, color.tobacco],
+    [0.58, color.camel],
+    [0.8, mix(color.camel, color.textPrimary, 0.45)],
   ] as Array<[number, string]>,
-  hatch: alpha(color.textPrimary, 0.4),
+  hatch: alpha(color.textPrimary, 0.3),
   bar: color.ochre,
   circle: color.rust,
   square: color.eucalyptus,
-  topStripe: alpha(color.bgBase, 0.6),
+  topStripe: alpha(color.bgBase, 0.55),
 };
 
 /**
