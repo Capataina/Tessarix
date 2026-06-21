@@ -36,24 +36,19 @@
   transition: background var(--t-fast), color var(--t-fast);
 }
 
-.tier-control__btn:hover:not(.tier-control__btn--active) {
+.tier-control__btn:hover {
   color: var(--text-secondary);
 }
 
-.tier-control__btn--active.tier-control__btn--essential {
-  background: rgba(201, 162, 107, 0.12);
-  color: var(--accent-cyan);
-  box-shadow: 0 0 0 1px rgba(201, 162, 107, 0.3);
+/* Depth gauge: every tier up to and including the active one lights tan, so the
+   control reads as "how deep am I going" rather than three separate buttons. */
+.tier-control__btn--lit {
+  color: var(--accent-tobacco);
+  background: rgba(194, 168, 120, 0.06);
 }
 
-.tier-control__btn--active.tier-control__btn--standard {
-  background: rgba(166, 120, 140, 0.12);
-  color: var(--accent-violet);
-  box-shadow: 0 0 0 1px rgba(166, 120, 140, 0.3);
-}
-
-.tier-control__btn--active.tier-control__btn--complete {
-  background: rgba(201, 154, 78, 0.12);
-  color: var(--accent-yellow);
-  box-shadow: 0 0 0 1px rgba(201, 154, 78, 0.3);
+.tier-control__btn--active {
+  color: var(--accent-camel);
+  background: rgba(194, 168, 120, 0.12);
+  box-shadow: inset 0 -2px 0 var(--accent-camel);
 }

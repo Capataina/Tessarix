@@ -1,0 +1,67 @@
+/* ===========================================================================
+ * Tessarix motion language
+ *
+ * One orchestrated moment (the app "booting" like a terminal coming up) plus
+ * quiet entrances. Everything is gated by the reduced-motion setting via the
+ * global rule in theme.css, which zeroes animation durations.
+ *
+ * Durations and easings come from the design tokens (--dur-* / --ease-*).
+ * =========================================================================== */
+
+@keyframes boot-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes boot-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The chrome settles first, then the content rises under it. */
+.app-topbar {
+  animation: boot-fade-down var(--dur-base) var(--ease-out) backwards;
+}
+.app-main {
+  animation: boot-fade-up var(--dur-boot) var(--ease-out) 60ms backwards;
+}
+
+/* Lesson content prints in top-to-bottom in a short staggered cascade, like a
+   terminal coming up. Capped so long lessons reveal quickly; newly-shown
+   sections (e.g. when the reader raises the depth tier) fade in the same way. */
+.lesson > * {
+  animation: boot-fade-up var(--dur-base) var(--ease-out) backwards;
+}
+.lesson > *:nth-child(1) { animation-delay: 40ms; }
+.lesson > *:nth-child(2) { animation-delay: 80ms; }
+.lesson > *:nth-child(3) { animation-delay: 120ms; }
+.lesson > *:nth-child(4) { animation-delay: 160ms; }
+.lesson > *:nth-child(5) { animation-delay: 200ms; }
+.lesson > *:nth-child(n + 6) { animation-delay: 240ms; }
+
+/* Catalog cards settle in as one quiet grid cascade. */
+.catalog-card {
+  animation: boot-fade-up var(--dur-base) var(--ease-out) backwards;
+}
+
+/* Hover micro-interactions: a 1px plate-lift on the interactive surfaces that
+   read as "cards" — catalog entries lift toward the reader on hover. */
+.catalog-card {
+  transition: transform var(--t-fast), border-color var(--t-fast),
+    box-shadow var(--t-fast);
+}
+.catalog-card:hover {
+  transform: translateY(-2px);
+}

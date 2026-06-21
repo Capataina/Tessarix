@@ -41,35 +41,23 @@
   color: var(--text-primary);
 }
 
-.app-topbar__brand-mark {
+.tesseract-mark {
   width: 22px;
   height: 22px;
-  position: relative;
+  color: var(--accent-camel);
+  transition: transform var(--dur-slow) var(--ease-out), color var(--t-fast);
 }
 
-.app-topbar__brand-mark::before,
-.app-topbar__brand-mark::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--accent-cyan);
-  transform: rotate(45deg);
-}
-.app-topbar__brand-mark::after {
-  inset: 4px;
-  border-color: var(--accent-magenta);
-  opacity: 0.7;
+.app-topbar__brand:hover .tesseract-mark,
+.app-topbar__brand--button:hover .tesseract-mark {
+  transform: rotate(90deg);
+  color: var(--accent-ochre);
 }
 
 .app-topbar__brand-text {
-  background: linear-gradient(
-    90deg,
-    var(--text-primary) 0%,
-    var(--accent-cyan) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.2em;
+  color: var(--text-primary);
+  transition: color var(--t-fast);
 }
 
 .app-topbar__lesson {
@@ -134,8 +122,9 @@
 }
 
 .app-topbar__pillar--active {
-  background: rgba(201, 162, 107, 0.14);
+  background: rgba(194, 168, 120, 0.1);
   color: var(--accent-camel);
+  box-shadow: inset 0 -2px 0 var(--accent-camel);
 }
 
 .app-topbar__pillar:disabled {
@@ -222,11 +211,7 @@
 }
 
 .app-topbar__brand--button:hover .app-topbar__brand-text {
-  color: var(--widget-accent);
-}
-
-.app-topbar__brand--button:hover .app-topbar__brand-mark {
-  background: var(--widget-accent);
+  color: var(--accent-camel);
 }
 
 .lesson-loading {

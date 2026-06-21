@@ -10,6 +10,7 @@ import { initTelemetry, emit as emitTelemetry } from "./lib/telemetry";
 import { prewarmLLM } from "./lib/llm/prewarm";
 import { findLesson, type LessonFrontmatter } from "./lessons/registry";
 import "./App.css";
+import "./styles/motion.css";
 
 type Route =
   | { kind: "catalog" }

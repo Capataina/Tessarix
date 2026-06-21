@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { LessonTOC } from "./LessonTOC";
 import { ReadingProgress } from "./ReadingProgress";
 import { TierControl } from "./TierControl";
+import { TesseractMark } from "./TesseractMark";
 import { SettingsButton } from "./SettingsPanel";
 import { AskAboutLesson } from "./chatbot/AskAboutLesson";
 import { emit as emitTelemetry } from "../lib/telemetry";
@@ -135,12 +136,12 @@ export function Layout({
             onClick={onBrandClick}
             aria-label="Back to library"
           >
-            <span className="app-topbar__brand-mark" aria-hidden />
+            <TesseractMark />
             <span className="app-topbar__brand-text">Tessarix</span>
           </button>
         ) : (
           <div className="app-topbar__brand">
-            <span className="app-topbar__brand-mark" aria-hidden />
+            <TesseractMark />
             <span className="app-topbar__brand-text">Tessarix</span>
           </div>
         )}

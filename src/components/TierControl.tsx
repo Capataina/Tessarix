@@ -22,19 +22,20 @@ const TIERS: { id: ComplexityTier; label: string; description: string }[] = [
 
 export function TierControl() {
   const { tier, setTier } = useTier();
+  const activeIdx = TIERS.findIndex((t) => t.id === tier);
 
   return (
     <div className="tier-control" role="radiogroup" aria-label="Complexity tier">
       <div className="tier-control__label">Depth</div>
       <div className="tier-control__buttons">
-        {TIERS.map((t) => (
+        {TIERS.map((t, i) => (
           <button
             key={t.id}
             role="radio"
             aria-checked={tier === t.id}
-            className={`tier-control__btn tier-control__btn--${t.id} ${
-              tier === t.id ? "tier-control__btn--active" : ""
-            }`}
+            className={`tier-control__btn ${
+              i <= activeIdx ? "tier-control__btn--lit" : ""
+            } ${tier === t.id ? "tier-control__btn--active" : ""}`}
             onClick={() => {
               if (t.id !== tier) {
                 emitTelemetry({
