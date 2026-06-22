@@ -327,7 +327,7 @@ Prerequisites: Node 20+, pnpm 9+, Rust toolchain (stable), and the Tauri 2 syste
 
 ## 14. Status
 
-Pre-Milestone 1. Repository was scaffolded on 2026-05-11 via `create-tauri-app` (Tauri 2 + Vite + React 19 + TypeScript). MDX content layer, component library, and SQLite layer are not yet wired up. The next concrete step is Milestone 1 as scoped above: the substrate + the A-FINE lesson + all three views rendering.
+Past Milestone 1, well into Milestone 2 (version 0.3.2). Scaffolded 2026-05-11; since then the M1 substrate shipped (the A-FINE lesson with all three views rendering), followed by an 8-lesson linear-algebra track carrying ~50 interactive widgets, a local-LLM layer (Ollama) powering the in-lesson chatbot, the catalog recommender, and state-aware widget explanations, a telemetry layer, and — most recently — a single-source design system (`src/styles/`, see `context/systems/styling-system.md`) under a chocolate-luxe / terminal visual identity (`context/notes/visual-identity.md`). Still unbuilt: the SQLite spaced-repetition store, the adaptive scheduler, the Quiz / Interview pillars, the sync-learning agent, and the Claude-API grader. The host (Rust) side stays thin beyond the Ollama + telemetry IPC modules.
 
 ---
 
