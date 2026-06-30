@@ -20,10 +20,23 @@ Signature elements:
 
 - A first chocolate palette (base `#15110d`, accent `#c9a26b`) was shipped, then refined darker and more muted after the user found it "odd rather than premium". The path to a clean result also required catching that the settings menu / GoalChain used an undefined `--surface-1/2` token namespace falling back to cold navy, and that the procedurally-drawn test image + heatmap colormap were neon hardcoded in JS (CSS could not reach them) — both fixed by routing through the token system.
 
+## ASCII custom displays
+
+**Any "custom display" — anything that isn't served by a standard chart/graph widget — renders as ASCII art, not as a pixel raster** (decision, user, 2026-06-30). The trigger that prompted it: the A-FINE lesson's `MetricComparison` (a band scene with a painted circle/square) and `EmbeddingHeatmap` (blurry pixel panels) were the only photo-like rasters left in the app. Palette-matched but incoherent — a photograph dropped into a terminal is still a photograph. ASCII art is the terminal-native form, so bespoke displays become real text on the page rather than an embedded image.
+
+What this looks like in practice:
+
+- **`MetricComparison`** is now a rotating `donut.c` torus (luminance = surface-normal · light → glyph ramp) over faint horizontal CRT scanlines. The luminance field IS what PSNR/SSIM measure, so the thing the reader sees and the thing the metric scores are one object — every glyph is a bucket of the measured field.
+- **`EmbeddingHeatmap`** is a 32×16 ASCII character field: glyph density = magnitude, per-cell colour = sign (the diverging colormap).
+- **Charts stay charts.** `TranslationVsBlurPlot` is a line chart and remains one — the principle is about bespoke rasters, not standard chart types. ASCII-ifying a response curve would be worse, not more coherent.
+
+The substrate is [`src/lib/ascii/`](../../src/lib/ascii) (luminance `Grid` + ramp, grid distortions, grid PSNR/SSIM, the donut scene, a reusable `AsciiField` component). A hard-won lesson from the build: when a custom display also carries a pedagogical contract (here, PSNR/SSIM must *diverge* for the lesson's GoalChain), the ASCII form has to be designed to preserve that contract, not just to look right — a bare donut broke the lesson; a donut + scanlines preserved it. See [`../plans/ascii-custom-displays.md`](../plans/ascii-custom-displays.md).
+
 ## Guiding Principles
 
 - One bold idea (the tesseract + the terminal language); everything around it quiet and disciplined.
 - Every design value flows from the token source of truth; never hardcode a colour in a widget. See [`../systems/styling-system.md`](../systems/styling-system.md).
+- Custom displays (non-chart bespoke visuals) are ASCII art, built on `src/lib/ascii`; standard charts stay charts.
 - Motion is one orchestrated moment (the boot cascade) plus restraint; always gated by the reduced-motion setting.
 
 ## Related Systems and Notes
@@ -31,4 +44,5 @@ Signature elements:
 - [`../systems/styling-system.md`](../systems/styling-system.md) — the token system that implements this identity.
 - [`interface-affordances.md`](interface-affordances.md) — the lesson-reading affordances (TOC, tiers, chatbot) the chrome wraps.
 - [`../plans/ui-redesign-chocolate-luxe.md`](../plans/ui-redesign-chocolate-luxe.md) — the redesign plan + remaining follow-ons (catalog ledger, per-widget chrome flatten).
+- [`../plans/ascii-custom-displays.md`](../plans/ascii-custom-displays.md) — the ASCII custom-display pass (donut + heatmap) and the resolved-design record.
 - Reference: Caner's `capataina-website` `AnsiBox.tsx` for the terminal-pane house style.

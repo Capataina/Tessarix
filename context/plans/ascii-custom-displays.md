@@ -47,11 +47,18 @@ and all goals are reachable. Verified in `/tmp/tessarix-ascii/` Python prototype
 
 ## Tasks
 
-- [ ] 1. `src/lib/ascii/` — Grid + ramp, grid distortions, grid psnr/ssim, donut scene, AsciiField component
-- [ ] 2. `MetricComparison` → rotating ASCII donut (preserve sliders/presets/explainer/onStateChange keys)
-- [ ] 3. `EmbeddingHeatmap` → ASCII character heatmaps (keep cosine/fidelity/morph)
-- [ ] 4. `TranslationVsBlurPlot` → same scene generator; then delete `lib/imaging/` + `refImage`
-- [ ] 5. Codify the ASCII-custom-display principle in `context/notes/`; commit + version bump
+- [x] 1. `src/lib/ascii/` — Grid + ramp, grid distortions, grid psnr/ssim, donut scene, AsciiField component (commit 5c49984)
+- [x] 2. `MetricComparison` → rotating ASCII donut (preserved sliders/presets/explainer/onStateChange keys; commit 5c49984, visibility fix a57832b)
+- [x] 3. `EmbeddingHeatmap` → ASCII character heatmaps (kept cosine/fidelity/morph; commit 42a8f80)
+- [x] 4. `TranslationVsBlurPlot` → same scene generator; deleted `lib/imaging/` + `refImage` (commit 27821cb)
+- [x] 5. Codified the ASCII-custom-display principle in `context/notes/visual-identity.md`; version bumped 0.3.2 → 0.3.3
+
+**Status: complete.** All three A-FINE image widgets are terminal-native and measure
+consistently. Open follow-up: in-app visual confirmation of the donut animation/sheen
+and heatmap colour (no headless webview harness in repo — verified via tsx renders +
+build; user confirms visually). A warm gradient sheen on the donut glyphs was deferred
+after the undefined-token bug (a57832b) — re-add later via a belt-and-braces pattern
+(solid `color` fallback + `-webkit-text-fill-color: transparent`) once eyeballed.
 
 ## Blast radius
 - `lib/imaging/{render,distortions,metrics}.ts` consumed by `MetricComparison` +
