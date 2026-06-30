@@ -241,6 +241,17 @@ The library is the **residue of authoring real lessons**, not a pre-built monoli
 
 Fully-generic (parse arbitrary algorithm code, infer data structures, polymorphic visualisation) is essentially a small visualisation IDE — months of work for marginal gain at the self-audience quality bar. Semi-generic is the chosen starting point: `<StepController>` + the typed data-visualiser library + per-algorithm code that calls into them. Fully-generic can graduate from semi-generic later if patterns repeat enough to obviously pay. The abstraction is not pre-built.
 
+### 10.4 Self-auditing test harness (planned)
+
+The author cannot eyeball every lesson for visual and behavioural bugs (the rotating donut once leaked its container) — so the agent has to verify the app itself. The framework is modelled on the Performance Profiler's layered off-game harness, adapted to Tessarix's advantage of having **no loader-lock**: the frontend is directly drivable, so the visual + interactive layers are the primary gate, not a substitute for a blocked one.
+
+- **Unit / logic** — `vitest` (TS: the `src/lib/ascii` maths, geometry, the concept-linker, the graph builder) + `cargo test` (Rust host). `scripts/verify-donut.ts` is the seed.
+- **Structural probes** — deterministic Playwright DOM + computed-style probes for overflow / leaks, unreadable or unstyled text, broken layout, mis-alignment. The load-bearing lesson from Performance Profiler: **probes beat screenshots for structure** (vision over-reports on layout); the donut-leak is an overflow probe, not a visual review.
+- **Render coverage + adaptive interaction** — walk the lesson registry, render every widget at default *and* edge-case states, and **discover interactions generically** (DOM scan + a per-widget descriptor) to drive sliders / buttons / drag-regions and catch anomalies (NaN, dead controls, console errors, mid-interaction overflow). Generic by construction: a new lesson is tested with zero harness change.
+- **Vision design audit** — the agent reviews a screenshot gallery against a design rubric for *holistic* quality (stiffness, inconsistency, off-identity), writing durable per-surface dossiers. Reserved for what probes can't judge.
+
+The connective tissue is one **widget descriptor** — an extension of the existing `widgetDescription` prop — consumed by three systems: `<WidgetExplainer>` (state caption), the mini-lesson + concept index (`teaches` / `howToRead`), and the test harness (`controls` / `invariants`). (→ [`context/plans/testing-framework.md`](context/plans/testing-framework.md))
+
 ---
 
 ## 11. The sync-learning agent (autonomous AI authoring layer)
@@ -315,6 +326,9 @@ The fullscreen widget mini-lesson (bottom drawer), "explain here", and ephemeral
 ### Milestone 8+ — Graduated abstractions
 Lift abstractions (fully-generic playground engine, parameterised lesson templates, shared rubric library) only where repetition by then obviously pays. Deferred until the patterns surface.
 
+### Cross-cutting — the self-auditing test harness
+Built incrementally alongside everything above (Performance-Profiler-style), not as a single milestone: the unit layer lands first (cheap, immediate), then the structural-probe + adaptive-interaction harness grows to cover every lesson generically, then the vision design audit. The agent verifies the app itself; the author stops being the only bug-catcher. (→ [`context/plans/testing-framework.md`](context/plans/testing-framework.md))
+
 ---
 
 ## 15. Why this is interesting
@@ -348,8 +362,9 @@ Lift abstractions (fully-generic playground engine, parameterised lesson templat
 | Pre-generated bank vs live-generation tradeoff | Both modes likely needed; proportion is a design call. |
 | Topic granularity — per-file / per-section / per-concept? | The `topic` frontmatter field is the current answer; revisit if clusters get fuzzy. |
 | Prerequisite enforcement — hard gate or advisory? | Lean advisory (show the order, don't lock it); unresolved. |
-| Component layer — Radix-on-tokens vs shadcn+Tailwind? | Lean Radix + `vaul` on the existing tokens (protects the single token system); user to land. (→ [`context/plans/component-system.md`](context/plans/component-system.md)) |
-| Per-category colour — accent-only vs full surface-temperature shift? | Lean accent-only (keeps warmth); decide when palettes are designed. |
+| Component layer — Radix-on-tokens vs shadcn+Tailwind? | **Decided: Radix + `vaul` on the existing tokens**, fully animated — shadcn generics are insufficient and Tailwind would fork the token system. (→ [`context/plans/component-system.md`](context/plans/component-system.md)) |
+| Per-category colour — accent-only vs full surface-temperature shift? | **Decided: full surface-temperature shift** per category; cohesion comes from the invariant structure, not a shared surface colour. |
+| Test-harness deps + Playwright MCP | Adds `vitest` + `@playwright/test` (dev-only; needs confirmation). A Playwright MCP isn't currently surfaced in-session; the in-repo harness is the durable core regardless. (→ [`context/plans/testing-framework.md`](context/plans/testing-framework.md)) |
 | Should the graph view itself be ASCII/terminal-styled? | Lean: proper node-graph for the map, terminal styling on the node chrome. |
 | SM-2 first or FSRS first? | SM-2 ships first; swap to FSRS later if benchmarks warrant. |
 
@@ -385,6 +400,7 @@ Prerequisites: Node 20+, pnpm 9+, Rust toolchain (stable), the Tauri 2 system de
 | Components | Radix primitives + `vaul` on the tokens *(planned; see §17)* | Accessible behaviour without a second styling paradigm. |
 | Storage | SQLite (WAL) *(planned)* | Spaced-repetition state + session history + per-topic mastery. Local-first, durable. |
 | LLM | Ollama (local, shipped) → Claude API for quality-critical paths *(planned)* | Interactive/high-volume → local; deliberate/quality-critical → cloud. |
+| Testing | `vitest` (unit) + `@playwright/test` (structural / interactive / vision) *(planned)* | A self-auditing harness modelled on the Performance Profiler's layered off-game harness; the agent verifies the frontend + backend itself. |
 | Deployment | Tauri desktop initially | Web build is a config flip later if framing demands it. |
 
 **Why Tauri specifically:** plain web cannot reliably tap CPU/GPU for the heavier visualisations; a TUI cannot deliver the interactivity + visual richness. Tauri sits in the middle — native-binary backed, webview frontend — so the MDX + TSX stack works natively while CPU/GPU stays accessible and the user gets a desktop-app install.

@@ -14,9 +14,9 @@ It also kills a concrete bug class the user flagged: widgets whose content "esca
 (overflow, not fitting the container). Containment becomes one reviewed component, not a
 per-widget re-solve.
 
-## The open decision — shadcn vs Radix-on-tokens
+## Decision (locked, 2026-06-30): Radix + `vaul` on the existing tokens, fully animated
 
-The user proposed shadcn. The catch worth a deliberate call:
+shadcn-style generic components aren't enough for the bespoke, animated surfaces this app needs, and shadcn's Tailwind requirement would fork the styling system. Locked on **Radix primitives + `vaul`, styled and animated with the existing tokens**. The reasoning that led here:
 
 **shadcn requires Tailwind.** Tessarix already has a strong, hand-built token system
 (`src/styles/tokens.ts` → `injectDesignTokens()` → CSS custom properties) that is *purpose-built*
@@ -27,15 +27,31 @@ for the per-category theming we want. Adopting shadcn means running two styling 
 | **shadcn + Tailwind** (full) | Huge ecosystem, copy-paste components, well-trodden | A second styling system alongside the token system; the token system gets sidelined or duplicated — risks the very coherence we're chasing |
 | **Radix primitives + `vaul`, styled by the existing tokens** (recommended) | The *same* accessible behaviour shadcn wraps (shadcn *is* Radix underneath) — Dialog, Drawer (`vaul`), Popover, Tooltip, Tabs, Slider, DropdownMenu — themed by `var(--token)` | More manual styling per primitive; one styling system; full control; per-category theming stays a one-line re-inject |
 
-**Recommendation: Radix + `vaul` on the existing tokens.** Rationale: the token system is the
-asset that makes idea-4 (per-category colour) nearly free; introducing Tailwind risks fragmenting
-it. Radix gives the hard part (accessible behaviour, focus management, the drawer/dialog
-mechanics) without the styling opinion. shadcn's real value is the *chrome and affordances* (the
-bottom drawer, the explain-here popover, consistent buttons) — never the bespoke learning widgets
-— and we can get all of that from Radix directly.
+**Why Radix + `vaul` on the tokens.** The token system is the asset that makes per-category colour
+nearly free; introducing Tailwind risks fragmenting it. Radix gives the hard part (accessible
+behaviour, focus management, the drawer/dialog mechanics) without the styling opinion. shadcn's real
+value is the *chrome and affordances* (the bottom drawer, the explain-here popover, consistent
+buttons) — never the bespoke learning widgets — and we get all of that from Radix directly, themed
+by our own tokens.
 
-This is a judgment call the user owns. If shadcn+Tailwind is chosen anyway, the mitigation is to
-drive shadcn's CSS-var theming from the existing tokens so there is still one source of colour.
+### Animation is a hard requirement, not a polish pass
+
+Because we build the chrome ourselves on *headless* Radix primitives, **we own the motion** — and a
+headless primitive wired with no transitions reads as stiff and cheap. Every self-built component
+ships with motion from day one, driven by the motion tokens (`--dur-*`, `--ease-*`) and gated by
+`prefers-reduced-motion` (consistent with [visual-identity.md](../notes/visual-identity.md)):
+
+- **Enter / exit** — dialogs, drawers, popovers, tooltips, dropdowns animate in and out (fade +
+  slide/scale), never hard-cut. `vaul` carries the drawer's drag-physics; Radix exposes
+  `data-state` (open/closed) for CSS transitions on the rest.
+- **Hover / press** — buttons, cards, controls respond to the pointer (lift, tint, scale) within
+  `--dur-fast`.
+- **Layout / state changes** — tab/pillar switches slide, tier changes cascade, values tween rather
+  than jump.
+
+The acid test: **nothing in the app appears or disappears instantly.** A Radix primitive with no
+transition is an unfinished component. This is also why a globalised layer matters — motion lives in
+the shared primitives once, not re-invented (or forgotten) per widget.
 
 ## `<WidgetFrame>` — the canonical widget container
 
@@ -47,7 +63,10 @@ Independent of the shadcn/Radix call, build one frame every widget sits in (see
 - `overflow` / `max-height` discipline → fixes the "escaping box" bug in one place;
 - corner controls: the `<WidgetExplainer>` trigger and the **fullscreen-expand** button that
   opens the bottom-drawer mini-lesson;
-- it reads tokens, so per-category recolour and consistent chrome are automatic.
+- it reads tokens, so per-category recolour and consistent chrome are automatic;
+- it is the **test harness's probe boundary** — overflow / leak checks run against the frame's
+  bounding box — and exposes the widget descriptor for generic interaction discovery
+  ([testing-framework.md](testing-framework.md)).
 
 Migration: wrap existing widgets incrementally; the frame is additive, no widget rewrite needed.
 
@@ -80,4 +99,5 @@ The open sub-decision (accent-only vs full surface-temperature shift) lives in t
   the autonomy contract (new deps always confirmed).
 - [curriculum-graph.md](curriculum-graph.md) (the nav renders through these components),
   [visual-identity.md](../notes/visual-identity.md) (the identity these enforce),
+  [testing-framework.md](testing-framework.md) (the `<WidgetFrame>` is its probe boundary + descriptor host),
   [../systems/styling-system.md](../systems/styling-system.md) (the token system they read).
