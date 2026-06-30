@@ -14,7 +14,30 @@ import {
 } from "../../../lib/ascii";
 import { emit as emitTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./MetricComparison.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "PSNR vs SSIM comparison",
+  description:
+    "Side-by-side reference and distorted images (a rotating ASCII donut over faint scanlines) with live PSNR and SSIM readouts; the reader applies translation, blur, noise, and brightness via sliders to watch where the two metrics agree and disagree.",
+  teaches: ["PSNR", "SSIM"],
+  howToRead:
+    "The left panel is the reference image; the right is a distorted copy. Drag a slider to apply a distortion and watch PSNR (peak signal-to-noise ratio) and SSIM (structural similarity) respond. The point is that they diverge — translation collapses PSNR while SSIM survives; blur destroys SSIM while PSNR holds.",
+  controls: [
+    { kind: "slider", label: "Translation", min: 0, max: 20, step: 1 },
+    { kind: "slider", label: "Gaussian blur", min: 0, max: 5, step: 0.1 },
+    { kind: "slider", label: "Gaussian noise", min: 0, max: 60, step: 1 },
+    { kind: "slider", label: "Brightness shift", min: -60, max: 60, step: 1 },
+    { kind: "button", label: "presets" },
+  ],
+  invariants: [
+    "PSNR readout is a finite number or ∞",
+    "SSIM readout is within [0, 1]",
+    "the donut panels do not overflow the widget frame",
+  ],
+};
 
 // The metric runs on a high-res square luminance field (matching the old 256px
 // canvas) so PSNR/SSIM keep the resolution-sensitive behaviour the GoalChain
@@ -242,8 +265,9 @@ export function MetricComparison({
   const ssimBar = Math.max(0, Math.min(1, ssimValue));
 
   return (
-    <div className="metric-comparison">
-      {title ? <div className="metric-comparison__title">{title}</div> : null}
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className="metric-comparison">
+        {title ? <div className="metric-comparison__title">{title}</div> : null}
 
       <div className="metric-comparison__panels">
         <figure className="metric-comparison__panel">
@@ -341,7 +365,8 @@ export function MetricComparison({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 
