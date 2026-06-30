@@ -1,17 +1,35 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { drawReference } from "../../../lib/imaging/render";
 import {
+  blur,
   brightness,
-  gaussianBlur,
-  gaussianNoise,
+  downsample,
+  drawDonutScene,
+  gridToAscii,
+  noise,
+  psnr,
+  ssim,
   translate,
-} from "../../../lib/imaging/distortions";
-import { psnr, ssim } from "../../../lib/imaging/metrics";
+  type Grid,
+  type Pose,
+} from "../../../lib/ascii";
 import { emit as emitTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./MetricComparison.css";
 
-const CANVAS_SIZE = 256;
+// The metric runs on a high-res square luminance field (matching the old 256px
+// canvas) so PSNR/SSIM keep the resolution-sensitive behaviour the GoalChain
+// predicates depend on. The display is a separate, coarse ASCII grid (rendered
+// from a 2× supersample, box-downsampled) — the donut you see is a downsample of
+// the field the metric measures. See context/plans/ascii-custom-displays.md.
+const METRIC_N = 256;
+const DISP_W = 56;
+const DISP_H = 28;
+const SS = 2; // display supersample factor
+// Spatial distortions (translate px, blur σ) are calibrated on the 256 grid;
+// scale them to the display grid so the donut you see is proportional to what
+// the number measures. Intensity distortions (noise, brightness) are not spatial.
+const DISP_SCALE = DISP_W / METRIC_N;
+const FRAME_MS = 1000 / 24; // CRT-ish cadence; also caps render cost
 
 interface DistortionState {
   translation: number;
@@ -33,6 +51,8 @@ interface Preset {
   state: DistortionState;
 }
 
+// Preset values land inside the GoalChain windows (verified in
+// scripts/verify-donut.ts): translate 4–8px, blur ~1–1.5σ, noise ≥25.
 const PRESETS: Preset[] = [
   {
     id: "translate-6",
@@ -40,9 +60,9 @@ const PRESETS: Preset[] = [
     state: { translation: 6, blur: 0, noise: 0, brightnessShift: 0 },
   },
   {
-    id: "heavy-blur",
-    label: "Heavy blur",
-    state: { translation: 0, blur: 3.5, noise: 0, brightnessShift: 0 },
+    id: "blur",
+    label: "Blur σ1.5",
+    state: { translation: 0, blur: 1.5, noise: 0, brightnessShift: 0 },
   },
   {
     id: "heavy-noise",
@@ -61,6 +81,20 @@ const PRESETS: Preset[] = [
   },
 ];
 
+/** Apply the distortion chain (translate → blur → noise → brightness) to a grid. */
+function distort(
+  grid: Grid,
+  dist: DistortionState,
+  spatialScale: number,
+): Grid {
+  let g = grid;
+  if (dist.translation !== 0) g = translate(g, dist.translation * spatialScale);
+  if (dist.blur > 0.01) g = blur(g, dist.blur * spatialScale);
+  if (dist.noise > 0.5) g = noise(g, dist.noise); // luminance-space; Math.random
+  if (dist.brightnessShift !== 0) g = brightness(g, dist.brightnessShift);
+  return g;
+}
+
 interface MetricComparisonProps {
   /** Optional caption rendered above the widget. */
   title?: string;
@@ -78,46 +112,71 @@ export function MetricComparison({
   onStateChange,
 }: MetricComparisonProps) {
   const [dist, setDist] = useState<DistortionState>(INITIAL);
-  const refCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const distCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const refImageDataRef = useRef<ImageData | null>(null);
   const [psnrValue, setPsnrValue] = useState<number>(Infinity);
   const [ssimValue, setSsimValue] = useState<number>(1);
 
-  // Draw the reference image once.
+  const refPreRef = useRef<HTMLPreElement | null>(null);
+  const distPreRef = useRef<HTMLPreElement | null>(null);
+  // Live pose + dist for the rAF closure (which captures once on mount).
+  const poseRef = useRef<Pose>({ a: 1.0, b: 0.3 });
+  const distRef = useRef<DistortionState>(dist);
   useEffect(() => {
-    const canvas = refCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    drawReference(ctx, CANVAS_SIZE, CANVAS_SIZE);
-    refImageDataRef.current = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    distRef.current = dist;
+  }, [dist]);
+
+  // Animation loop: spin the donut and repaint both ASCII panels. The donut is a
+  // 2× supersample box-downsampled to the display grid for smoother glyphs.
+  useEffect(() => {
+    const draw = () => {
+      const base = downsample(
+        drawDonutScene(DISP_W * SS, DISP_H * SS, poseRef.current, {
+          charAspect: 2,
+        }),
+        DISP_W,
+        DISP_H,
+      );
+      if (refPreRef.current) refPreRef.current.textContent = gridToAscii(base);
+      if (distPreRef.current) {
+        distPreRef.current.textContent = gridToAscii(
+          distort(base, distRef.current, DISP_SCALE),
+        );
+      }
+    };
+
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      draw();
+      return;
+    }
+
+    let raf = 0;
+    let last = 0;
+    const tick = (t: number) => {
+      raf = requestAnimationFrame(tick);
+      if (t - last < FRAME_MS) return;
+      last = t;
+      poseRef.current = {
+        a: poseRef.current.a + 0.035,
+        b: poseRef.current.b + 0.014,
+      };
+      draw();
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Recompute the distorted image and metrics whenever the distortion state
-  // changes.
+  // Recompute metrics on distortion change, at the donut's current pose. The
+  // value is pose-stable (rotation distorts both panels equally), so it sits
+  // steady while the donut spins and only moves when a slider does.
   useEffect(() => {
-    const refData = refImageDataRef.current;
-    const canvas = distCanvasRef.current;
-    if (!refData || !canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Apply distortions in a fixed order: translate -> blur -> noise -> brightness.
-    let current = new ImageData(
-      new Uint8ClampedArray(refData.data),
-      refData.width,
-      refData.height,
-    );
-    if (dist.translation !== 0) current = translate(current, dist.translation);
-    if (dist.blur > 0.01) current = gaussianBlur(current, dist.blur);
-    if (dist.noise > 0.5) current = gaussianNoise(current, dist.noise);
-    if (dist.brightnessShift !== 0)
-      current = brightness(current, dist.brightnessShift);
-
-    ctx.putImageData(current, 0, 0);
-    const psnrVal = psnr(refData, current);
-    const ssimVal = ssim(refData, current);
+    const ref = drawDonutScene(METRIC_N, METRIC_N, poseRef.current, {
+      charAspect: 1,
+    });
+    const distorted = distort(ref, dist, 1);
+    const psnrVal = psnr(ref, distorted);
+    const ssimVal = ssim(ref, distorted);
     setPsnrValue(psnrVal);
     setSsimValue(ssimVal);
     if (onStateChange) {
@@ -155,7 +214,7 @@ export function MetricComparison({
 
   const stateSummary = useMemo(() => {
     const psnrStr = isFinite(psnrValue) ? `${psnrValue.toFixed(2)} dB` : "∞ dB";
-    return `Translation = ${dist.translation} px, Gaussian blur sigma = ${dist.blur.toFixed(2)}, Gaussian noise sigma = ${dist.noise.toFixed(1)}, Brightness shift = ${dist.brightnessShift}. Current metrics: PSNR = ${psnrStr}, SSIM = ${ssimValue.toFixed(3)}.`;
+    return `Translation = ${dist.translation} px, Gaussian blur sigma = ${dist.blur.toFixed(2)}, Gaussian noise sigma = ${dist.noise.toFixed(1)}, Brightness shift = ${dist.brightnessShift}. Current metrics: PSNR = ${psnrStr}, SSIM = ${ssimValue.toFixed(3)}. The reference is a rotating ASCII donut over faint scanlines; both panels spin together so the metrics reflect only the distortion, not the rotation.`;
   }, [dist, psnrValue, ssimValue]);
 
   const stateKey = useMemo(
@@ -189,20 +248,14 @@ export function MetricComparison({
       <div className="metric-comparison__panels">
         <figure className="metric-comparison__panel">
           <figcaption>Reference</figcaption>
-          <canvas
-            ref={refCanvasRef}
-            width={CANVAS_SIZE}
-            height={CANVAS_SIZE}
-            className="metric-comparison__canvas"
-          />
+          <pre ref={refPreRef} className="metric-comparison__ascii" aria-hidden />
         </figure>
         <figure className="metric-comparison__panel">
           <figcaption>Distorted</figcaption>
-          <canvas
-            ref={distCanvasRef}
-            width={CANVAS_SIZE}
-            height={CANVAS_SIZE}
-            className="metric-comparison__canvas"
+          <pre
+            ref={distPreRef}
+            className="metric-comparison__ascii"
+            aria-hidden
           />
         </figure>
       </div>
@@ -284,7 +337,7 @@ export function MetricComparison({
 
       <WidgetExplainer
         widgetName="PSNR vs SSIM comparison"
-        widgetDescription="Side-by-side reference and distorted images with live PSNR and SSIM readouts; the reader applies translation, Gaussian blur, Gaussian noise, and brightness shift via sliders to watch where the two metrics agree and disagree."
+        widgetDescription="Side-by-side reference and distorted images (a rotating ASCII donut over faint scanlines) with live PSNR and SSIM readouts; the reader applies translation, Gaussian blur, Gaussian noise, and brightness shift via sliders to watch where the two metrics agree and disagree. Both panels spin in lockstep so the metrics reflect only the distortion."
         stateSummary={stateSummary}
         stateKey={stateKey}
       />

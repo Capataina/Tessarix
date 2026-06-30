@@ -49,17 +49,34 @@
 }
 
 /* Canvas capped to keep the pair compact; aspect preserved so no distortion. */
-.metric-comparison__canvas {
+/* ASCII donut field. A single mono <pre> per panel (text set imperatively each
+   frame), so the glyphs are real selectable text — fully native to the terminal
+   identity rather than a raster. A vertical camel→cream gradient clipped to the
+   glyphs gives a warm sheen; brightness is carried by glyph density, the colour
+   is just material. The panel itself supplies the dark surface + hairline frame. */
+.metric-comparison__ascii {
   display: block;
   margin: 0 auto;
-  width: auto;
+  width: max-content;
   max-width: 100%;
-  height: auto;
-  max-height: 190px;
-  image-rendering: pixelated;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.42rem;
+  line-height: 1.02;
+  letter-spacing: 0;
+  white-space: pre;
+  padding: var(--space-2);
   border-radius: var(--radius-sm);
   border: 1px solid var(--widget-border);
-  background: var(--bg-base);
+  background-image: linear-gradient(
+    180deg,
+    var(--accent-camel),
+    var(--text-primary)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
 }
 
 .metric-comparison__metrics {
