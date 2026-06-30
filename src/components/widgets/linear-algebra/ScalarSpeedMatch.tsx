@@ -46,6 +46,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./ScalarSpeedMatch.css";
 
 const CANVAS_SIZE = 300;
@@ -153,6 +155,26 @@ function buildSession(diff: Difficulty): Session {
     active: 0,
   };
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Scalar speed match",
+  description:
+    "A timed-flash quiz for scalar multiplication. Each of 10 rounds shows a vector v (solid arrow) and a target k·v (dashed arrow) on the same canvas. Four scalar candidates appear as buttons. The reader has 3 seconds to tap the candidate that scales v to the target — letting the timer expire counts as wrong. Three difficulty modes: easy (integer scalars from {-3,-2,-1,2,3} with integer-step distractors), medium (half-integer scalars), hard (decimal scalars with 0.3-step distractors). Each correct answer scores 1 point plus a fractional bonus weighted by how much time remained; wrong / timeout scores 0. Pedagogical point: forces reflexive intuition for k·v as length-scaling — three seconds isn't enough time to compute the ratio explicitly, so the reader has to learn to *see* it. Negative k flips direction; |k|<1 shrinks v; |k|>1 stretches it.",
+  teaches: ["scalar multiplication"],
+  howToRead:
+    "The solid arrow is v; the dashed arrow is the target k·v. Before the timer runs out, tap the scalar button that maps v onto the dashed target.",
+  controls: [
+    { kind: "button", label: "difficulty (easy / medium / hard)" },
+    { kind: "button", label: "scalar candidate" },
+    { kind: "button", label: "new session" },
+    { kind: "canvas", label: "vector and target display" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "exactly one of the four candidates equals the true scalar k",
+    "letting the timer expire counts as a wrong answer",
+  ],
+};
 
 interface ScalarSpeedMatchProps {
   initialDifficulty?: Difficulty;
@@ -357,6 +379,7 @@ export function ScalarSpeedMatch({
   const isPerfect = sessionDone && correctCount === ROUNDS_PER_SESSION;
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`ssm${sessionDone ? " ssm--done" : ""}${isPerfect ? " ssm--perfect" : ""}`}>
       <header className="ssm__head">
         <div className="ssm__heading">
@@ -487,6 +510,7 @@ export function ScalarSpeedMatch({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

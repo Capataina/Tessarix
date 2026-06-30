@@ -27,7 +27,30 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./DotProductGeometry.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Dot product — projection geometry",
+  description:
+    "Two vectors a and b, both draggable. The widget visualises the projection of a's tip onto b's direction line — the 'shadow' segment from the origin to the perpendicular drop-point. The shadow's signed length times |b| equals a·b, and is colour-coded green when positive (vectors aligned), red when negative (vectors opposing). The angle θ between a and b is shown as an arc at the origin.",
+  teaches: ["dot product", "vector projection"],
+  howToRead:
+    "Drag the tip of either vector; the solid bar is the projection (shadow) of a onto b's direction line, green when a·b > 0 and red when a·b < 0. Watch how the shadow length and the dot-product readout move together.",
+  controls: [
+    { kind: "drag", label: "drag the tips of a and b" },
+    { kind: "button", label: "b ← a (parallel)" },
+    { kind: "button", label: "b ⊥ a (90°)" },
+    { kind: "button", label: "b = −a (anti)" },
+    { kind: "button", label: "Reset" },
+  ],
+  invariants: [
+    "cos θ stays within [-1, 1]",
+    "the projection shadow is colour-coded by the sign of a·b",
+    "nothing overflows the frame",
+  ],
+};
 
 const CANVAS_SIZE = 360;
 
@@ -380,7 +403,8 @@ export function DotProductGeometry({
           : "near-perpendicular";
 
   return (
-    <div className="dotprod">
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className="dotprod">
       <div className="dotprod__layout">
         <div className="dotprod__chart-wrap">
           <canvas
@@ -477,7 +501,8 @@ export function DotProductGeometry({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

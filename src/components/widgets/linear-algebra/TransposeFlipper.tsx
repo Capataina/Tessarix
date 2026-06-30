@@ -35,6 +35,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./TransposeFlipper.css";
 
 type Cell = number;
@@ -116,6 +118,25 @@ function matrixEq(M: Matrix3, N: Matrix3): boolean {
 interface TransposeFlipperProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Transpose Flipper — swap pairs to reach Aᵀ",
+  description:
+    "A swap puzzle for matrix transposition. The reader sees a 3×3 matrix and must reach its transpose by swapping pairs of off-diagonal entries. Each swap is performed by clicking one entry to arm it (cyan ring), then clicking the entry at its mirror position across the main diagonal — i.e. if the reader armed entry (i, j), the legal partner is (j, i). Clicking the wrong partner re-arms; clicking the diagonal does nothing (diagonal entries don't move under transposition). The widget tracks a swap counter. The minimum is exactly 3 — there are three distinct off-diagonal pairs in a 3×3, and each one needs to swap exactly once. Solving in more than 3 swaps means the reader has accidentally swapped the same pair twice (returning to the prior state). The pedagogical point is that transpose IS the reflection across the diagonal — every swap is a literal mirror move, and 3-swap solutions show the reader has internalised exactly which entries move and which don't.",
+  teaches: ["matrix transpose", "symmetric matrices"],
+  howToRead:
+    "Click an off-diagonal entry to arm it (cyan ring), then click its mirror across the main diagonal to swap them; diagonal entries are locked because transposition leaves them in place. Reach the target Aᵀ in three swaps — the minimum, one per off-diagonal pair.",
+  controls: [
+    { kind: "button", label: "Matrix cell (arm / swap)" },
+    { kind: "select", label: "Puzzle selector" },
+    { kind: "button", label: "Reset" },
+  ],
+  invariants: [
+    "Nothing overflows the widget frame.",
+    "Diagonal entries never move.",
+    "The minimum number of swaps to reach the transpose is three.",
+  ],
+};
 
 export function TransposeFlipper({ onStateChange }: TransposeFlipperProps) {
   const { recordInteraction } = useWidgetTelemetry("TransposeFlipper");
@@ -220,6 +241,7 @@ export function TransposeFlipper({ onStateChange }: TransposeFlipperProps) {
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div
       className={`tf${solved ? (elegant ? " tf--elegant" : " tf--solved") : ""}`}
     >
@@ -312,6 +334,7 @@ export function TransposeFlipper({ onStateChange }: TransposeFlipperProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

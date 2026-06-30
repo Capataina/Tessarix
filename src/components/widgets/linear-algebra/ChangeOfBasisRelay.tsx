@@ -38,6 +38,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./ChangeOfBasisRelay.css";
 
 interface Vec2 {
@@ -132,6 +134,26 @@ interface ChangeOfBasisRelayProps {
 }
 
 type StepStatus = "active" | "locked" | "pending";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Change of basis relay — multi-step solver",
+  description:
+    "A two-step computational solver. The reader is given a vector v's coordinates in basis B₁, plus the two basis matrices B₁ and B₂; they have to find v's coordinates in basis B₂. The widget splits the computation into the canonical relay: step 1 converts [v]_B₁ to standard coordinates via B₁·[v]_B₁; step 2 converts standard coordinates to [v]_B₂ via B₂⁻¹·[v]_std. Each step has a pair of numeric inputs (x and y components), per-entry grading on submit (correct entries flash green, wrong red), an option to reveal that step's answer, and an automatic lock when correct. Step 2 is gated until step 1 is locked, so the reader cannot skip ahead and use the truth of step 2 to back-derive step 1. B₂⁻¹ is displayed pre-computed so the reader doesn't have to invert by hand. Four puzzles span the regime: identity-to-rotation, diagonal stretches, sheared-to-standard, and two non-trivial bases.",
+  teaches: ["change of basis", "coordinates", "matrix multiplication"],
+  howToRead:
+    "Each step shows a matrix-vector product to compute; type the x and y components of the result and submit to grade each entry (green correct, red wrong). A step locks once both entries are right, and step 2 stays gated until step 1 is solved.",
+  controls: [
+    { kind: "button", label: "Step x/y numeric entries (typed, then submitted)" },
+    { kind: "button", label: "Submit step (grades the entered x and y)" },
+    { kind: "button", label: "Reveal step answer" },
+    { kind: "button", label: "Choose puzzle (4 puzzles)" },
+  ],
+  invariants: [
+    "Step 2 stays locked until step 1 is solved.",
+    "A step auto-locks into a read-only state once both its entries grade correct.",
+    "Nothing overflows the frame.",
+  ],
+};
 
 export function ChangeOfBasisRelay({ onStateChange }: ChangeOfBasisRelayProps) {
   const { recordInteraction } = useWidgetTelemetry("ChangeOfBasisRelay");
@@ -295,6 +317,7 @@ export function ChangeOfBasisRelay({ onStateChange }: ChangeOfBasisRelayProps) {
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`cbr${allDone ? " cbr--complete" : ""}`}>
       <header className="cbr__head">
         <div className="cbr__heading">
@@ -403,6 +426,7 @@ export function ChangeOfBasisRelay({ onStateChange }: ChangeOfBasisRelayProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

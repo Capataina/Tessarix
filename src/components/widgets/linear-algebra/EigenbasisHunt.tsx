@@ -41,7 +41,32 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./EigenbasisHunt.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Eigenbasis hunt — discover the special directions of a matrix",
+  description:
+    "A discovery puzzle that foreshadows eigenvectors without using the vocabulary. The reader sees a matrix A and a draggable test vector x; the widget continuously shows x's image Ax as a second arrow. An alignment meter tracks the angle between x and Ax; when the angle is within 3° of 0 or 180°, the meter goes parallel and the widget auto-records the direction as a found eigendirection (with its signed eigenvalue, |Ax| / |x| with the sign determined by whether x and Ax point the same or opposite way). Five presets span the regime: shear (one eigendirection), stretch+shear (two), pure rotation (zero — pedagogically the most important: the reader will sweep x in a full circle and never align), diagonal scaling (two — the axes), and reflection (two — the axis of reflection and its perpendicular). The widget de-duplicates found directions by checking both same-sign and antipodal closeness, so x and -x count as the same direction. Pedagogical intent: directions where A acts as pure scaling are the eigenvectors of A; making them findable by inspection grounds the lesson that follows.",
+  teaches: ["eigenvectors", "eigenbasis", "eigenvalues"],
+  howToRead:
+    "Drag the input vector x around the plane; the widget draws its image Ax as a second arrow. When x and Ax line up (parallel within ~3°) the alignment meter goes green and the direction is auto-recorded as a found eigendirection with its eigenvalue λ. Cycle the presets to hunt eigendirections in a shear, a stretch+shear, a diagonal scaling, a reflection, and a pure rotation — which has none.",
+  controls: [
+    { kind: "drag", label: "Input vector x (drag on the canvas)" },
+    { kind: "button", label: "Reset found list" },
+    {
+      kind: "button",
+      label:
+        "Preset matrix (Shear, Stretch + shear, Rotation 30°, Diagonal scale, Reflection)",
+    },
+  ],
+  invariants: [
+    "a direction is recorded only when x and Ax are within ~3° of 0° or 180°",
+    "found directions de-duplicate so x and -x count as the same line",
+    "nothing overflows the widget frame",
+  ],
+};
 
 const CANVAS_SIZE = 380;
 /** Angle (in radians) tolerance for "parallel". ~3°. */
@@ -262,7 +287,8 @@ export function EigenbasisHunt({ onStateChange }: EigenbasisHuntProps) {
   );
 
   return (
-    <div className={`ebh${complete ? " ebh--complete" : ""}`}>
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className={`ebh${complete ? " ebh--complete" : ""}`}>
       <header className="ebh__head">
         <div className="ebh__heading">
           <span className="ebh__heading-label">MATRIX A</span>
@@ -362,7 +388,8 @@ export function EigenbasisHunt({ onStateChange }: EigenbasisHuntProps) {
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

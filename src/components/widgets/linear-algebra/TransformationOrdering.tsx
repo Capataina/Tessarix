@@ -31,6 +31,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./TransformationOrdering.css";
 
 const CANVAS_SIZE = 320;
@@ -128,6 +130,31 @@ interface TransformationOrderingProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
 
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Transformation ordering — drag cards to compose",
+  description:
+    "An ordering-puzzle widget for matrix composition. The reader is given a target transformation (its image of the unit square is drawn dashed on the canvas) and a palette of 5 named transformation cards: Rotate 90°, Shear-x, Scale-x, Scale-y, Reflect-y. The reader clicks palette cards to append them to a sequence; the sequence composes left-to-right (leftmost applies first, like reading order). The widget computes the composed matrix and draws its action on the unit square in real time, comparing the result to the target. When the matrix-norm distance between composed and target drops below ε, the puzzle is solved. The reader can remove any card from the sequence by clicking it, swap adjacent cards with a ⇄ button (excellent for demonstrating non-commutativity — swap two cards, see the resulting shape change), or reset. Four built-in puzzles, each with a hint about the intended ordering. The pedagogical point is that ordering MATTERS — matrix multiplication is non-commutative, and two readers who choose the same cards in different orders will reach different final shapes.",
+  teaches: [
+    "matrix multiplication",
+    "composition of linear transformations",
+    "non-commutativity",
+  ],
+  howToRead:
+    "Click palette cards to append them to the sequence (leftmost applies first); the solid shape on the canvas is your composition's action on the unit square and the dashed shape is the target. Use the ⇄ button to swap adjacent cards and watch the result change — the same cards in a different order reach a different shape.",
+  controls: [
+    { kind: "button", label: "Palette card (append to sequence)" },
+    { kind: "button", label: "Swap adjacent cards (⇄)" },
+    { kind: "button", label: "Reset" },
+    { kind: "select", label: "Puzzle selector" },
+    { kind: "canvas", label: "Composed vs target unit-square canvas" },
+  ],
+  invariants: [
+    "Nothing overflows the widget frame.",
+    "The composed matrix is the left-to-right product of the placed cards.",
+    "Reordering the same cards can change the composed result (non-commutativity).",
+  ],
+};
+
 export function TransformationOrdering({
   onStateChange,
 }: TransformationOrderingProps) {
@@ -217,6 +244,7 @@ export function TransformationOrdering({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`to${isSolved ? " to--solved" : ""}`}>
       <header className="to__head">
         <div className="to__heading">
@@ -347,6 +375,7 @@ export function TransformationOrdering({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

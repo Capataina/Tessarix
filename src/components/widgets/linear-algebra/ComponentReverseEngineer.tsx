@@ -37,6 +37,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./ComponentReverseEngineer.css";
 
 const CANVAS_SIZE = 320;
@@ -90,6 +92,28 @@ interface ComponentReverseEngineerProps {
   initialDifficulty?: Difficulty;
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Component reverse-engineer",
+  description:
+    "A reverse-direction quiz for component reading. The canvas shows a target vector drawn from the origin without any component labels — only the grid and the arrow are visible. Two number inputs (v_x and v_y) plus click-arrow nudges let the reader set their guess for the target's components; the guess is drawn as a GHOST arrow overlaid on the canvas in a contrasting colour, so the reader gets live visual feedback as they adjust. When the guess matches the target within the difficulty's tolerance, the round flashes green and auto-advances. Three tiers: easy (integer components, exact match), medium (half-integer, 0.05 tolerance), hard (tenth-grid components, 0.07 tolerance). Reader can give up to reveal the answer or skip without revealing. Score = sum of (1 + 0.5/nudges-after-4) over solved rounds; perfect-first-try scores 1.5 per round, slow solves score near 1.0. The pedagogical point is to invert the usual exercise: instead of being given components and drawing an arrow, the reader sees an arrow and writes its components — the directional skill the rest of linear algebra rests on.",
+  teaches: ["vectors", "coordinates"],
+  howToRead:
+    "Read the target arrow's components off the grid, then set v_x and v_y with the number inputs or the ± nudge buttons; the ghost arrow tracks your guess, and the round flashes green and auto-advances once it matches within tolerance.",
+  controls: [
+    { kind: "button", label: "Difficulty (easy / medium / hard)" },
+    { kind: "button", label: "Nudge v_x (− / +)" },
+    { kind: "button", label: "Nudge v_y (− / +)" },
+    { kind: "button", label: "v_x / v_y numeric entries (typed)" },
+    { kind: "button", label: "Give up — reveal v" },
+    { kind: "button", label: "Next vector (skip / try next)" },
+  ],
+  invariants: [
+    "The target arrow and the ghost guess arrow share the origin as their tail.",
+    "A round counts as solved only when the guess is within the difficulty's tolerance.",
+    "Nothing overflows the frame.",
+  ],
+};
 
 export function ComponentReverseEngineer({
   initialDifficulty = "easy",
@@ -266,6 +290,7 @@ export function ComponentReverseEngineer({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`cre${flashSolved ? " cre--solved" : ""}${revealed ? " cre--revealed" : ""}`}>
       <header className="cre__head">
         <div className="cre__heading">
@@ -418,6 +443,7 @@ export function ComponentReverseEngineer({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

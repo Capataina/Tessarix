@@ -28,7 +28,41 @@
 import { useEffect, useMemo, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./GaussianElimination.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Gaussian elimination — step-through row reduction",
+  description:
+    "An interactive 3x3 augmented matrix with three elementary row operations the reader can apply: swap two rows, scale a row by a non-zero scalar, or add a scalar multiple of one row to another. Each application updates the matrix and appends to a history of moves. The widget detects when the matrix has reached row-echelon form (pivots strictly right-ward) or reduced row-echelon form (RREF — leading 1s with zeros above and below each pivot) and reports the solution: unique, under-determined with free variables, or inconsistent. Three presets cover the canonical cases: a system with one solution, a system with a free variable (under-determined), and an inconsistent system (0 = non-zero).",
+  teaches: [
+    "Gaussian elimination",
+    "row-echelon form",
+    "reduced row-echelon form (RREF)",
+    "solution classification (unique / free-variable / inconsistent)",
+  ],
+  howToRead:
+    "Pick a preset system, then choose an elementary row operation (add k·Rⱼ to Rᵢ, scale Rᵢ by k, or swap Rᵢ ↔ Rⱼ), set the rows and scalar, and click Apply to transform the matrix one step at a time. The status line reports whether you have reached row-echelon form or RREF and classifies the system; Undo and Reset walk the move history back.",
+  controls: [
+    {
+      kind: "button",
+      label: "presets (Unique solution / Free variable / Inconsistent)",
+    },
+    { kind: "select", label: "Operation (add / scale / swap)" },
+    { kind: "select", label: "Row Ri" },
+    { kind: "select", label: "Row Rj" },
+    { kind: "slider", label: "Scalar k (numeric entry)", step: 0.1 },
+    { kind: "button", label: "Apply" },
+    { kind: "button", label: "Undo" },
+    { kind: "button", label: "Reset" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "every applied move is one of the three elementary row operations (swap, scale by non-zero, add a multiple of another row)",
+    "the status correctly classifies the system as unique-solution, under-determined, or inconsistent",
+  ],
+};
 
 const ROWS = 3;
 const COLS = 4; // 3 unknowns + 1 RHS
@@ -248,7 +282,8 @@ export function GaussianElimination({
   };
 
   return (
-    <div className="gauss">
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className="gauss">
       <div className="gauss__presets">
         {PRESETS.map((p, i) => (
           <button
@@ -405,6 +440,7 @@ export function GaussianElimination({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }

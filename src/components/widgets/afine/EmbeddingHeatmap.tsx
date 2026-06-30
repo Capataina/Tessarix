@@ -2,7 +2,32 @@ import { useMemo, useState } from "react";
 import { divergingColor } from "../../../styles";
 import { AsciiField } from "../../../lib/ascii";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./EmbeddingHeatmap.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "CLIP embedding heatmap",
+  description:
+    "Two synthetic 512-d CLIP-like embeddings rendered as 32×16 ASCII character heatmaps (glyph density = magnitude, colour = sign via the diverging colormap) with a morph slider linearly interpolating between them. Shows both cosine similarity (the linear-space alignment) and the SSIM-style fidelity ratio (the structural-similarity measure A-FINE's fidelity head actually uses), so the reader can see when the two metrics agree and where they diverge.",
+  teaches: ["CLIP embedding", "cosine similarity", "fidelity ratio"],
+  howToRead:
+    "Drag the morph slider to interpolate the middle embedding from the reference toward the distorted one; watch the cosine similarity and the SSIM-style fidelity ratio respond as the glyph field changes.",
+  controls: [
+    {
+      kind: "slider",
+      label: "Morph: reference → distorted",
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+  ],
+  invariants: [
+    "cosine similarity stays within [-1, 1]",
+    "the three heatmaps share one colour scale",
+    "the heatmaps do not overflow the widget frame",
+  ],
+};
 
 const EMBED_DIM = 512;
 const GRID_W = 32;
@@ -169,7 +194,8 @@ export function EmbeddingHeatmap() {
   );
 
   return (
-    <div className="embedding-heatmap">
+    <WidgetFrame descriptor={DESCRIPTOR}>
+      <div className="embedding-heatmap">
       <div className="embedding-heatmap__panels">
         <Heatmap label="Reference embedding" embedding={reference} vmax={vmax} />
         <Heatmap label="Morphed (current)" embedding={morphed} vmax={vmax} />
@@ -217,6 +243,7 @@ export function EmbeddingHeatmap() {
         stateSummary={`Morph value t = ${t.toFixed(2)} (0 = reference, 1 = distorted). Current morphed embedding: cosine(reference, morphed) = ${cosVal.toFixed(3)}, SSIM-in-feature-space fidelity ratio = ${fidVal.toFixed(3)}.`}
         stateKey={JSON.stringify({ t: Number(t.toFixed(2)) })}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }

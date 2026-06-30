@@ -42,6 +42,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./CosineWheelHunt.css";
 
 const CANVAS_SIZE = 380;
@@ -70,6 +72,26 @@ const TARGETS: Target[] = [
 interface CosineWheelHuntProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Cosine wheel hunt",
+  description:
+    "A construction puzzle for the dot product. The reader is given a target value X for u · v, then drags both u and v on the canvas until the dot product matches X within ±0.35. Six targets covering positive, negative, and zero values, each chosen to surface a different geometric pattern: positive targets are reachable with u and v roughly aligned; negative with them opposing; zero requires perpendicularity. The widget continuously displays |u|, |v|, θ, cos θ, and the |u|·|v|·cos θ product alongside the algebraic u · v, so the reader can see how the same scalar emerges from very different geometric choices — short vectors at a small angle, long vectors at a wider one. A history list shows past hits so the reader can compare alternative solutions to the same target. The pedagogical centerpiece is that the dot product is many-to-one: the same number can be assembled from many configurations, and exploring that solution space directly builds intuition for which configurations land which sign and magnitude of dot product.",
+  teaches: ["dot product", "cosine similarity"],
+  howToRead:
+    "Read the target dot-product value, then drag the u and v handles on the canvas until the running u · v lands within tolerance of it. The distance bar and the |u|, |v|, θ, cos θ readouts show how angle and magnitude jointly build the same scalar.",
+  controls: [
+    { kind: "drag", label: "Drag the u vector handle" },
+    { kind: "drag", label: "Drag the v vector handle" },
+    { kind: "button", label: "Next target / Loop back" },
+    { kind: "button", label: "Reset" },
+  ],
+  invariants: [
+    "A hit registers when u · v is within ±0.35 of the target.",
+    "The next-target button is disabled until the current target is hit.",
+    "The distance-to-target bar fill stays between 0% and 100%.",
+  ],
+};
 
 export function CosineWheelHunt({ onStateChange }: CosineWheelHuntProps) {
   const { recordInteraction } = useWidgetTelemetry("CosineWheelHunt");
@@ -188,6 +210,7 @@ export function CosineWheelHunt({ onStateChange }: CosineWheelHuntProps) {
   const barPct = Math.max(0, Math.min(100, (1 - err / 4) * 100));
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`cwh${isMatch ? " cwh--hit" : ""}`}>
       <header className="cwh__head">
         <div className="cwh__heading">
@@ -327,6 +350,7 @@ export function CosineWheelHunt({ onStateChange }: CosineWheelHuntProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

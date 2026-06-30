@@ -1,5 +1,25 @@
 import { useState } from "react";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./AFinePipeline.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "A-FINE forward pass",
+  description:
+    "An interactive seven-stage walkthrough of A-FINE's forward pass — input pair, shared CLIP ViT-B/32 backbone, naturalness head, fidelity head, logistic calibrators, asymmetric adapter, and final score — where clicking any stage reveals what that step computes.",
+  teaches: ["A-FINE", "CLIP backbone", "adapter", "fidelity ratio"],
+  howToRead:
+    "Click a stage in the track (or use Previous / Next) to read what that step of the A-FINE pipeline computes; the highlighted stage's detail panel updates below it.",
+  controls: [
+    { kind: "button", label: "Pipeline stage" },
+    { kind: "button", label: "Previous / Next" },
+  ],
+  invariants: [
+    "exactly one stage is active at a time",
+    "the detail text matches the selected stage",
+    "the pipeline track does not overflow the widget frame",
+  ],
+};
 
 const STAGES = [
   {
@@ -65,7 +85,8 @@ export function AFinePipeline() {
   const stage = STAGES[active];
 
   return (
-    <figure className="afine-pipeline">
+    <WidgetFrame descriptor={DESCRIPTOR}>
+      <figure className="afine-pipeline">
       <figcaption className="afine-pipeline__title">
         A-FINE forward pass — click any stage
       </figcaption>
@@ -122,6 +143,7 @@ export function AFinePipeline() {
           Next →
         </button>
       </div>
-    </figure>
+      </figure>
+    </WidgetFrame>
   );
 }

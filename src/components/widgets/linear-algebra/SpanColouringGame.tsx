@@ -32,6 +32,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./SpanColouringGame.css";
 
 const CANVAS_SIZE = 360;
@@ -95,6 +97,26 @@ function evaluate(
   }
   return { inSpan: true, alpha, beta };
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Span colouring game — click to test reachability",
+  description:
+    "A click-to-test widget for the span of two 2D vectors u and v. The reader drags u and v to define the basis, then clicks anywhere on the canvas to drop test points. Each test point is evaluated against the current span: green if reachable as some linear combination α·u + β·v, red if not. In continuous mode, every point is reachable when u and v are linearly independent (det non-zero); the whole canvas turns green. In lattice mode, only integer combinations count, so the reader sees a discrete lattice of green points. When u and v are made parallel (det ≈ 0), the span collapses to a 1D line and only points on that line are green — most clicks elsewhere turn red. The widget reports hit count, miss count, hit rate, and the current span dimension.",
+  teaches: ["span"],
+  howToRead:
+    "Drag the u and v handles to set the basis, then click anywhere to drop a test point: green means the point is reachable as a linear combination of u and v, red means it is out of the span.",
+  controls: [
+    { kind: "drag", label: "basis vectors u and v" },
+    { kind: "canvas", label: "click to drop a test point" },
+    { kind: "toggle", label: "continuous / lattice mode" },
+    { kind: "button", label: "clear marks / presets" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "every mark re-evaluates whenever u or v moves",
+    "when u and v are parallel the span collapses to a 1D line",
+  ],
+};
 
 interface SpanColouringGameProps {
   initialU?: Vec2;
@@ -189,6 +211,7 @@ export function SpanColouringGame({
   ];
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className="scg">
       <header className="scg__head">
         <div className="scg__heading">
@@ -257,6 +280,7 @@ export function SpanColouringGame({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

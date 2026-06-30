@@ -1,7 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
 import { LineChart, type Series } from "../shared/LineChart";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./RatioCollapseDemo.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "SSIM-style ratio collapse demo",
+  description:
+    "Shows the SSIM-style structural-similarity ratio in CLIP feature space at three different stabilising constants: A-FINE's c = 1e-10, DISTS's c = 1e-6, and a reader-controlled custom c. The reader can also scale the synthetic feature norm to see how the c constant interacts with feature scale.",
+  teaches: ["fidelity ratio", "SSIM", "stabilising constant"],
+  howToRead:
+    "Drag the feature-scale and custom-c sliders to see how the SSIM-style ratio's dynamic range changes; the diagnostic readout reports how much range is lost at DISTS's c = 1e-6 versus A-FINE's c = 1e-10.",
+  controls: [
+    { kind: "slider", label: "Feature scale ×", min: 0.05, max: 5, step: 0.05 },
+    { kind: "slider", label: "Custom c (log scale)", min: 1e-12, max: 1e-2 },
+  ],
+  invariants: [
+    "all three ratio curves are finite across α",
+    "dynamic-range loss is reported as a percentage in [0, 100]",
+    "the chart does not overflow the widget frame",
+  ],
+};
 
 const FEATURE_DIM = 512;
 const ALPHA_SAMPLES = 41;
@@ -246,7 +266,8 @@ export function RatioCollapseDemo({ onStateChange }: RatioCollapseDemoProps = {}
   ];
 
   return (
-    <div className="ratio-demo">
+    <WidgetFrame descriptor={DESCRIPTOR}>
+      <div className="ratio-demo">
       <LineChart
         xs={xs}
         series={series}
@@ -298,6 +319,7 @@ export function RatioCollapseDemo({ onStateChange }: RatioCollapseDemoProps = {}
           c: Number(Math.log10(customC).toFixed(2)),
         })}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }

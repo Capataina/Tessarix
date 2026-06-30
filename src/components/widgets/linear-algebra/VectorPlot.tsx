@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./VectorPlot.css";
 
 /**
@@ -39,6 +41,23 @@ const DEFAULT_COLORS = [
   "var(--widget-chart-2)",
   "var(--widget-chart-3)",
 ];
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Vector plot",
+  description:
+    "Interactive 2D vector field. Drag each vector's tip to manipulate its components; readouts show the components, magnitude, and direction.",
+  teaches: ["vector", "vector addition"],
+  howToRead:
+    "Each arrow is a vector from the origin; drag its tip dot to change its components. When the head-to-tail sum is shown, the vectors chain and a distinct arrow marks the resultant. Readouts below give components, magnitude, and (for the sum) the resultant.",
+  controls: [
+    { kind: "drag", label: "Drag a vector's tip to change its components" },
+  ],
+  invariants: [
+    "Each arrow's tip sits at its current components.",
+    "When the sum is shown, the resultant equals the head-to-tail chain of all vectors.",
+    "Nothing overflows the widget frame.",
+  ],
+};
 
 export function VectorPlot({
   initial,
@@ -283,6 +302,7 @@ export function VectorPlot({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className="vec-plot">
       <div className="vec-plot__chart-wrap">
         <canvas
@@ -358,6 +378,7 @@ export function VectorPlot({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

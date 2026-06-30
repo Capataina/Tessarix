@@ -36,6 +36,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./VectorMaze.css";
 
 const CANVAS_SIZE = 360;
@@ -207,6 +209,25 @@ interface VectorMazeProps {
   initialPuzzle?: number;
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Vector maze",
+  description:
+    "A grid-maze navigation game where each move is a vector. The reader's position is shown as a coloured dot on a small grid; clicking an action tile (ê₁, ê₂, ê₁+ê₂, -ê₁, etc.) adds that vector to the running position. Walls block specific moves; out-of-bounds moves are rejected. The reader's job is to chain moves from the action palette so the running sum reaches the goal cell within a fixed move budget. The widget shows the chain as a sequence of chips — clicking any chip undoes back to that point. Four puzzles cover (a) integer reachability with only positive axis-aligned moves, (b) diagonal moves to demonstrate ê₁+ê₂ = ê₁ then ê₂, (c) walls forcing detour and the use of negative moves, (d) negative direction reachability. The pedagogical point is that vector addition is a TRANSLATION — the position after n moves is literally the sum of the n action vectors, and the destination depends only on the multiset of moves, not the order (though the *path* through walls does depend on order).",
+  teaches: ["vector addition", "translation"],
+  howToRead:
+    "Click action tiles to translate the player dot one vector at a time; the position after n moves is the sum of those n vectors. Reach the goal cell within the move budget. Walls and bounds reject some moves; click a chain chip to undo back to that point, or Reset to start over.",
+  controls: [
+    { kind: "button", label: "Action vector tile (click to apply a move)" },
+    { kind: "button", label: "Chain chip (click to undo back to that point)" },
+    { kind: "button", label: "Reset / switch puzzle" },
+  ],
+  invariants: [
+    "The player position equals the start plus the sum of all applied moves.",
+    "Moves that cross a wall or leave the grid are rejected.",
+    "Nothing overflows the widget frame.",
+  ],
+};
 
 export function VectorMaze({
   initialPuzzle = 0,
@@ -387,6 +408,7 @@ export function VectorMaze({
     : "vm__verdict vm__verdict--working";
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`vm${reachedGoal ? " vm--won" : ""}${outOfMoves ? " vm--lost" : ""}`}>
       <header className="vm__head">
         <div className="vm__heading">
@@ -502,6 +524,7 @@ export function VectorMaze({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

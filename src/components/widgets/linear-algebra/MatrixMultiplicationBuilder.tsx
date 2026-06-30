@@ -41,7 +41,35 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { resolveColor } from "../../../lib/theme";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./MatrixMultiplicationBuilder.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Matrix multiplication builder — drag rows and columns to construct AB",
+  description:
+    "A construction-quiz widget for the row-times-column rule of matrix multiplication. The reader is shown two 2×2 matrices A and B, with each row of A presented as a clickable chip (Row 1, Row 2) and each column of B as a clickable chip (Col 1, Col 2). Below them, the four entries of AB are empty slots, each with two sub-targets labelled 'row from A' and 'col from B'. The reader clicks a chip to pick it up, then clicks a sub-target to drop it. The widget enforces the index pattern: entry (i, j) of AB requires exactly Row i of A and Column j of B — dropping the wrong row or wrong column triggers a red rejection flash. When a slot has both correct row and correct column, the dot product fires and the slot lights up green with the computed value. The pedagogical point is that the row-times-column rule isn't an arbitrary convention — it's an index-matching constraint, and the reader cannot finish the matrix without performing each dot product correctly. Three built-in puzzles of varying difficulty (integers, mixed-sign, geometric shear · rotate).",
+  teaches: [
+    "matrix multiplication",
+    "the row-times-column (row · column) rule",
+    "entry (i, j) of AB = row i of A · column j of B",
+  ],
+  howToRead:
+    "Click a row chip of A or a column chip of B to pick it up, then click the matching 'row from A' / 'col from B' sub-target inside an AB entry. Entry (i, j) only accepts Row i and Column j — a wrong index flashes red; a correct pair computes the dot product and lights the slot green. Build all four entries to solve the puzzle.",
+  controls: [
+    {
+      kind: "drag",
+      label: "Pick a row of A / column of B and place it in an AB entry's sub-target",
+    },
+    { kind: "button", label: "Puzzle selector (integers, mixed signs, shear · rotate)" },
+    { kind: "button", label: "Reset slots" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "an entry (i, j) only accepts Row i of A and Column j of B; any other chip is rejected",
+    "the puzzle is solved exactly when all four entries are correctly built",
+  ],
+};
 
 interface Matrix2 {
   a: number;
@@ -317,6 +345,7 @@ export function MatrixMultiplicationBuilder({
   }, [recordInteraction]);
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`mmb${allComplete ? " mmb--solved" : ""}`}>
       <header className="mmb__head">
         <div className="mmb__heading">
@@ -406,6 +435,7 @@ export function MatrixMultiplicationBuilder({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

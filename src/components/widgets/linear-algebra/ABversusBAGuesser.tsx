@@ -41,6 +41,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./ABversusBAGuesser.css";
 
 interface Matrix2 {
@@ -119,6 +121,27 @@ interface RoundResult {
 interface ABversusBAGuesserProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "AB vs BA Guesser — predict one entry of each",
+  description:
+    "A prediction quiz that surfaces the asymmetry of AB vs BA by asking the reader to guess one entry of each. The reader sees two 2×2 matrices A and B at the top, then picks one cell (i, j) of AB and one cell (i', j') of BA, typing a numerical guess for each. Hitting 'Reveal' computes both AB and BA, scores the two guesses by relative closeness (score = 1 − |error| / max(|guess|, |truth|, 1)), highlights the reader's picks in the revealed matrices, and reports the better of the two guesses as the round score. Across rounds the widget tracks how often the reader scored ≥ 0.85 (a 'good' round) and the mean ||AB − BA||₁ — making it tactile that the gap between AB and BA is usually NOT small. One round (round 6) is a scalar-multiple-of-identity case where the reader will be surprised to find AB = BA exactly. The pedagogical point is that AB and BA are not interchangeable, the difference is rarely small, and the reader develops a quantitative feel for both the magnitudes of typical dot products and the spread between AB and BA across many cases.",
+  teaches: ["matrix multiplication", "non-commutativity of matrix products"],
+  howToRead:
+    "Read A and B at the top, click one cell of AB and one cell of BA to choose which entry to predict, type a number for each, then hit Reveal to score your guesses and see how far apart AB and BA actually are.",
+  controls: [
+    { kind: "button", label: "Pick a cell of AB to predict" },
+    { kind: "button", label: "Pick a cell of BA to predict" },
+    { kind: "button", label: "Reveal AB and BA" },
+    { kind: "button", label: "New round" },
+    { kind: "button", label: "Reset this round" },
+  ],
+  invariants: [
+    "the round score is the better of the two guesses, between 0 and 1",
+    "AB and BA are only revealed once both guesses have been entered",
+    "nothing overflows the frame",
+  ],
+};
 
 export function ABversusBAGuesser({ onStateChange }: ABversusBAGuesserProps) {
   const { recordInteraction } = useWidgetTelemetry("ABversusBAGuesser");
@@ -297,6 +320,7 @@ export function ABversusBAGuesser({ onStateChange }: ABversusBAGuesserProps) {
   const goodRounds = history.filter((h) => h.good).length;
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div
       className={`abba${
         revealed ? (bestScore >= 0.85 ? " abba--good" : " abba--off") : ""
@@ -427,6 +451,7 @@ export function ABversusBAGuesser({ onStateChange }: ABversusBAGuesserProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

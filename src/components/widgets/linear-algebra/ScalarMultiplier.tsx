@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./ScalarMultiplier.css";
 
 /**
@@ -21,6 +23,26 @@ import "./ScalarMultiplier.css";
  * controls k. Plot also shows magnitude, direction, and a clear "flipped"
  * badge when k < 0.
  */
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Scalar multiplication — stacking & stretch views",
+  description:
+    "Interactive scalar multiplication. The reader drags v's tip; a slider sets the scalar k. Two view modes: 'stacked copies' draws k·v as |k| copies of v head-to-tail (the iterated-addition meaning of scalar multiplication), and 'single stretched arrow' draws k·v as one arrow at the same origin. Both modes show how k changes magnitude and direction; negative k flips orientation.",
+  teaches: ["scalar multiplication"],
+  howToRead:
+    "Drag the tip of v to set the base vector and slide k to scale it; the warm arrow is k·v. Watch |k·v| = |k|·|v| in the readout, and note that k < 0 flips the direction while k = 0 collapses the vector to the origin.",
+  controls: [
+    { kind: "drag", label: "vector v tip" },
+    { kind: "slider", label: "scalar k", min: -3, max: 3, step: 0.1 },
+    { kind: "toggle", label: "stacked copies / single stretched arrow" },
+    { kind: "button", label: "k presets" },
+  ],
+  invariants: [
+    "k·v has magnitude |k|·|v|",
+    "k < 0 reverses the vector's direction",
+    "nothing overflows the widget frame",
+  ],
+};
 
 const CANVAS_SIZE = 360;
 
@@ -270,6 +292,7 @@ export function ScalarMultiplier({
   const kvMag = Math.abs(k) * vMag;
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className="scalar-mult">
       <div className="scalar-mult__layout">
         <div className="scalar-mult__chart-wrap">
@@ -390,6 +413,7 @@ export function ScalarMultiplier({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

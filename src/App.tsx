@@ -14,6 +14,7 @@ import { findLesson, type LessonFrontmatter } from "./lessons/registry";
 import "./App.css";
 import "./styles/motion.css";
 import "./styles/containment.css";
+import "./styles/concept-link.css";
 
 type Route =
   | { kind: "catalog" }

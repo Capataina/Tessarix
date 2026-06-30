@@ -38,6 +38,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./CornerPredictor.css";
 
 const CANVAS_SIZE = 360;
@@ -102,6 +104,27 @@ const PUZZLES: Puzzle[] = [
 interface CornerPredictorProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Corner predictor — click-to-place spatial-prediction assessment",
+  description:
+    "A spatial-prediction assessment widget. The reader is shown a 2×2 matrix A and the original unit square. The reader's job is to click four positions on the canvas, in order, where they predict each corner of the unit square will land after A is applied: corner 1 = (0,0)'s image, corner 2 = (1,0)'s image (the new î), corner 3 = (1,1)'s image, corner 4 = (0,1)'s image (the new ĵ). After placing all four the reader clicks 'Reveal & grade'; the widget overlays the true transformed parallelogram, draws red error lines from each prediction to its true target, and reports per-corner errors plus average and max in math units. Verdict thresholds: perfect (max < 0.18 and avg < 0.12), good (max < 0.5 and avg < 0.3), rough otherwise. Best-average-error per puzzle persists in memory across attempts. Six puzzles ranging from canonical named transformations (scale-x, shear, rotation, reflection) to compound stretch+shear. The pedagogical payload is the spatial commitment: the reader cannot wait to see the answer before placing a prediction.",
+  teaches: ["matrix-vector multiplication", "linear transformations"],
+  howToRead:
+    "Read the 2×2 matrix at the top, then click four points on the canvas — in the prompted corner order — where you predict each unit-square corner lands once the matrix is applied. Hit 'Reveal & grade' to overlay the true image and see your per-corner error.",
+  controls: [
+    { kind: "canvas", label: "Click the canvas to place a predicted corner" },
+    { kind: "button", label: "Undo last" },
+    { kind: "button", label: "Clear all" },
+    { kind: "button", label: "Reveal & grade" },
+    { kind: "button", label: "Puzzle selector (six named transformations)" },
+  ],
+  invariants: [
+    "At most four corner predictions can be placed.",
+    "Reveal is disabled until all four corners are placed.",
+    "A verdict is only shown after the reader reveals.",
+  ],
+};
 
 export function CornerPredictor({ onStateChange }: CornerPredictorProps) {
   const { recordInteraction } = useWidgetTelemetry("CornerPredictor");
@@ -231,6 +254,7 @@ export function CornerPredictor({ onStateChange }: CornerPredictorProps) {
   const bestForPuzzle = bestErrors.get(puzzleIdx);
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div
       className={`cp${
         verdict === "perfect"
@@ -368,6 +392,7 @@ export function CornerPredictor({ onStateChange }: CornerPredictorProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

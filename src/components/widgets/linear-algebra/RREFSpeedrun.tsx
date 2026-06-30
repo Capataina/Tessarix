@@ -34,7 +34,29 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./RREFSpeedrun.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "RREF Speedrun — timed row-reduction game",
+  description:
+    "A timed game over a 3×3 augmented matrix. The reader has 60 seconds to row-reduce the matrix to reduced row-echelon form (RREF) using the three elementary row operations (swap, scale, add multiple). The clock starts on the first applied operation, not on widget mount, so reading time is free. Score is computed as 1000 − 10·seconds − 20·operations, clamped to 0; the formula rewards both fewer operations and less wall-clock time. The matrix view shows the augmented form with the RHS visually separated from the coefficient block. Personal-best score per preset is tracked across runs. Four presets of increasing difficulty: an already-echelon diagonal that only needs scaling; a classic 3×3 needing two pivot-clear passes; a swap-required matrix where R1's pivot is zero; and a hard preset with negative pivots that forces fractional scalars. Hints surface the optimal first move for each preset. The pedagogical point: row reduction is mechanical, but the STRATEGY isn't — which pivot to clear first, when to swap to avoid fractions, how to plan the operation sequence to minimise steps. Re-running the same matrix with a time budget surfaces the better strategies; the personal-best counter rewards optimisation.",
+  teaches: ["RREF", "row reduction", "elementary row operations"],
+  howToRead:
+    "Pick an elementary row operation (swap, scale, or add-multiple), set its row indices and scalar, and apply it to drive the matrix toward RREF before the timer expires. The clock starts on your first operation and auto-stops the instant the matrix reaches RREF; a lower op count and faster time give a higher score.",
+  controls: [
+    { kind: "select", label: "operation type (swap / scale / add)" },
+    { kind: "select", label: "row i / row j" },
+    { kind: "slider", label: "scalar k", step: 0.5 },
+    { kind: "button", label: "apply / reset / preset pick" },
+  ],
+  invariants: [
+    "the clock starts only on the first applied operation",
+    "the clock auto-stops when the matrix reaches RREF",
+    "nothing overflows the widget frame",
+  ],
+};
 
 const ROWS = 3;
 const COLS = 4;
@@ -322,6 +344,7 @@ export function RREFSpeedrun({ onStateChange }: RREFSpeedrunProps) {
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div
       className={`rr${outcome === "won" ? " rr--won" : ""}${outcome === "timeout" ? " rr--timeout" : ""}`}
     >
@@ -496,5 +519,6 @@ export function RREFSpeedrun({ onStateChange }: RREFSpeedrunProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }

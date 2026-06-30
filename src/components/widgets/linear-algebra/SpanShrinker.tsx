@@ -41,6 +41,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./SpanShrinker.css";
 
 const CANVAS_SIZE = 360;
@@ -132,6 +134,25 @@ function spanDim(vecs: Vec2[]): number {
   }
   return 1;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Span Shrinker — predict-the-shrink puzzle",
+  description:
+    "A constraint-satisfaction puzzle. Three vectors in ℝ² form a spanning set whose dimension (1 or 2) is computed on the fly. The reader picks a vector to remove and must predict whether the span will SHRINK (dimension drops) or STAY THE SAME (the removed vector was redundant). The widget reveals the actual result; wrong predictions cost a life from three available. The reader survives the round only if every prediction was correct. Four puzzles cover the key shapes: (1) two parallel + one off-line — removing the off-line vector is the only shrinker; (2) three pairwise-independent but jointly-dependent vectors — first removal preserves span; (3) three vectors on a single line — span starts at 1D, removing any one keeps it 1D unless it's the last non-zero; (4) sneaky linear combination — c = 2a + b makes c the redundant one. The pedagogical goal is to make the reader internalise that span depends on the SET of reachable points, not the count of generators.",
+  teaches: ["span", "linear independence"],
+  howToRead:
+    "Three vectors form a spanning set. Arm a vector by clicking it, then predict whether removing it will shrink the span or leave it the same; the widget reveals the true outcome and wrong predictions cost a life.",
+  controls: [
+    { kind: "button", label: "arm a vector to remove" },
+    { kind: "button", label: "predict shrink / same" },
+    { kind: "button", label: "reset / choose puzzle" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "span dimension is recomputed after each removal",
+    "a wrong prediction removes one of three lives",
+  ],
+};
 
 interface SpanShrinkerProps {
   initialPuzzle?: number;
@@ -266,6 +287,7 @@ export function SpanShrinker({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`ssk${survived ? " ssk--survived" : ""}${lives <= 0 ? " ssk--failed" : ""}`}>
       <header className="ssk__head">
         <div className="ssk__heading">
@@ -404,6 +426,7 @@ export function SpanShrinker({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

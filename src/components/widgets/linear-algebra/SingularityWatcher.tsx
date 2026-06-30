@@ -39,6 +39,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./SingularityWatcher.css";
 
 const PLOT_W = 320;
@@ -157,6 +159,26 @@ const PUZZLES: Puzzle[] = [
 PUZZLES[4].detExpr2 = (t, s) => (s ?? 0) + t - 2;
 PUZZLES[4].description =
   "A = [[s, 1], [1, t]]. Two constraints: det(A) = 0 AND (trace − 2) = 0. Find (s, t) satisfying both. (Foreshadows the eigenvalue equation, where det and trace pin λ.)";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Singularity Watcher — find the parameter that makes det(A) = 0",
+  description:
+    "A find-the-singularity puzzle. The reader is given a 2×2 matrix A whose entries depend on a parameter t (and sometimes also s). They adjust the parameter(s) with sliders until det(A) hits zero within tolerance, then claim the singularity. Five puzzles cover three modes: LINEAR (one entry is t, det is linear/quadratic with one or two roots), QUADRATIC (t appears in multiple entries, det is quadratic with up to two roots in the slider range), and SYSTEM (two parameters s and t, with TWO simultaneous constraints — det = 0 AND a trace condition — that must both be satisfied; this foreshadows eigenvalue equations where eigenvalues are pinned by both det and trace). One puzzle has NO root for any t in range (the second quadratic, where det simplifies to a constant 1) — the reader must spot impossibility and click 'No singular t exists' instead. A small det-vs-t plot shows the current t marked with a crosshair and the determinant curve's actual roots; the reader can see geometrically where they're heading. Score is wins/attempts across puzzles. The pedagogical point: singularity is a CODIMENSION-1 condition — a single equation det = 0, which becomes a root-finding problem when the matrix is parameterised. This is the entry point to eigenvalue computation (eigenvalues are exactly the roots of det(A − λI) = 0).",
+  teaches: ["singular matrix", "determinant"],
+  howToRead:
+    "Drag the t slider (and the s slider in system mode) until det(A) reaches zero within tolerance; the det-vs-t plot marks your current parameter against the curve's true roots. Then claim the singularity, or claim no root exists when the determinant never reaches zero.",
+  controls: [
+    { kind: "slider", label: "t" },
+    { kind: "slider", label: "s (system mode only)" },
+    { kind: "button", label: "claim singular / no root / next puzzle" },
+    { kind: "select", label: "puzzle" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "det(A) is computed from the current parameter values",
+    "a correct claim requires every constraint satisfied within tolerance",
+  ],
+};
 
 interface SingularityWatcherProps {
   onStateChange?: (state: Record<string, number>) => void;
@@ -300,6 +322,7 @@ export function SingularityWatcher({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`sw${onTarget ? " sw--on-target" : ""}`}>
       <header className="sw__head">
         <div className="sw__heading">
@@ -480,6 +503,7 @@ export function SingularityWatcher({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

@@ -37,6 +37,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./BasisOrNot.css";
 
 const CANVAS_SIZE = 280;
@@ -152,6 +154,25 @@ function generateRound(): Pair[] {
 interface BasisOrNotProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Basis or Not — rapid-fire judgement quiz",
+  description:
+    "A speed quiz for basis recognition in ℝ². Ten pairs of 2D vectors are shown one at a time. For each pair, the reader hits B (basis — independent, spans the plane) or N (not basis — dependent or degenerate). Each answer is immediately graded; a final scorecard shows accuracy, average response time, and a per-category breakdown. Categories: easy-basis (clearly independent), easy-non-basis (integer-multiple parallel pairs), near-miss-basis (independent but small angle — visually deceptive), near-miss-non-basis (decimal-multiple parallel — algebraically subtle), zero (one vector is the zero vector, trivially non-basis). The pedagogical goal is to build a sub-second visual reflex for spotting degenerate cases, rather than relying on the slower algebraic det != 0 calculation.",
+  teaches: ["basis", "span", "linear independence"],
+  howToRead:
+    "A vector pair flashes on the grid; hit B (or the BASIS button) if they are independent and span ℝ², or N (or NOT BASIS) if they are parallel, opposite, or one is zero. Answer fast — average response time is part of the final scorecard.",
+  controls: [
+    { kind: "button", label: "BASIS (B)" },
+    { kind: "button", label: "NOT BASIS (N)" },
+    { kind: "button", label: "New round of 10" },
+  ],
+  invariants: [
+    "the quiz runs exactly 10 rounds before showing the scorecard",
+    "the correct count never exceeds the number of rounds answered",
+    "nothing overflows the frame",
+  ],
+};
 
 export function BasisOrNot({ onStateChange }: BasisOrNotProps) {
   const { recordInteraction } = useWidgetTelemetry("BasisOrNot");
@@ -282,6 +303,7 @@ export function BasisOrNot({ onStateChange }: BasisOrNotProps) {
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`bon${isDone ? " bon--done" : ""}`}>
       <header className="bon__head">
         <div className="bon__heading">
@@ -409,6 +431,7 @@ export function BasisOrNot({ onStateChange }: BasisOrNotProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

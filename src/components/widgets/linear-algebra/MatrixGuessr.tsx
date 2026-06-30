@@ -31,7 +31,34 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./MatrixGuessr.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Matrix Guessr — reverse-engineer the matrix",
+  description:
+    "A quiz widget. The widget draws the image of the unit square under a hidden 2×2 matrix A. The reader has four input fields (a, b, c, d) and must enter A. On submit, each entry is graded against the hidden matrix with a tolerance based on difficulty (5% for easy/medium, 1% for hard). Correct entries flash green, wrong entries flash red. Three difficulty levels: easy (integer entries, no rotations), medium (any integer matrix with det != 0), hard (rotation matrices with decimal entries like 0.866). The reader can hint (fill in one correct entry), give up (reveal A), or start a new round. Score across rounds is tracked. The pedagogical point is to internalise that A's columns are the images of the basis vectors — the reader's job is to read those images off the parallelogram and write them as columns.",
+  teaches: [
+    "matrix as a transformation",
+    "a matrix's columns are the images of the basis vectors",
+    "reading a matrix off its geometry",
+  ],
+  howToRead:
+    "The canvas shows the unit square (dashed) sent to a parallelogram (solid) by a hidden matrix A; the transformed basis-vector arrows î' and ĵ' are A's two columns. Read those columns off the geometry, type the four entries a, b, c, d into the bracketed input grid, and hit Submit to be graded entry-by-entry.",
+  controls: [
+    { kind: "button", label: "Difficulty (easy / medium / hard)" },
+    { kind: "button", label: "Submit guess" },
+    { kind: "button", label: "Reveal one entry (hint)" },
+    { kind: "button", label: "Give up — reveal A" },
+    { kind: "button", label: "New round" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "wins never exceed attempts",
+    "after a correct submit the entered matrix matches the hidden A within tolerance",
+  ],
+};
 
 const CANVAS_SIZE = 320;
 
@@ -220,6 +247,7 @@ export function MatrixGuessr({ onStateChange }: MatrixGuessrProps) {
   const showAnswer = revealed || allCorrect;
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`mg${allCorrect ? " mg--solved" : ""}`}>
       <header className="mg__head">
         <div className="mg__heading">
@@ -362,6 +390,7 @@ export function MatrixGuessr({ onStateChange }: MatrixGuessrProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

@@ -9,7 +9,23 @@ import {
 } from "../../../lib/ascii";
 import { LineChart } from "../shared/LineChart";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./TranslationVsBlurPlot.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Translation vs blur response curves",
+  description:
+    "Two precomputed response curves: PSNR and SSIM measured against translation magnitude (0–16 px) and Gaussian blur sigma (0–4). Shows the shape of each metric's response to each distortion type, side by side.",
+  teaches: ["PSNR", "SSIM"],
+  howToRead:
+    "Read the four precomputed curves: PSNR and SSIM versus translation magnitude (left) and versus Gaussian blur sigma (right). PSNR collapses fast under translation while SSIM survives; SSIM collapses under blur while PSNR holds.",
+  invariants: [
+    "PSNR curves are finite (∞ is clamped to 50 dB)",
+    "SSIM curves stay within [0, 1]",
+    "both plots stay within the widget frame",
+  ],
+};
 
 // Same scene + resolution + pose as MetricComparison's metric grid, so the two
 // A-FINE metric widgets measure one image and their numbers agree.
@@ -91,7 +107,11 @@ export function TranslationVsBlurPlot() {
   }, [curves]);
 
   return (
-    <div className="tvb-plot">
+    <WidgetFrame
+      descriptor={DESCRIPTOR}
+      stateSummary={`Translation curve: ${translationStateSummary}\nBlur curve: ${blurStateSummary}`}
+    >
+      <div className="tvb-plot">
       <div className="tvb-plot__plots">
         <div className="tvb-plot__plot">
           <div className="tvb-plot__plot-title">Translation response</div>
@@ -196,6 +216,7 @@ export function TranslationVsBlurPlot() {
         stateSummary={`Translation curve: ${translationStateSummary}\nBlur curve: ${blurStateSummary}`}
         stateKey="static"
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }

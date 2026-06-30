@@ -36,7 +36,39 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./MatrixInverse.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Matrix inverse — A and A⁻¹ as paired transformations",
+  description:
+    "A 2x2 matrix A controlled by sliders. The widget computes A⁻¹ using the closed-form formula (1/det A)·[[d, -b], [-c, a]] and draws both transformations side-by-side. Left panel: A applied to the unit square (and to a draggable test vector v) shows the image parallelogram. Right panel: A⁻¹ applied to that parallelogram returns the unit square — visually demonstrating that A⁻¹ undoes A. When det(A) ≈ 0, A is singular: the right panel shows a 'no inverse exists' overlay because the transformation has collapsed two dimensions into one, and no operation can un-collapse it. Numeric verdict reports the round-trip error ‖A⁻¹A·v − v‖, which is vanishingly small for non-singular A.",
+  teaches: [
+    "matrix inverse",
+    "the determinant and singular matrices",
+    "an inverse undoes a transformation",
+  ],
+  howToRead:
+    "Set A's four entries with the number boxes or sliders; A⁻¹ is computed live beside them. The left panel applies A to the unit square, the right applies A⁻¹ to that parallelogram and lands back on the unit square — the visual proof that A⁻¹ undoes A. Drag the test vector v in the left panel and watch the round-trip error; when det(A) ≈ 0 the right panel shows a 'no inverse exists' overlay.",
+  controls: [
+    { kind: "slider", label: "A entry a", min: -2, max: 2, step: 0.05 },
+    { kind: "slider", label: "A entry b", min: -2, max: 2, step: 0.05 },
+    { kind: "slider", label: "A entry c", min: -2, max: 2, step: 0.05 },
+    { kind: "slider", label: "A entry d", min: -2, max: 2, step: 0.05 },
+    {
+      kind: "drag",
+      label: "Test vector v (drag in the left panel)",
+      selector: ".mat-inv__canvas--draggable",
+    },
+    { kind: "button", label: "Presets (stretch+shear, rotate, reflect, singular, identity)" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "the right panel shows the 'no inverse' overlay exactly when det(A) ≈ 0",
+    "for non-singular A the round-trip error ‖A⁻¹A·v − v‖ is numerically zero",
+  ],
+};
 
 const CANVAS_SIZE = 280;
 const SINGULAR_EPS = 0.02;
@@ -144,6 +176,7 @@ export function MatrixInverse({
   ];
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className="mat-inv">
       <div className="mat-inv__top">
         <MatrixControls label="A" M={A} setM={setA} />
@@ -218,6 +251,7 @@ export function MatrixInverse({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

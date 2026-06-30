@@ -40,6 +40,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./ProjectionTargetGame.css";
 
 const CANVAS_SIZE = 360;
@@ -103,6 +105,25 @@ function classify(err: number): "exact" | "close" | "off" {
 interface ProjectionTargetGameProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Projection target game — click the foot",
+  description:
+    "A predict-then-verify spatial quiz for vector projection. Two vectors a and b are drawn from a shared origin on a grid. The reader is asked to predict — by clicking a position — where the foot of the perpendicular from a's tip onto b's line will land. The reader's click is automatically snapped to b's infinite line (so they cannot be 'off the line' — their job is only to place the foot along the line). On click, the widget reveals the true foot (green dot), the reader's prediction (yellow), the perpendicular drop from a's tip to the foot (dashed), and scores by distance: exact (≤0.2u, 3 pts), close (≤0.6u, 1 pt), off (otherwise, 0 pts). Six varied built-in rounds exercise the failure modes: the foot can land INSIDE b (scalar in (0,1)), BEYOND b's tip (scalar > 1), or BEHIND the origin (scalar < 0 when angle is obtuse). The pedagogical goal is to make projection a geometric operation the reader can SEE — eyeballing where the foot lands trains the same intuition that underlies Gram-Schmidt, least squares, and SVD downstream.",
+  teaches: ["vector projection", "dot product"],
+  howToRead:
+    "Picture dropping a perpendicular from a's tip onto b's line, then click where you think the foot lands; your click snaps to b's line and the widget reveals the true foot (green), your prediction (yellow), and scores by distance. Press Next round to advance through the six built-in rounds.",
+  controls: [
+    { kind: "canvas", label: "Click on b's line to predict the foot" },
+    { kind: "button", label: "Next round →" },
+    { kind: "button", label: "Reset game" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "the reader's click always snaps onto b's infinite line",
+    "exact ≤ 0.2u scores 3 pts, close ≤ 0.6u scores 1 pt, otherwise 0",
+  ],
+};
 
 export function ProjectionTargetGame({
   onStateChange,
@@ -207,9 +228,10 @@ export function ProjectionTargetGame({
   );
 
   return (
-    <div
-      className={`ptg${revealed && result ? ` ptg--${result.verdict}` : ""}`}
-    >
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div
+        className={`ptg${revealed && result ? ` ptg--${result.verdict}` : ""}`}
+      >
       <header className="ptg__head">
         <div className="ptg__heading">
           <span className="ptg__heading-label">ROUND</span>
@@ -299,7 +321,8 @@ export function ProjectionTargetGame({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

@@ -32,6 +32,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./SystemTriage.css";
 
 const TIME_PER = 5; // seconds per system
@@ -198,6 +200,26 @@ interface SystemTriageProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
 
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "System Triage — rapid classification of linear systems",
+  description:
+    "A speed-classify minigame. Eight 2×2 or 3×3 augmented matrices flash one at a time; the reader has 5 seconds each to classify the system as UNIQUE solution, INFINITE solutions, or NO solution. Wrong answers and timeouts both count as misses; correct answers advance immediately. Final score out of 8 with a personal-best tracker across runs. Questions are drawn from a curated bank with three outcome classes, balanced ~3:3:2. The pedagogical point is reading the SIGNATURE of an augmented matrix without solving it: two rows with proportional coefficients but different RHS → inconsistent (no solution); rank-deficient coefficient block with consistent RHS → free variable (infinite solutions); full-rank coefficient block → unique solution. Drilling this under a 5-second clock makes the recognition reflexive rather than calculation-driven, which is the right disposition for inspecting systems in the wild (least-squares fits, regression, eigenvalue problems) where the consistency question is the first thing you ask. After every answer the widget surfaces the WHY for that question — proportional rows, free variable, contradictory RHS — so missed questions become a teaching moment, not just a tally.",
+  teaches: ["system of equations", "rank", "consistency of linear systems"],
+  howToRead:
+    "Each round flashes one augmented matrix; read its signature and hit Unique, Infinite, or No solution before the 5-second clock runs out. Proportional rows with a mismatched RHS mean no solution; a rank-deficient coefficient block with a consistent RHS means infinite solutions; a full-rank coefficient block means a unique solution.",
+  controls: [
+    { kind: "button", label: "Start run" },
+    { kind: "button", label: "Unique solution" },
+    { kind: "button", label: "Infinite solutions" },
+    { kind: "button", label: "No solution" },
+  ],
+  invariants: [
+    "Nothing overflows the widget frame.",
+    "The score never exceeds the 8-question total.",
+    "Each presented system has exactly one correct outcome.",
+  ],
+};
+
 export function SystemTriage({ onStateChange }: SystemTriageProps) {
   const { recordInteraction } = useWidgetTelemetry("SystemTriage");
   const [questions, setQuestions] = useState<Question[]>(() => pickQuestions());
@@ -343,6 +365,7 @@ export function SystemTriage({ onStateChange }: SystemTriageProps) {
   const correctAnsweredEntirely = finished && score === TOTAL;
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div
       className={`st${correctAnsweredEntirely ? " st--perfect" : ""}${
         finished && score < TOTAL ? " st--finished" : ""
@@ -504,5 +527,6 @@ export function SystemTriage({ onStateChange }: SystemTriageProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }

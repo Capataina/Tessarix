@@ -33,6 +33,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./VectorChainPuzzle.css";
 
 const CANVAS_SIZE = 360;
@@ -116,6 +118,25 @@ interface VectorChainPuzzleProps {
   initialPuzzle?: number;
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Vector chain puzzle",
+  description:
+    "A drag-to-construct puzzle. A target vector T is drawn on a grid. A palette of 4-6 candidate vectors sits below. The reader clicks palette tiles to add each chosen vector head-to-tail to a running chain; the canvas shows the chain as a sequence of connected arrows accumulating toward T. The widget detects success (running sum within ε of T) and reports whether the chain is OPTIMAL (uses no more segments than necessary) or just SOLVED. The reader can remove placed vectors from the chain strip, reset, or switch between four built-in puzzles. The pedagogical goal is to make vector addition tangible as physical concatenation — the chain literally snaps head-to-tail, commutativity is forced (any permutation of the same multiset reaches the same target), and the elegance scoring nudges toward parsimonious solutions.",
+  teaches: ["vector addition"],
+  howToRead:
+    "Click palette tiles to chain vectors head-to-tail; the running sum (Σ) walks across the grid toward the target T. Reach T within ε to solve, and use no more than the optimal number of segments for an elegant solve. Click a chain chip to remove it, or Reset to start over.",
+  controls: [
+    { kind: "button", label: "Palette vector tile (click to add to the chain)" },
+    { kind: "button", label: "Chain chip (click to remove from the chain)" },
+    { kind: "button", label: "Reset / switch puzzle" },
+  ],
+  invariants: [
+    "The running sum equals the head-to-tail sum of every placed vector.",
+    "A solve requires the running sum to be within ε of the target.",
+    "Nothing overflows the widget frame.",
+  ],
+};
 
 export function VectorChainPuzzle({
   initialPuzzle = 0,
@@ -234,6 +255,7 @@ export function VectorChainPuzzle({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`vcp${isSolved ? " vcp--solved" : ""}`}>
       <header className="vcp__head">
         <div className="vcp__heading">
@@ -342,6 +364,7 @@ export function VectorChainPuzzle({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

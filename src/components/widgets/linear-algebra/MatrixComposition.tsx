@@ -26,7 +26,28 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./MatrixComposition.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Matrix composition — AB vs BA side-by-side",
+  description:
+    "Two 2x2 matrices A and B set by sliders. The widget computes AB (apply B first, then A) and BA (apply A first, then B), draws each as a transformation of the unit square in its own panel, and reports the non-commutativity ||AB - BA||. Shows directly that matrix multiplication is non-commutative in general, and lets the reader find the special cases where commutativity holds (identity, two rotations around the same point, two scalings of the same axes).",
+  teaches: ["matrix composition", "matrix multiplication", "non-commutativity"],
+  howToRead:
+    "Set the four entries of A and B with the number boxes or sliders. The left panel draws the unit square under AB and the right under BA; when the two parallelograms differ, AB ≠ BA and the verdict reports ||AB − BA||. Reach for a preset to jump to a known case — two rotations commute, a shear and a rotation do not.",
+  controls: [
+    { kind: "slider", label: "Matrix A entries a, b, c, d", min: -2, max: 2, step: 0.05 },
+    { kind: "slider", label: "Matrix B entries a, b, c, d", min: -2, max: 2, step: 0.05 },
+    { kind: "button", label: "presets" },
+  ],
+  invariants: [
+    "the verdict reads 'commute' exactly when ||AB − BA|| is near zero",
+    "each panel draws the unit square transformed by its product matrix",
+    "nothing overflows the widget frame",
+  ],
+};
 
 const CANVAS_SIZE = 280;
 
@@ -131,6 +152,7 @@ export function MatrixComposition({
   ];
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className="mat-comp">
       <div className="mat-comp__top">
         <MatrixControls label="A" M={A} setM={setA} />
@@ -187,6 +209,7 @@ export function MatrixComposition({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

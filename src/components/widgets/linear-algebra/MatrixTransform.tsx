@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./MatrixTransform.css";
 
 /**
@@ -34,6 +36,28 @@ interface MatrixTransformProps {
   widgetName?: string;
   widgetDescription?: string;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "2×2 matrix transformation",
+  description:
+    "Visualise how a 2×2 matrix transforms the plane. The reader sets the four matrix entries; the widget shows the unit square mapping to a parallelogram, the transformed basis vectors, and the determinant. Optionally a draggable test vector and its image under A.",
+  teaches: ["matrix as transformation", "determinant", "basis vectors"],
+  howToRead:
+    "Set the four matrix entries a, b, c, d (each via a number field and a slider) and watch the dashed unit square map to the filled parallelogram, the transformed basis vectors î = (a, c) and ĵ = (b, d), and the determinant readout. A negative determinant tints the fill and flips orientation; a zero determinant collapses the area (singular). When enabled, drag the test vector v to see its image A·v.",
+  controls: [
+    { kind: "slider", label: "Matrix entry a", min: -3, max: 3, step: 0.05 },
+    { kind: "slider", label: "Matrix entry b", min: -3, max: 3, step: 0.05 },
+    { kind: "slider", label: "Matrix entry c", min: -3, max: 3, step: 0.05 },
+    { kind: "slider", label: "Matrix entry d", min: -3, max: 3, step: 0.05 },
+    { kind: "button", label: "presets (Identity, Scale 2×, Rotate 45°, Shear x, Reflect x, Singular)" },
+    { kind: "drag", label: "test vector v on the canvas" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "det(A) readout equals a·d − b·c",
+    "the dashed outline is always the original unit square; the filled shape is its image under A",
+  ],
+};
 
 export function MatrixTransform({
   initial = { a: 1, b: 0, c: 0, d: 1 },
@@ -304,7 +328,8 @@ export function MatrixTransform({
   ];
 
   return (
-    <div className="mat-trans">
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className="mat-trans">
       <div className="mat-trans__layout">
         <div className="mat-trans__chart-wrap">
           <canvas
@@ -368,7 +393,8 @@ export function MatrixTransform({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

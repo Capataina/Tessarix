@@ -1,7 +1,23 @@
 import { useMemo } from "react";
 import { LineChart, type Series } from "../shared/LineChart";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./GeluComparison.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "QuickGELU vs erf-GELU comparison",
+  description:
+    "Two activation curves overlaid (QuickGELU and erf-based GELU) plus a difference curve at full precision. Static plot — no interactive controls — but readers can ask questions about the difference's shape and why the ~1% gap fails the parity test.",
+  teaches: ["GELU"],
+  howToRead:
+    "Read the two activation curves on the left (QuickGELU solid, erf-GELU dashed) and the difference curve on the right; the max |Δ| aside reports the largest pointwise gap, which peaks near |x| ≈ 1.2.",
+  invariants: [
+    "the difference curve equals QuickGELU − erf-GELU pointwise",
+    "max |Δ| is a small finite number (~0.02)",
+    "both plots stay within the widget frame",
+  ],
+};
 
 const X_MIN = -3;
 const X_MAX = 3;
@@ -83,7 +99,8 @@ export function GeluComparison() {
   ];
 
   return (
-    <div className="gelu-comparison">
+    <WidgetFrame descriptor={DESCRIPTOR}>
+      <div className="gelu-comparison">
       <div className="gelu-comparison__plots">
         <div className="gelu-comparison__plot">
           <div className="gelu-comparison__plot-title">Activations</div>
@@ -129,6 +146,7 @@ export function GeluComparison() {
         stateSummary={`Static plot of QuickGELU (x · sigmoid(1.702 x)) versus the erf-based GELU (0.5 · x · (1 + erf(x / √2))) over x ∈ [-3, 3]. The maximum pointwise absolute difference is ${maxAbsDiff.toFixed(4)}, located near |x| ≈ 1.2. The CLIP backbone uses QuickGELU; the naturalness head uses erf-based GELU.`}
         stateKey="static"
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }

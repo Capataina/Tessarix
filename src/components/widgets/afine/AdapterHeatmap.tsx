@@ -8,7 +8,42 @@ import {
 } from "react";
 import { sequentialWarm } from "../../../styles";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./AdapterHeatmap.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "A-FINE adapter heatmap",
+  description:
+    "2D heatmap of A-FINE's final score over (s_nat_r, s_fid) for fixed k and s_nat_d. The reader can drag a primary cursor anywhere on the heatmap; a ghost cursor automatically tracks the swap-twin position (same s_fid, x = s_nat,d). Both scores are always visible, so the asymmetry is observable without mutating state.",
+  teaches: ["adapter", "A-FINE score", "asymmetry"],
+  howToRead:
+    "Drag the cursor across the heatmap to set (s_nat,r, s_fid); the colour is the fused A-FINE score and the dashed ghost cursor marks the swap-twin. The asymmetry |Δ| readout is the score gap between the current point and its twin, and goes to zero when k=0, s_fid=1, or the two naturalness scores match.",
+  controls: [
+    { kind: "drag", label: "Heatmap cursor (s_nat,r, s_fid)" },
+    { kind: "slider", label: "k — blend parameter", min: 0, max: 1, step: 0.01 },
+    {
+      kind: "slider",
+      label: "s_nat,d — distorted naturalness",
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    {
+      kind: "slider",
+      label: "s_nat,r — reference naturalness",
+      min: 0,
+      max: 1,
+      step: 0.01,
+    },
+    { kind: "slider", label: "s_fid — fidelity", min: 0, max: 1, step: 0.01 },
+  ],
+  invariants: [
+    "the score readouts are finite numbers",
+    "asymmetry |Δ| is non-negative",
+    "the heatmap and cursors do not overflow the widget frame",
+  ],
+};
 
 const HEATMAP_SIZE = 240;
 
@@ -162,7 +197,8 @@ export function AdapterHeatmap({ onStateChange }: AdapterHeatmapProps = {}) {
   const ghostY = (1 - sFid) * 100;
 
   return (
-    <div className="adapter-heatmap">
+    <WidgetFrame descriptor={DESCRIPTOR}>
+      <div className="adapter-heatmap">
       <div className="adapter-heatmap__layout">
         <div className="adapter-heatmap__chart-wrap">
           <canvas
@@ -300,6 +336,7 @@ export function AdapterHeatmap({ onStateChange }: AdapterHeatmapProps = {}) {
           onChange={setSFid}
         />
       </div>
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }

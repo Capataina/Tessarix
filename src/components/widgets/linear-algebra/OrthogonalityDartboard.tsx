@@ -37,6 +37,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./OrthogonalityDartboard.css";
 
 const CANVAS_SIZE = 360;
@@ -77,6 +79,25 @@ interface OrthogonalityDartboardProps {
   seed?: number;
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Orthogonality dartboard",
+  description:
+    "An aim-and-verify mini-game for orthogonality. A reference vector r is fixed at a random angle each round. The reader drags a 'dart' vector d (magnitude locked, only angle changes) until r and d are perpendicular. The widget colour-codes the angle in real time: red when more than 30° off perpendicular, yellow within 30°, green within 2°. The dot product r·d updates continuously and approaches zero as the dart approaches perpendicular — making 'perpendicular ⇔ dot product = 0' a directly-felt fact rather than a memorised equivalence. On a green hit, the round scores and the next round spawns a new reference angle. Score = rounds hit; drag count surfaces efficient aiming; streak tracks consecutive perpendicular finds. The pedagogical goal is to give the reader a visceral feel for orthogonality: watching the bar swing past zero, overshoot, and swing back trains the same eye-hand coordination engineers use when sketching projections by hand.",
+  teaches: ["orthogonality", "dot product"],
+  howToRead:
+    "Drag the green dart handle d so it forms a right angle with the fixed reference vector r; watch the dot product r·d swing toward zero and the colour shift red → yellow → green. A green verdict (within 2° of perpendicular) scores the round; press Next round for a fresh reference angle.",
+  controls: [
+    { kind: "drag", label: "Dart vector d (drag the green handle; magnitude locked)" },
+    { kind: "button", label: "Next round →" },
+    { kind: "button", label: "Reset game" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "the dart magnitude is locked; only its angle changes",
+    "a green verdict means r·d is within tolerance of zero (within 2° of perpendicular)",
+  ],
+};
 
 export function OrthogonalityDartboard({
   seed,
@@ -253,7 +274,8 @@ export function OrthogonalityDartboard({
   }, [initialRefTheta, recordInteraction]);
 
   return (
-    <div className={`odb odb--${verdict}${roundHit ? " odb--hit" : ""}`}>
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className={`odb odb--${verdict}${roundHit ? " odb--hit" : ""}`}>
       <header className="odb__head">
         <div className="odb__heading">
           <span className="odb__heading-label">ROUND</span>
@@ -352,7 +374,8 @@ export function OrthogonalityDartboard({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

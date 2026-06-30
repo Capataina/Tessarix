@@ -34,7 +34,41 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./InverseRevealer.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Inverse Revealer — predict-then-verify 2×2 inverses",
+  description:
+    "A quiz widget. A random 2×2 matrix A is generated; the reader must compute A⁻¹ by hand and enter its four entries in input fields. The widget grades each entry within tolerance (0.04 for easy/medium, 0.03 for hard) and flags correct entries green, wrong entries red. Three difficulty levels: easy (integer A with det ∈ {±1, ±2} for clean fractional inverses), medium (any integer A with non-zero det), hard (mixes invertible and SINGULAR matrices — when A is singular, the reader must declare 'no inverse' instead of entering values). Three wizards: det check (computes ad − bc and reports invertibility), formula reminder (the 2×2 inverse formula with the reader's A substituted in), per-entry hint (reveals one correct entry). Score is tracked across rounds. The canvas at the top draws the unit square's image under A and the parallelogram's image under the inverse — so the reader can visually verify their answer round-trips. The pedagogical point is committing to the four entries: the 2×2 inverse formula is mechanical, but executing it under quiz pressure cements the swap-diagonals/negate-off-diagonals/divide-by-det pattern. The singular case in hard mode makes 'A⁻¹ does not exist' a first-class answer the reader must actively recognise.",
+  teaches: [
+    "2×2 matrix inverse",
+    "determinant and singularity",
+    "the 2×2 inverse formula (swap diagonal, negate off-diagonal, divide by det)",
+  ],
+  howToRead:
+    "Read the given 2×2 matrix A, compute A⁻¹ by hand, and type its four entries (decimals or simple fractions) before submitting — correct entries turn green, wrong ones red. In hard mode some matrices are singular, so 'Declare singular' is the right answer when det(A) = 0. The det-check, formula, and reveal-one-entry wizards scaffold the computation, and the canvas shows the unit square's image under A so you can sanity-check.",
+  controls: [
+    { kind: "button", label: "Difficulty (easy / medium / hard)" },
+    {
+      kind: "slider",
+      label: "A⁻¹ entry fields a, b, c, d (type a number or simple fraction)",
+    },
+    { kind: "button", label: "Submit A⁻¹" },
+    { kind: "button", label: "Declare singular (hard mode)" },
+    { kind: "button", label: "Det check" },
+    { kind: "button", label: "Show formula" },
+    { kind: "button", label: "Reveal one entry" },
+    { kind: "button", label: "Give up" },
+    { kind: "button", label: "New round" },
+  ],
+  invariants: [
+    "nothing overflows the widget frame",
+    "an entry is graded correct only when it is within tolerance of the true A⁻¹ entry (0.03–0.04)",
+    "a singular matrix (det = 0) is solved only by declaring 'no inverse', never by entering values",
+  ],
+};
 
 const CANVAS_SIZE = 280;
 const SINGULAR_EPS = 1e-9;
@@ -352,7 +386,8 @@ export function InverseRevealer({ onStateChange }: InverseRevealerProps) {
   const showAnswer = revealed || allCorrect || singularWin;
 
   return (
-    <div className={`ir${solved ? " ir--solved" : ""}`}>
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className={`ir${solved ? " ir--solved" : ""}`}>
       <header className="ir__head">
         <div className="ir__heading">
           <span className="ir__heading-label">DIFFICULTY</span>
@@ -605,7 +640,8 @@ export function InverseRevealer({ onStateChange }: InverseRevealerProps) {
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

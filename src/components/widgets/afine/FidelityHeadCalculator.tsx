@@ -1,6 +1,26 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./FidelityHeadCalculator.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Fidelity head — 8-dim SSIM-in-feature-space calculator",
+  description:
+    "An 8-dimensional simplification of A-FINE's fidelity head. The reference vector f_r is fixed; the reader drags each of the 8 components of f_d to manipulate the distorted vector. Live readouts show μ_d, μ_r, σ_d², σ_r², σ_dr, the four bracket terms of the SSIM formula, and the assembled ratio.",
+  teaches: ["fidelity head", "fidelity ratio", "SSIM"],
+  howToRead:
+    "Drag any of the eight bars of the distorted vector f_d (the reference f_r is fixed); the means, variances, covariance, the four SSIM bracket terms, and the assembled fidelity ratio all update live. The preset buttons jump f_d to matched, anticorrelated, zero, or random.",
+  controls: [
+    { kind: "drag", label: "f_d component bars (×8)", min: -1, max: 1 },
+    { kind: "button", label: "Presets (match / anti / zero / random)" },
+  ],
+  invariants: [
+    "the fidelity ratio is a finite number",
+    "each f_d component stays within [-1, 1]",
+    "the bars and readouts do not overflow the widget frame",
+  ],
+};
 
 const DIM = 8;
 const C1 = 1e-10;
@@ -84,7 +104,8 @@ export function FidelityHeadCalculator({
   }, []);
 
   return (
-    <div className="fhc">
+    <WidgetFrame descriptor={DESCRIPTOR}>
+      <div className="fhc">
       <div className="fhc__vectors">
         <div className="fhc__vector fhc__vector--ref">
           <div className="fhc__vector-head">
@@ -183,7 +204,8 @@ export function FidelityHeadCalculator({
         stateSummary={`f_d = [${fD.map((v) => v.toFixed(2)).join(", ")}]. Statistics: μ_d = ${s.muA.toFixed(3)}, μ_r = ${s.muB.toFixed(3)}, σ_d² = ${s.vA.toFixed(3)}, σ_r² = ${s.vB.toFixed(3)}, σ_dr = ${s.cov.toFixed(4)}. Fidelity ratio = ${ratio.toFixed(4)}.`}
         stateKey={JSON.stringify(fD.map((v) => Number(v.toFixed(2))))}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

@@ -44,6 +44,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./CoordinateTranslator.css";
 
 const CANVAS_SIZE = 360;
@@ -108,6 +110,29 @@ const PUZZLES: Puzzle[] = [
 interface CoordinateTranslatorProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Coordinate translator — navigate under a custom basis",
+  description:
+    "A navigation puzzle that forces the reader to enact the change-of-basis identity T = α·u + β·v with their fingers. A ship begins at the origin; a target is shown on a grid drawn in the standard basis. The target's only label is its CUSTOM-basis coordinates (α, β) — the standard-basis coordinates are hidden by default. The reader presses +u / -u / +v / -v (or arrow keys); each press translates the ship by ±u or ±v in standard-basis space. To reach the target the reader must compose α u-moves and β v-moves (counting signs). The widget tracks moves used vs the optimal |α| + |β|, and surfaces 'show standard coords' as an optional reveal for readers who want to double-check. The pedagogical point: under a custom basis, the controls and the target coordinates are in different languages from the rendering, and translating between them is the change-of-basis operation.",
+  teaches: ["change of basis", "basis", "coordinates"],
+  howToRead:
+    "Press +u / −u / +v / −v (or the arrow / WASD keys) to translate the ship in the custom basis; compose α u-moves and β v-moves to land on the target, whose only label is its custom-basis coordinates until you reveal the standard ones.",
+  controls: [
+    { kind: "button", label: "+v (↑ / W)" },
+    { kind: "button", label: "−v (↓ / S)" },
+    { kind: "button", label: "+u (→ / D)" },
+    { kind: "button", label: "−u (← / A)" },
+    { kind: "button", label: "Reset (R)" },
+    { kind: "toggle", label: "Show / hide standard coords" },
+    { kind: "button", label: "Choose puzzle (4 puzzles)" },
+  ],
+  invariants: [
+    "Move buttons are disabled once the ship reaches the target.",
+    "The optimal move count equals |α| + |β|.",
+    "The ship's standard-basis position equals shipA·u + shipB·v.",
+  ],
+};
 
 export function CoordinateTranslator({
   onStateChange,
@@ -279,6 +304,7 @@ export function CoordinateTranslator({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div
       className={`ct${isSolved ? " ct--solved" : ""}`}
       ref={wrapRef}
@@ -420,6 +446,7 @@ export function CoordinateTranslator({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

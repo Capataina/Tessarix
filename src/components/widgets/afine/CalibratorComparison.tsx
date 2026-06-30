@@ -1,7 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
 import { LineChart, type Series } from "../shared/LineChart";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./CalibratorComparison.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Trained calibrator vs reader's calibrator",
+  description:
+    "Two five-parameter logistic calibrator curves overlaid: a trained reference (the kind A-FINE actually ships in its checkpoint) and the reader's free-parameter version. The reader manipulates β₁..β₅ to try to match the trained curve; RMSE between the two curves is shown live. Teaches what the training process optimised for — the trained β values absorb whatever offset and scale the raw head produces.",
+  teaches: ["logistic calibrator", "calibration"],
+  howToRead:
+    "Drag β₁..β₅ to reshape your five-parameter logistic curve (dashed) toward the trained target (solid); the live RMSE readout tells you how close the fit is, dropping toward zero as the curves overlap.",
+  controls: [
+    { kind: "slider", label: "β₁ — logistic amplitude", min: 0, max: 2, step: 0.05 },
+    { kind: "slider", label: "β₂ — steepness", min: 0.1, max: 4, step: 0.05 },
+    { kind: "slider", label: "β₃ — centre", min: -3, max: 3, step: 0.05 },
+    { kind: "slider", label: "β₄ — linear slope", min: -0.5, max: 0.5, step: 0.01 },
+    { kind: "slider", label: "β₅ — bias", min: -0.5, max: 1, step: 0.01 },
+  ],
+  invariants: [
+    "RMSE is a finite non-negative number",
+    "both curves stay within the chart axes",
+    "nothing overflows the widget frame",
+  ],
+};
 
 const X_MIN = -4;
 const X_MAX = 4;
@@ -145,7 +168,8 @@ export function CalibratorComparison({
   ];
 
   return (
-    <div className="calibrator-comparison">
+    <WidgetFrame descriptor={DESCRIPTOR}>
+      <div className="calibrator-comparison">
       <LineChart
         xs={xs}
         series={series}
@@ -225,6 +249,7 @@ export function CalibratorComparison({
           b5: Number(params.b5.toFixed(2)),
         })}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }

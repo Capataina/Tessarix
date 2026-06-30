@@ -41,6 +41,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./BasisCardTournament.css";
 
 const CANVAS_SIZE = 240;
@@ -174,6 +176,25 @@ interface BasisCardTournamentProps {
 }
 
 type Phase = "playing" | "feedback" | "won" | "lost";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Basis Card Tournament — speed-recognition of basis status",
+  description:
+    "A survival tournament: 10 rounds, each showing a pair of 2D vectors u and v. The reader hits ✓ (is a basis) or ✗ (not a basis). Correct answers advance; wrong answers end the tournament and reveal the truth with the determinant. Card difficulty grows with round number — early rounds use obviously-independent or obviously-parallel pairs; later rounds use near-collinear pairs whose dependence is visually subtle. Generation guarantees ground truth: a pair counts as a basis iff |det[u | v]| > 0.06, and 'not basis' cards are generated as exact scalar multiples (or near-multiples then rounded to exact) so there is no ambiguity. The widget tracks streak, best streak, runs played and runs won across tournaments. Pedagogically, the speed forces gut-level recognition over numerical computation; the post-mortem on a wrong answer always shows the determinant and a one-sentence rationale to close the loop.",
+  teaches: ["basis", "linear independence"],
+  howToRead:
+    "A pair of vectors u and v is drawn on a small grid; decide whether they form a basis for ℝ² (✓/Y/→) or not (✗/N/←). Get it right to advance; a wrong answer ends the run and shows the determinant and reason.",
+  controls: [
+    { kind: "button", label: "Is a basis (✓ / Y / →)" },
+    { kind: "button", label: "Not a basis (✗ / N / ←)" },
+    { kind: "button", label: "Start a new tournament" },
+  ],
+  invariants: [
+    "a wrong answer ends the run and resets the current streak to zero",
+    "the tournament is at most 10 rounds long",
+    "nothing overflows the frame",
+  ],
+};
 
 export function BasisCardTournament({
   onStateChange,
@@ -317,6 +338,7 @@ export function BasisCardTournament({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div
       className={`bct${phase === "won" ? " bct--won" : phase === "lost" ? " bct--lost" : ""}`}
       ref={wrapRef}
@@ -404,6 +426,7 @@ export function BasisCardTournament({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

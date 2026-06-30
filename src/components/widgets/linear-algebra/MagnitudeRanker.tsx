@@ -47,7 +47,30 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./MagnitudeRanker.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Magnitude ranker — drag rows to order by length",
+  description:
+    "A ranking-quiz widget. The canvas on the left draws 6 vectors of distinct magnitudes from the origin, each labelled v₁..v₆. The right column lists the same 6 vectors as draggable rows, currently in the canvas's display order. The reader drags rows up or down to reorder them so that the top of the list has the largest magnitude and the bottom has the smallest. Submit grades each row by comparing the reader's placed position to the true rank; correct positions flash green, wrong red, and the true |v| is revealed on each wrong row. The pedagogical point is that magnitude is a SCALAR derived from a 2-component vector and depends on both components in the Pythagorean way — a slanted long vector can look short to an eye that's only tracking horizontal extent. The (3, 4) trap: integer components don't tell you the magnitude; you have to square-and-add. Six vectors with magnitudes evenly spread from ~1.2 to ~4.2 and angles spread across the full 360°. The reader can also nudge rows up/down with arrow buttons, shuffle to restart, or hit New round for a fresh set of vectors.",
+  teaches: ["vector magnitude", "Euclidean norm"],
+  howToRead:
+    "Read each vector's length off the canvas, then drag the rows so the longest vector sits at the top and the shortest at the bottom. Hit Submit to grade: green rows are in the right place, red rows are wrong and reveal the true |v|. The trap is judging length by horizontal extent — a long, slanted vector reads as short until you compute √(x²+y²).",
+  controls: [
+    { kind: "drag", label: "Drag rows to reorder by magnitude" },
+    { kind: "button", label: "Move up / Move down (per row)" },
+    { kind: "button", label: "Submit ranking" },
+    { kind: "button", label: "Shuffle (clear ordering)" },
+    { kind: "button", label: "New round" },
+  ],
+  invariants: [
+    "exactly 6 vectors are ranked each round",
+    "after submit, a row flashes green iff its placed position matches its true magnitude rank",
+    "nothing overflows the widget frame",
+  ],
+};
 
 const CANVAS_SIZE = 320;
 const VECTORS_PER_ROUND = 6;
@@ -327,6 +350,7 @@ export function MagnitudeRanker({ onStateChange }: MagnitudeRankerProps) {
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`mr${submitted ? (allCorrect ? " mr--perfect" : " mr--graded") : ""}`}>
       <header className="mr__head">
         <div className="mr__heading">
@@ -459,6 +483,7 @@ export function MagnitudeRanker({ onStateChange }: MagnitudeRankerProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

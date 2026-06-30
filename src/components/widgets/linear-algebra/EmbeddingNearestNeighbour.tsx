@@ -44,7 +44,32 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./EmbeddingNearestNeighbour.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Embedding nearest-neighbour quiz",
+  description:
+    "A predict-then-reveal quiz for cosine similarity in 2D as a stand-in for high-dimensional embeddings. 30 fake embedding points are scattered across the plane in 5 deterministic semantic clusters (animals, vehicles, food, places, tools). Three phases: (1) reader clicks a point to set it as the query; (2) reader clicks 3 candidate nearest neighbours by cosine similarity (their direction agreement to the query); (3) widget reveals the true cosine top-3 (green halos) and the Euclidean top-3 for comparison (dashed rings). Scores the reader's prediction by overlap with cosine top-3. The pedagogical lift is that cosine similarity in 2D is mostly about DIRECTION agreement, not distance — a point that LOOKS close (Euclidean) can have low cosine similarity if it's at a different angle. This 2D intuition transfers conceptually to high-D embedding similarity (CLIP, BERT, OpenAI text-embedding-3): the geometry is the same; the only thing that changes is how many dimensions the cosine is computed in.",
+  teaches: ["cosine similarity", "dot product", "embeddings", "nearest neighbour"],
+  howToRead:
+    "Three phases: click a scatter point to set it as the query, click three candidate nearest neighbours by cosine similarity (direction agreement to the query, cos θ = a·b / |a||b|), then Reveal to compare your picks against the true cosine top-3 (green halos) and the Euclidean top-3 (dashed rings). The point is that cosine ranks by direction, not distance — a Euclidean-close point can miss the cosine top-3.",
+  controls: [
+    {
+      kind: "canvas",
+      label: "Scatter — click points to pick the query and guess neighbours",
+    },
+    { kind: "button", label: "Reveal top-3" },
+    { kind: "button", label: "Try a different query" },
+    { kind: "button", label: "Reset" },
+  ],
+  invariants: [
+    "the query point is excluded from its own top-3",
+    "Reveal is only available once exactly 3 guesses are selected",
+    "nothing overflows the widget frame",
+  ],
+};
 
 const CANVAS_SIZE = 380;
 const TOP_K = 3;
@@ -263,7 +288,8 @@ export function EmbeddingNearestNeighbour({
   );
 
   return (
-    <div className={`enn enn--${phase}`}>
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className={`enn enn--${phase}`}>
       <header className="enn__head">
         <div className="enn__heading">
           <span className="enn__heading-label">PHASE</span>
@@ -378,7 +404,8 @@ export function EmbeddingNearestNeighbour({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

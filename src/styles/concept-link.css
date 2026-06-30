@@ -1,0 +1,14 @@
+/* Cross-page concept links (the deterministic linker's output). Used in the
+   widget mini-lesson today and any inline lesson prose that routes through the
+   linker. Warm underline that picks up the active category accent. */
+.concept-link {
+  color: var(--accent-camel);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent-camel) 45%, transparent);
+  text-underline-offset: 2px;
+  transition: text-decoration-color var(--dur-fast) var(--ease-standard);
+}
+
+.concept-link:hover {
+  text-decoration-color: var(--accent-camel);
+}

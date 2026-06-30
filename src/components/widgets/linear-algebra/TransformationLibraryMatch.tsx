@@ -33,6 +33,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./TransformationLibraryMatch.css";
 
 interface Matrix2 {
@@ -126,6 +128,25 @@ interface MatchPair {
 interface TransformationLibraryMatchProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Transformation library match — connect names to matrices",
+  description:
+    "A matching-game widget. The reader sees six named geometric transformations on the left column (Identity, Rotate 90°, Rotate 30°, Scale 2× vertically, Shear-x by 1, Reflect across x-axis) and the same six transformations' matrices shuffled into the right column. The reader pairs each name to its matrix by clicking a name then clicking a matrix; a coloured line is drawn between the two on an SVG overlay (green for correct, red for incorrect, evaluated instantly). The matrix entries are shown as a 2×2 grid; the named transformations' tooltips contain the geometric rationale (e.g. 'θ = π/2: cos θ = 0, sin θ = 1' for Rotate 90°). The pedagogical goal is rote translation between geometric description and matrix entries — the reflex that 'shear-x by k' has matrix [[1, k]; [0, 1]] and 'scale-y by s' has matrix [[1, 0]; [0, s]]. The widget reports pair count, correct count, and percentage accuracy.",
+  teaches: ["linear transformation", "transformation matrices"],
+  howToRead:
+    "Click a transformation name in the left column, then click the matrix in the right column that produces it; a line connects the pair, green when the matrix matches the name and red when it does not. Click either endpoint of a wrong pair to break it and try again.",
+  controls: [
+    { kind: "drag", label: "Connect a transformation name to its matrix" },
+    { kind: "button", label: "Reveal all" },
+    { kind: "button", label: "New round" },
+  ],
+  invariants: [
+    "Nothing overflows the widget frame.",
+    "At most six pairs can be placed (one per transformation).",
+    "A pair is correct only when the name's matrix equals the connected matrix.",
+  ],
+};
 
 export function TransformationLibraryMatch({
   onStateChange,
@@ -275,6 +296,7 @@ export function TransformationLibraryMatch({
   }, [recordInteraction]);
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`tlm${isPerfect ? " tlm--perfect" : ""}`}>
       <header className="tlm__head">
         <div className="tlm__heading">
@@ -428,6 +450,7 @@ export function TransformationLibraryMatch({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

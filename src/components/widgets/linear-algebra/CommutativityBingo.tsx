@@ -37,6 +37,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./CommutativityBingo.css";
 
 interface Matrix2 {
@@ -188,6 +190,25 @@ interface CommutativityBingoProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
 
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Commutativity Bingo — 4×4 judgement grid",
+  description:
+    "A speed-judgement grid widget for matrix commutativity. The reader sees 16 hand-curated pairs of 2×2 matrices (A, B), arranged in a 4×4 grid. For each cell the reader must mark either 'AB = BA' (commute), 'AB ≠ BA' (don't commute), or leave it as '?'. Clicking a cell cycles through the three states. Submitting grades all 16 — correct marks get a green ring, wrong marks get a red ring and reveal an author-anchored hint explaining why the pair does or doesn't commute. The cells are chosen to cover the canonical commuting patterns (identity, scalar-multiples of identity, diagonal-with-diagonal, same-axis rotations, same-axis shears, A with A^k, upper-triangular-with-equal-diagonals via shared nilpotent structure) AND visually-deceptive non-commuting pairs that look similar to the commuting ones (rotation + shear, reflection + rotation, two arbitrary upper-triangulars with different diagonals). The pedagogical point: non-commutativity is the rule, commutativity is the exception — and the exceptions fall into a small number of recognisable patterns.",
+  teaches: ["matrix multiplication", "commutativity"],
+  howToRead:
+    "Click each cell to cycle its mark between ?, AB = BA, and AB ≠ BA, then submit to grade all 16 at once — correct cells ring green, wrong cells ring red and reveal a per-cell hint.",
+  controls: [
+    { kind: "button", label: "Cell (click cycles ? → = → ≠)" },
+    { kind: "button", label: "Submit board (grades all 16)" },
+    { kind: "button", label: "Reset (returns board to all-?)" },
+  ],
+  invariants: [
+    "The board has exactly 16 cells.",
+    "The reported score never exceeds the number of marked cells (≤ 16).",
+    "Clicking a cell cycles through exactly three marks.",
+  ],
+};
+
 export function CommutativityBingo({ onStateChange }: CommutativityBingoProps) {
   const { recordInteraction } = useWidgetTelemetry("CommutativityBingo");
   const [marks, setMarks] = useState<Mark[]>(() => CELLS.map(() => "?"));
@@ -277,6 +298,7 @@ export function CommutativityBingo({ onStateChange }: CommutativityBingoProps) {
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className="cb">
       <header className="cb__head">
         <div className="cb__heading">
@@ -371,6 +393,7 @@ export function CommutativityBingo({ onStateChange }: CommutativityBingoProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

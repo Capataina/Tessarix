@@ -37,7 +37,28 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./DeterminantSlider.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Determinant target-zero game — drive |det A| to zero",
+  description:
+    "A target-value game widget. The reader sees two draggable basis vectors u (first column of a 2×2 matrix A) and v (second column) on a math-coordinate plane. The widget computes det A = u.x · v.y − u.y · v.x in real time and shows it as both a numeric readout and a 'danger meter' bar that fills as |det| shrinks (heat = 1 when det ≈ 0, heat = 0 when |det| ≥ 1). A 'near miss' visual cue fires when 0.005 ≤ |det| < 0.05 — the reader is brushing the singular line. The goal is to drive |det A| below 0.005 (the singular set, where u and v are parallel — one a scalar multiple of the other, the unit square collapsed to a segment). The widget tracks elapsed time per round and a best-time leaderboard across rounds. The pedagogical claim is that singularity is a 'knife edge' in matrix space: most random configurations have det far from zero, and finding zero requires the columns to align — a measure-zero subset of the space of 2×2 matrices.",
+  teaches: ["determinant", "linear independence"],
+  howToRead:
+    "Drag basis vectors u and v (the two columns of A) until they line up — one a scalar multiple of the other — to drive det A to zero; the danger meter fills as |det A| shrinks toward the singular knife edge and the timer races you.",
+  controls: [
+    { kind: "drag", label: "drag u and v on the canvas" },
+    { kind: "button", label: "New round" },
+    { kind: "button", label: "clear best time" },
+  ],
+  invariants: [
+    "det A equals u.x·v.y − u.y·v.x at all times",
+    "the round is solved only when |det A| < 0.005",
+    "nothing overflows the frame",
+  ],
+};
 
 const CANVAS_SIZE = 360;
 const SOLVED_EPS = 0.005;
@@ -185,7 +206,8 @@ export function DeterminantSlider({ onStateChange }: DeterminantSliderProps) {
   }, [recordInteraction]);
 
   return (
-    <div className={`ds${solved ? " ds--solved" : ""}${isNearMiss ? " ds--near" : ""}`}>
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className={`ds${solved ? " ds--solved" : ""}${isNearMiss ? " ds--near" : ""}`}>
       <header className="ds__head">
         <div className="ds__heading">
           <span className="ds__heading-label">DET A</span>
@@ -275,7 +297,8 @@ export function DeterminantSlider({ onStateChange }: DeterminantSliderProps) {
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

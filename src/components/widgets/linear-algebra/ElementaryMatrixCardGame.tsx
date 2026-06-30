@@ -39,7 +39,32 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./ElementaryMatrixCardGame.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Elementary card game — build A⁻¹ from row-op cards",
+  description:
+    "A build-the-inverse card game. The reader is given a 2×2 matrix A. A deck of three card types — Swap (rows), Scale (a row by k), Add (k times row j to row i) — is available; the reader configures each card (which row, what scalar) and plays it. Each card multiplies the current matrix on the left by its elementary matrix; the goal is to reduce the matrix to the identity. The widget shows two panels: the CURRENT matrix (starts at A, target is I), and the RUNNING PRODUCT of every played card (starts at I, ends at A⁻¹ by construction). The puzzle is solved when the current matrix is the identity; at that moment the running product IS the inverse, by the [A | I] → [I | A⁻¹] reasoning the lesson teaches. Score is the number of cards played (lower is better; ideal counts and personal bests are tracked per puzzle). Five puzzles of increasing difficulty: a clean diagonal, an upper-triangular shear, a swap-required matrix, a mixed-row matrix, and a negative-entry matrix. The pedagogical point is direct: A⁻¹ is a product of elementary matrices, and that fact is normally proved algebraically. This widget makes the reader BUILD that product, one card at a time, while seeing each factor appear in the running-product panel.",
+  teaches: ["elementary matrices", "matrix inverse", "row operations"],
+  howToRead:
+    "Pick a card type (Swap, Scale row, Add multiple), configure its rows and scalar from the dropdowns, then play it to multiply the current matrix on the left by that elementary matrix. Reduce the current matrix to the identity; the running-product panel then shows A⁻¹, assembled one elementary factor at a time. Fewer cards is a better score.",
+  controls: [
+    { kind: "button", label: "Card type (Swap / Scale row / Add multiple)" },
+    { kind: "select", label: "Row and k for the Scale card" },
+    { kind: "select", label: "Target row, k, and source row for the Add card" },
+    { kind: "button", label: "Play card" },
+    { kind: "button", label: "Undo" },
+    { kind: "button", label: "Reset" },
+    { kind: "button", label: "Puzzle (5 matrices of increasing difficulty)" },
+  ],
+  invariants: [
+    "the running product equals A⁻¹ exactly when the current matrix reaches the identity",
+    "scale-by-zero and add-row-to-itself cards are blocked as illegal",
+    "nothing overflows the widget frame",
+  ],
+};
 
 type Matrix2 = [[number, number], [number, number]];
 
@@ -327,7 +352,8 @@ export function ElementaryMatrixCardGame({
   const addKChoices = [-3, -2, -1, 1, 2, 3];
 
   return (
-    <div className={`emcg${solved ? " emcg--solved" : ""}`}>
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className={`emcg${solved ? " emcg--solved" : ""}`}>
       <header className="emcg__head">
         <div className="emcg__heading">
           <span className="emcg__heading-label">PUZZLE</span>
@@ -575,7 +601,8 @@ export function ElementaryMatrixCardGame({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }
 

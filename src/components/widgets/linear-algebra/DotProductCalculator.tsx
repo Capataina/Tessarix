@@ -39,7 +39,29 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./DotProductCalculator.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Dot product calculator — build the sum",
+  description:
+    "An algorithm-execution quiz for the dot product formula. Two vectors a and b are shown. Six product tiles appear: the two correct products (a₁·b₁ and a₂·b₂), two CROSS-pair distractors (a₁·b₂ and a₂·b₁) that trap the common 'wrong index pairing' mistake, and two SAME-VECTOR distractors (a₁·a₂ and b₁·b₂) for completeness. The reader clicks correct tiles to push them into a 'sum bar'; distractors get rejected with a shake animation and increment an error counter. The widget grades on outcome: round is solved when both correct tiles are placed. Five rounds with progressive trickiness — round 3 introduces negative entries (sign-handling), round 4 has perpendicular vectors with zero entries (a·b = 0 even though neither vector is zero), round 5 has perpendicular mixed-sign vectors. The pedagogical centerpiece is that the dot product pairs components BY INDEX (a_i with b_i, never a_i with b_j for i≠j) — having the cross-pair tiles physically reject reinforces the rule by negative example.",
+  teaches: ["dot product"],
+  howToRead:
+    "Two vectors a and b are shown with six product tiles below; click the two correct index-matched products (a₁·b₁ and a₂·b₂) to push them into the sum bar — distractors flash red and are rejected. Solve all five rounds.",
+  controls: [
+    { kind: "button", label: "product tiles (click correct ones to add to the sum)" },
+    { kind: "button", label: "Next round" },
+    { kind: "button", label: "Reset round" },
+    { kind: "button", label: "Reset game" },
+  ],
+  invariants: [
+    "distractor tiles can never enter the sum bar",
+    "a round is solved only when both correct product tiles are placed",
+    "nothing overflows the frame",
+  ],
+};
 
 interface Vec2Pair {
   a: [number, number];
@@ -283,7 +305,8 @@ export function DotProductCalculator({
   );
 
   return (
-    <div className={`dpc${isSolved ? " dpc--solved" : ""}`}>
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
+      <div className={`dpc${isSolved ? " dpc--solved" : ""}`}>
       <header className="dpc__head">
         <div className="dpc__heading">
           <span className="dpc__heading-label">ROUND</span>
@@ -438,6 +461,7 @@ export function DotProductCalculator({
         stateSummary={stateSummary}
         stateKey={stateKey}
       />
-    </div>
+      </div>
+    </WidgetFrame>
   );
 }

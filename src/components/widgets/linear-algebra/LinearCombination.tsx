@@ -22,7 +22,29 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./LinearCombination.css";
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Linear combinations and span",
+  description:
+    "Two vectors u and v at the origin (both draggable); sliders for coefficients α and β; the combined vector α·u + β·v drawn in green; a faint dot trail showing every point reachable by varying α and β over [-2, 2] — the SPAN of {u, v}. When u and v are linearly independent the trail fills the plane; when they're linearly dependent (parallel or anti-parallel) the trail collapses to a single line through the origin and the output vector turns red. Reader can also drag the green output point directly to set α and β automatically by inverting the 2×2 matrix [u | v].",
+  teaches: ["linear combination", "span", "linear independence"],
+  howToRead:
+    "Drag u or v to choose the basis vectors; move the α and β sliders to scale them and watch the green output α·u + β·v slide along the construction parallelogram. The faint dots are the span — every point you could reach. When u and v line up, the span (and the dots) collapse to a single line and the output turns red.",
+  controls: [
+    { kind: "drag", label: "Drag u, v, or the green output point" },
+    { kind: "slider", label: "α", min: -2, max: 2, step: 0.05 },
+    { kind: "slider", label: "β", min: -2, max: 2, step: 0.05 },
+    { kind: "toggle", label: "Show span trail (faint dots)" },
+  ],
+  invariants: [
+    "the output vector equals α·u + β·v",
+    "the span collapses to a line exactly when det[u | v] is near zero",
+    "nothing overflows the widget frame",
+  ],
+};
 
 const CANVAS_SIZE = 360;
 
@@ -333,6 +355,7 @@ export function LinearCombination({
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className="lincomb">
       <div className="lincomb__layout">
         <div className="lincomb__chart-wrap">
@@ -418,6 +441,7 @@ export function LinearCombination({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

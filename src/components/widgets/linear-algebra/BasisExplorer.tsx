@@ -37,6 +37,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeFromPx, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./BasisExplorer.css";
 
 const CANVAS_SIZE = 300;
@@ -70,6 +72,26 @@ interface BasisExplorerProps {
   initialW?: Vec2;
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Basis explorer — same vector, two coordinate tuples",
+  description:
+    "Two side-by-side panels display the SAME draggable vector w under two different bases. Left panel uses the standard basis (ê₁, ê₂) so w's coordinates are just its (x, y). Right panel uses a custom basis {u, v} (draggable basis vectors); w's coordinates in that basis are (α, β) where w = α·u + β·v, computed by solving the 2×2 system. The geometric position of w is the SAME in both panels — only the gridlines and the coordinate tuple change. When the user drags u and v close to parallel, det[u | v] approaches zero, the basis collapses, and the right panel shows a 'no basis' overlay because two parallel vectors cannot span the plane.",
+  teaches: ["basis", "change of basis", "coordinates relative to a basis"],
+  howToRead:
+    "Drag w to see its coordinates in both panels at once; the vector stays in the same place but its coordinate tuple differs because the gridlines differ. Drag u and v (right panel) to reshape the custom basis; pull them parallel to watch the basis collapse.",
+  controls: [
+    { kind: "button", label: "Preset basis (Standard / Skewed / Rotated / Stretched / Collapsed)" },
+    { kind: "drag", label: "Drag custom basis vector u" },
+    { kind: "drag", label: "Drag custom basis vector v" },
+    { kind: "drag", label: "Drag the target vector w" },
+  ],
+  invariants: [
+    "w occupies the same geometric position in both panels",
+    "when det[u | v] ≈ 0 the custom panel shows a collapsed overlay and reports no coordinates",
+    "nothing overflows the frame",
+  ],
+};
 
 export function BasisExplorer({
   initialU = { x: 1.2, y: 0.4 },
@@ -126,6 +148,7 @@ export function BasisExplorer({
   ];
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className="basis">
       <div className="basis__presets">
         {presets.map((p) => (
@@ -214,6 +237,7 @@ export function BasisExplorer({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

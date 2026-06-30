@@ -38,6 +38,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./DependenceDetector.css";
 
 const CANVAS_SIZE = 360;
@@ -120,6 +122,27 @@ interface DependenceDetectorProps {
   initialRound?: number;
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Dependence Detector — find every dependent pair",
+  description:
+    "A find-them-all quiz widget for linear dependence. Six or seven vectors are drawn on a single canvas (each labelled a, b, c, …). Some pairs are linearly dependent (one is a scalar multiple of the other — colinear through the origin); others are independent. The reader clicks two vectors to mark them as a hypothesised-dependent pair, then iterates to mark every such pair. On submit, the widget grades the full selection: each correctly-found dependent pair counts toward recall; each falsely-selected independent pair degrades precision. F1 combines them. The pedagogical goal is to make the reader recognise dependence as a visual pattern (two vectors on the same line through the origin), with the multi-select interaction forcing a commitment before grading rather than letting them trial-and-error individual pairs.",
+  teaches: ["linear dependence", "linear independence", "span"],
+  howToRead:
+    "Look at the labelled vectors and find every pair lying on the same line through the origin. Click one vector to arm it, click a second to mark the pair, repeat for all suspected pairs, then Submit to reveal the true dependent pairs and your precision/recall/F1 grade.",
+  controls: [
+    { kind: "canvas", label: "Click two vectors on the canvas to mark a pair" },
+    { kind: "button", label: "Selected-pair chip (click to remove)" },
+    { kind: "button", label: "Submit selections" },
+    { kind: "button", label: "Reset" },
+    { kind: "button", label: "Round selector (R1–R3)" },
+  ],
+  invariants: [
+    "The actual dependent pairs stay hidden until the reader submits.",
+    "Submit is disabled until at least one pair is selected.",
+    "Selection is graded by precision and recall, combined into F1.",
+  ],
+};
 
 export function DependenceDetector({
   initialRound = 0,
@@ -268,6 +291,7 @@ export function DependenceDetector({
   const allCorrect = submitted && correct === truePairs.size && falsePositive === 0;
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div className={`dd${allCorrect ? " dd--solved" : ""}`}>
       <header className="dd__head">
         <div className="dd__heading">
@@ -377,6 +401,7 @@ export function DependenceDetector({
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 

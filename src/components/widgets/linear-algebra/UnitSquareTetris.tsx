@@ -39,6 +39,8 @@ import { resolveColor, resolveColorAlpha } from "../../../lib/theme";
 import { computeDomain, makeToPx } from "../../../lib/geometry";
 import { useWidgetTelemetry } from "../../../lib/telemetry";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
+import { WidgetFrame } from "../shared/WidgetFrame";
+import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./UnitSquareTetris.css";
 
 const CANVAS_SIZE = 360;
@@ -114,6 +116,24 @@ type Phase = "playing" | "resolved" | "game_over";
 interface UnitSquareTetrisProps {
   onStateChange?: (state: Record<string, number>) => void;
 }
+
+const DESCRIPTOR: WidgetDescriptor = {
+  name: "Unit-square Tetris — pick the matching matrix before the shape lands",
+  description:
+    "A real-time mini-game widget. A target shape (the image of the unit square under a hidden 2×2 matrix) drops from the top of the canvas over a fixed duration (~6.5 seconds). Below the canvas, four candidate matrices A/B/C/D are shown — exactly one is the truth, the other three are distractors drawn from a curated palette of common transformations (identity, rotations, shears, reflections, anisotropic scales). The reader must click the correct matrix before the shape lands. Correct pick → score +1, next shape spawns. Wrong pick or timeout → lose a life. Three lives per game; high score persists across games. The pedagogical purpose is to force rapid mental application of 'the columns of A are the images of the basis vectors' — under time pressure, the reader cannot calculate entry-by-entry, they have to recognise the shape's tilt and stretch and match it to a matrix at a glance.",
+  teaches: ["matrix transformation", "linear transformation"],
+  howToRead:
+    "A shape (the unit square transformed by a hidden 2×2 matrix) falls from the top; before it lands, click the candidate matrix A/B/C/D whose image of the unit square matches the falling shape. The î/ĵ arrows on the shape are the columns of the matrix.",
+  controls: [
+    { kind: "button", label: "Start / Play again / Quit the game" },
+    { kind: "button", label: "Pick a candidate matrix (A, B, C, D)" },
+  ],
+  invariants: [
+    "Exactly one candidate matrix is the truth each round.",
+    "Three lives per game; the game ends when lives reach zero.",
+    "Nothing overflows the widget frame.",
+  ],
+};
 
 export function UnitSquareTetris({ onStateChange }: UnitSquareTetrisProps) {
   const { recordInteraction } = useWidgetTelemetry("UnitSquareTetris");
@@ -276,6 +296,7 @@ export function UnitSquareTetris({ onStateChange }: UnitSquareTetrisProps) {
   );
 
   return (
+    <WidgetFrame descriptor={DESCRIPTOR} stateSummary={stateSummary}>
     <div
       className={`ust${
         phase === "game_over"
@@ -404,6 +425,7 @@ export function UnitSquareTetris({ onStateChange }: UnitSquareTetrisProps) {
         stateKey={stateKey}
       />
     </div>
+    </WidgetFrame>
   );
 }
 
