@@ -1,0 +1,81 @@
+/* The shared button surface. Hairline terminal grammar; warm tan accent on
+   hover/press; motion from the design tokens, reduced-motion handled globally
+   in styles/motion.css. */
+
+.ui-button {
+  --btn-bg: transparent;
+  --btn-border: var(--widget-border);
+  --btn-fg: var(--widget-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5em 0.9em;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+.ui-button[data-size="sm"] {
+  font-size: 0.64rem;
+  padding: 0.4em 0.7em;
+}
+
+.ui-button:hover {
+  --btn-border: var(--accent-camel);
+  --btn-fg: var(--accent-camel);
+  transform: translateY(-1px);
+}
+
+.ui-button:active {
+  transform: translateY(0);
+}
+
+.ui-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-camel) 45%, transparent);
+}
+
+.ui-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ui-button[data-variant="solid"] {
+  --btn-bg: color-mix(in srgb, var(--accent-camel) 16%, transparent);
+  --btn-border: color-mix(in srgb, var(--accent-camel) 50%, transparent);
+  --btn-fg: var(--accent-camel);
+}
+
+.ui-button[data-variant="solid"]:hover {
+  --btn-bg: color-mix(in srgb, var(--accent-camel) 24%, transparent);
+}
+
+.ui-button[data-variant="ghost"] {
+  --btn-border: transparent;
+}
+
+.ui-button[data-variant="ghost"]:hover {
+  --btn-border: var(--widget-border);
+}
+
+.ui-icon-button {
+  padding: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  font-size: 0.8rem;
+}

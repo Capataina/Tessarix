@@ -20,7 +20,15 @@ import "katex/dist/katex.min.css";
  */
 
 interface RichTextProps {
-  text: string;
+  text?: string;
+  /**
+   * Trusted HTML source — prose segments are rendered as HTML rather than plain
+   * text, so injected markup (e.g. the concept-linker's `<a>` cross-links) shows.
+   * The caller is responsible for escaping any untrusted input before injecting
+   * known-good markup; `linkConceptsToHtml` does exactly this. Math ($...$) inside
+   * is still tokenised and KaTeX-rendered. Mutually exclusive with `text`.
+   */
+  html?: string;
   /** Treat the entire string as block-level math (forced display mode). */
   displayMode?: boolean;
   /** Optional extra className on the wrapping span. */
@@ -85,32 +93,30 @@ function renderMath(latex: string, display: boolean): string {
   }
 }
 
-export function RichText({ text, displayMode, className }: RichTextProps) {
+export function RichText({ text, html, displayMode, className }: RichTextProps) {
+  const source = html ?? text ?? "";
+  const proseAsHtml = html !== undefined;
   const nodes: ReactNode[] = useMemo(() => {
     if (displayMode) {
       // Whole-string-as-math mode — no tokenisation, render the entire input.
-      const html = renderMath(text, true);
       return [
-        <span
-          key="math"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />,
+        <span key="math" dangerouslySetInnerHTML={{ __html: renderMath(source, true) }} />,
       ];
     }
-    const segments = tokenise(text);
+    const segments = tokenise(source);
     return segments.map((s, i) => {
       if (s.kind === "prose") {
-        return <span key={i}>{unescapeDollars(s.content)}</span>;
+        return proseAsHtml ? (
+          <span key={i} dangerouslySetInnerHTML={{ __html: s.content }} />
+        ) : (
+          <span key={i}>{unescapeDollars(s.content)}</span>
+        );
       }
-      const html = renderMath(s.content, s.display);
       return (
-        <span
-          key={i}
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+        <span key={i} dangerouslySetInnerHTML={{ __html: renderMath(s.content, s.display) }} />
       );
     });
-  }, [text, displayMode]);
+  }, [source, proseAsHtml, displayMode]);
 
   return <span className={className}>{nodes}</span>;
 }

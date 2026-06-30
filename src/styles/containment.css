@@ -1,0 +1,32 @@
+/* Universal layout-containment safety net.
+ *
+ * Applies app-wide so widget content can never escape its column, independent of
+ * whether a given widget has been wrapped in <WidgetFrame> yet. This is the
+ * generic, low-touch half of the "layout never breaks" guarantee; <WidgetFrame>
+ * is the per-widget half (a hard overflow boundary + the chrome).
+ *
+ * NOTE: the grid-track blowout fix (min-width:0 on grid items, which is what the
+ * leaking-donut bug needs) is applied per-widget at its source, so a freshly
+ * authored widget that forgets it is still *caught* by the test harness rather
+ * than silently papered over here. */
+
+/* Intrinsically-wide elements never exceed their container. */
+.lesson canvas,
+.lesson pre,
+.lesson svg,
+.lesson img,
+.lesson video,
+.lesson table,
+.widget-frame canvas,
+.widget-frame pre,
+.widget-frame svg {
+  max-width: 100%;
+}
+
+/* Inside a frame, grid/flex children may shrink below their intrinsic width so a
+   wide child can't blow out a track and overflow the row. */
+.widget-frame__body [class*="__panels"] > *,
+.widget-frame__body [class*="__plots"] > *,
+.widget-frame__body [class*="__grid"] > * {
+  min-width: 0;
+}

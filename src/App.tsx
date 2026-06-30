@@ -11,6 +11,7 @@ import { prewarmLLM } from "./lib/llm/prewarm";
 import { findLesson, type LessonFrontmatter } from "./lessons/registry";
 import "./App.css";
 import "./styles/motion.css";
+import "./styles/containment.css";
 
 type Route =
   | { kind: "catalog" }

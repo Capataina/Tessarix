@@ -1,0 +1,79 @@
+/* The universal widget container — one hairline terminal pane + mono label, with
+   the fullscreen-expand control in the corner. overflow:hidden makes the frame
+   the hard containment boundary (a pathological widget gets clipped here rather
+   than leaking across the page); min-width:0 lets the frame shrink inside grids. */
+
+.widget-frame {
+  margin: var(--space-5) 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--widget-radius, var(--radius-md));
+  overflow: hidden;
+}
+
+.widget-frame__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--widget-border);
+}
+
+.widget-frame__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--widget-text-muted);
+}
+
+/* The expand control stays quiet until the widget is hovered/focused, then warms. */
+.widget-frame__expand {
+  opacity: 0.55;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+
+.widget-frame:hover .widget-frame__expand,
+.widget-frame:focus-within .widget-frame__expand {
+  opacity: 1;
+}
+
+.widget-frame__body {
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+/* The widget's own outer box is redundant inside a frame — flatten it so there's
+   no card-in-card. Direct widget roots drop their border/background/margin. */
+.widget-frame__body > div[class$="-comparison"],
+.widget-frame__body > div[class$="-heatmap"],
+.widget-frame__body > div[class*="__root"] {
+  margin: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* Mini-lesson prose inside the drawer. */
+.widget-frame__mini {
+  max-width: 70ch;
+  line-height: 1.6;
+  color: var(--widget-text);
+  font-size: 0.95rem;
+}
+
+.widget-frame__mini a {
+  color: var(--accent-camel);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.widget-frame__mini-status {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--widget-text-muted);
+}
