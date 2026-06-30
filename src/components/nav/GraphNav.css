@@ -1,0 +1,273 @@
+/* The concept-graph nav. Terminal-pane nodes, a branching tree with connector
+   lines, animated expand. Recolours with the active category palette (every
+   colour here is a token, so the palette swap reaches it). */
+
+.graphnav {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-5) var(--space-16);
+}
+
+.graphnav__loading {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-16) 0;
+  letter-spacing: 0.08em;
+}
+
+.graphnav__title {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.graphnav__lede {
+  color: var(--text-secondary);
+  max-width: 54ch;
+  margin: var(--space-3) 0 0;
+  line-height: 1.55;
+}
+
+/* ── category picker ────────────────────────────────────────────── */
+
+.graphnav__intro {
+  margin-bottom: var(--space-10);
+}
+
+.graphnav__categories {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.graphnav__category {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+  text-align: left;
+  padding: var(--space-5);
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.graphnav__category:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-camel);
+  box-shadow: var(--shadow-elevated);
+}
+
+.graphnav__category-name {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  color: var(--accent-camel);
+  letter-spacing: 0.04em;
+}
+
+.graphnav__category-meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.graphnav__category-topics {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* ── category tree ──────────────────────────────────────────────── */
+
+.graphnav__back {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--dur-fast) var(--ease-standard);
+}
+
+.graphnav__back:hover {
+  color: var(--accent-camel);
+}
+
+.graphnav__cat-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-6);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--widget-border);
+}
+
+.graphnav__cat-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.graphnav__tree {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.graphnav__topic-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.graphnav__caret {
+  display: inline-block;
+  color: var(--accent-camel);
+  transition: transform var(--dur-fast) var(--ease-standard);
+}
+
+.graphnav__caret[data-open="true"] {
+  transform: rotate(90deg);
+}
+
+.graphnav__topic-name {
+  font-size: var(--text-md);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.graphnav__topic-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  border: 1px solid var(--widget-border);
+  border-radius: 999px;
+  padding: 0 0.5em;
+}
+
+.graphnav__lessons {
+  list-style: none;
+  margin: 0 0 var(--space-2) 0.5rem;
+  padding: var(--space-1) 0 0 var(--space-5);
+  border-left: 1px solid var(--widget-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  animation: graphnav-expand var(--dur-base) var(--ease-out);
+}
+
+.graphnav__lesson {
+  position: relative;
+}
+
+/* the branch tick from the trunk line into each lesson node */
+.graphnav__lesson::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--space-5));
+  top: 1.4rem;
+  width: var(--space-4);
+  height: 1px;
+  background: var(--widget-border);
+}
+
+.graphnav__lesson-btn {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
+}
+
+.graphnav__lesson-btn:hover {
+  border-color: var(--accent-camel);
+  transform: translateX(3px);
+}
+
+.graphnav__lesson-idx {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--accent-camel);
+  border: 1px solid var(--border-accent);
+  border-radius: 50%;
+}
+
+.graphnav__lesson-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.graphnav__lesson-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.graphnav__lesson-summary {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.graphnav__lesson-teaches {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+@keyframes graphnav-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graphnav__lessons {
+    animation: none;
+  }
+}

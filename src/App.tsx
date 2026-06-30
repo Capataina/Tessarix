@@ -1,7 +1,9 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { MDXProvider } from "@mdx-js/react";
 import { Layout } from "./components/Layout";
-import { Catalog } from "./components/Catalog";
+import { GraphNav } from "./components/nav/GraphNav";
+import { applyCategoryTheme } from "./lib/graph/themes";
+import { LESSON_META } from "./lib/graph/meta";
 import { mdxComponents } from "./components/MDXComponents";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { TierProvider } from "./state/TierContext";
@@ -151,6 +153,14 @@ function App() {
     (window as unknown as { __tessarixPrevRoute?: string }).__tessarixPrevRoute = currentLabel;
   }, [route]);
 
+  // Recolour the app to the active lesson's category (full per-category palette).
+  // The catalog route's theme is owned by <GraphNav> (it tracks the picker).
+  useEffect(() => {
+    if (route.kind === "lesson") {
+      applyCategoryTheme(LESSON_META[route.slug]?.category ?? null);
+    }
+  }, [route]);
+
   // Resolve frontmatter for the active lesson.
   useEffect(() => {
     if (route.kind !== "lesson") {
@@ -229,7 +239,7 @@ function App() {
               activePillar="teach"
               hideSidebars
             >
-              <Catalog onSelect={handleSelect} />
+              <GraphNav onSelect={handleSelect} />
             </Layout>
           </TierProvider>
         </SettingsProvider>
@@ -250,7 +260,7 @@ function App() {
               onBrandClick={handleHome}
               hideSidebars
             >
-              <Catalog onSelect={handleSelect} />
+              <GraphNav onSelect={handleSelect} />
             </Layout>
           </TierProvider>
         </SettingsProvider>

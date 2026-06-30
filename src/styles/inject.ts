@@ -11,8 +11,9 @@
 import { color, font, fontSize, space, radius, shadow, motion } from "./tokens";
 import { alpha } from "./derived";
 
-function buildVars(): Record<string, string> {
-  const c = color;
+export type Palette = Record<keyof typeof color, string>;
+
+function buildVars(c: Palette = color): Record<string, string> {
   const px = (n: number) => `${n}px`;
   return {
     // Backgrounds
@@ -128,9 +129,17 @@ function buildVars(): Record<string, string> {
   };
 }
 
-export function injectDesignTokens(): void {
+/**
+ * Inject the design tokens as :root custom properties. Pass a partial palette
+ * override to recompute the ENTIRE var set (accents, chart palette, glows,
+ * borders, surfaces) from a category's colours — this is how full per-category
+ * theming works: structure tokens (radii/space/type/motion) stay constant, the
+ * palette shifts. See src/lib/graph/themes.ts.
+ */
+export function injectDesignTokens(overrides?: Partial<Palette>): void {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
-  const vars = buildVars();
+  const palette: Palette = overrides ? { ...color, ...overrides } : color;
+  const vars = buildVars(palette);
   for (const name in vars) root.style.setProperty(name, vars[name]);
 }
