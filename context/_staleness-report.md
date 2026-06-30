@@ -1,80 +1,52 @@
-# Staleness Report
+# Staleness report — 2026-06-30 (post four-feature build)
 
-Snapshot from the 2026-06-21 upkeep-context pass. Overwritten each run; not an accumulating log.
-
-This pass focused on the **single-source styling system** (`src/styles/`) and the **chocolate-luxe chrome redesign** shipped this session, and on correcting the most-misleading scaffold-era framing in `architecture.md`. It did **not** fully re-verify the frontend internals (telemetry, LLM, content/registry, the IPC-flow sections) that accumulated drift across the entire M1→present period — that is the largest remaining gap, flagged below and in the run's WIDND.
+Snapshot after the graph-nav / mini-lesson / component-layer+WidgetFrame / test-framework build.
+Overwritten each upkeep run; not an accumulating log.
 
 ## Per-file staleness
 
 | File | Verdict | Evidence |
 |------|---------|----------|
-| `architecture.md` | needs-updating | Corrected this run: killed the "scaffold state / 2 commits / no domain code / empty IPC" framing (verified against `src-tauri/src/{llm,telemetry}/` + `lib.rs` invoke_handler + `Cargo.toml` reqwest/tokio + 83-commit count); added the styling-system subsystem; refreshed the src/ tree. STILL stale: the Dependency-Direction diagram, the Inter-System Relationships table, and Critical-Paths still describe the empty-IPC scaffold (the live LLM/telemetry IPC flows are not yet traced). Deferred. |
-| `notes.md` | up-to-date | Index refreshed this run: added `visual-identity` and (earlier this session) `lineage-over-snapshot`. Every `notes/` file is indexed. |
-| `systems/styling-system.md` | up-to-date | New this run; authored from the code I wrote + verified by headless render (tokens injected on `<html>`). |
-| `systems/frontend-shell.md` | needs-updating | Fixed the internal contradiction (header said shipped, body said "placeholder") and added a drift note + styling-system pointer. The file inventory + entry sequence still describe early-M1 (a few widgets, neon theme) and predate the 44-widget LA push + the redesign. Full re-inventory deferred. |
-| `systems/tauri-host.md` | needs-verification | Not read this run. Code shows `src-tauri/src/{llm,telemetry}/` modules + `invoke_handler`; the old report says this doc was refreshed 2026-05-11 for the LLM module, but it was not re-verified against current code this pass. |
-| `systems/build-pipeline.md` | up-to-date | The pnpm→Vite→Cargo→tauri build chain is unchanged; the styling system adds no build step (runtime token injection). Not re-read in full but no change pressure. |
-| `notes/visual-identity.md` | up-to-date | New this run; documents the chocolate-luxe / terminal identity. |
-| `notes/lineage-over-snapshot.md` | up-to-date | New this session (the genealogy authoring principle). |
-| `notes/interface-affordances.md` | up-to-date | The tier control is now rendered as a depth gauge and the chrome was redesigned, but the affordance *model* (TOC, three tiers, chatbot) is unchanged. The depth-gauge reframing is visual, captured in `visual-identity.md` + `styling-system.md`. |
-| `notes/visualisation-over-prose.md` | up-to-date | Authoring philosophy; unaffected by the redesign. |
-| `notes/explanations-must-adapt-to-state.md` | up-to-date | Authoring philosophy; unaffected. |
-| `notes/widget-creativity-discipline.md` | up-to-date | Authoring philosophy; unaffected. |
-| `notes/assessment-design.md` | up-to-date | Authoring philosophy; unaffected. |
-| `notes/lesson-voice.md` | up-to-date | Authoring philosophy; unaffected. |
-| `notes/content-architecture.md` | up-to-date | Content model; unaffected. |
-| `notes/lessons-as-living-documents.md` | up-to-date | Authoring philosophy; unaffected. |
-| `notes/three-pillar-model.md` | up-to-date | Product model; unaffected. |
-| `notes/authoring-discipline.md` | up-to-date | Authoring philosophy; unaffected. |
-| `notes/playground-engine-scope.md` | up-to-date | Playgrounds still unbuilt; unaffected. |
-| `notes/stack-rationale.md` | up-to-date | Stack rationale; unaffected (styling stays plain CSS + a TS token layer, consistent with the no-CSS-in-JS decision). |
-| `notes/enrich-lesson-skill.md` | up-to-date | Future-skill design note; unaffected. |
-| `notes/llm-integrations.md` | needs-verification | LLM features expanded since; not re-read this run. The shipped LLM layer is Ollama-backed (not Claude API). Re-verify next pass. |
-| `plans/ui-redesign-chocolate-luxe.md` | up-to-date | Ticked this run (palette/depth/neon-sweep/refinement + styling system + chrome/motion all done; catalog ledger + per-widget flatten remain). |
-| `plans/afine-further-improvements.md` | preserved | Not touched this run; out of scope. Not re-verified. |
-| `plans/creative-widgets-catalogue.md` | preserved | Not touched this run; out of scope. |
-| `plans/linear-algebra-curriculum.md` | preserved | Not touched this run; out of scope. |
-| `references/inspirations/**` | preserved | Research catalogue, unaffected by the redesign; not re-verified this run. All 28 files enumerated below. |
+| `architecture.md` | needs-updating (partial) | Intro, drift banner, Repository Overview, and the subsystem table updated this run for the four features. The deeper sections (IPC-flow diagram, Inter-System tables, Core Execution Flow, Coverage) still carry scaffold-era phrasing ("renders a heading", "two commits old") and are flagged below for a dedicated deep-verification. |
+| `notes.md` | up-to-date | "Active focus" reflects the two-backbone direction; index lines reflect the extended notes. |
+| `notes/visual-identity.md` | up-to-date | ASCII-custom-displays + per-category palettes (full-temperature, locked) match `src/lib/graph/themes.ts` + `src/lib/ascii`. |
+| `notes/content-architecture.md` | up-to-date | concept-index + generation≠linking match `src/lib/graph/linker.ts`. |
+| `notes/interface-affordances.md` | up-to-date | §10 WidgetFrame + fullscreen mini-lesson match `src/components/widgets/shared/WidgetFrame.tsx`. |
+| `notes/llm-integrations.md` | up-to-date | §10 reader surfaces match `src/lib/llm/miniLesson.ts`; the browser fallback (client.ts/hooks.ts) is newer than the doc but consistent with its local-first posture. |
+| `notes/*` (other 12) | preserved | Authoring-discipline + pedagogy notes unaffected by this build. |
+| `plans/curriculum-graph.md` | needs-updating | Now BUILT (graph nav + linker shipped). Ticked this run. |
+| `plans/component-system.md` | needs-updating | Now BUILT (Radix+vaul + WidgetFrame, full-temp theming). Ticked this run. |
+| `plans/testing-framework.md` | needs-updating | Now BUILT (vitest + Playwright harness shipped + run). Ticked this run. |
+| `plans/ascii-custom-displays.md` | up-to-date | Marked complete in a prior pass. |
+| `plans/afine-further-improvements.md` | preserved | Not touched this build. |
+| `systems/frontend-shell.md` | needs-updating | Predates the component layer, GraphNav, WidgetFrame, lib/graph, lib/ascii, the test framework. Architecture.md overview now carries the current map; a full frontend-shell refresh is deferred (flagged). |
+| `systems/styling-system.md` | needs-updating (minor) | injectDesignTokens now takes a palette override for per-category theming — one new capability to fold in. |
+| `systems/tauri-host.md` | up-to-date (re: this build) | Host side unchanged this session (still llm + telemetry). |
+| `systems/build-pipeline.md` | needs-updating (minor) | New dev deps (@radix-ui/*, vaul, vitest, @playwright/test) + the `test`/`test:e2e` scripts + the e2e harness not yet reflected. |
 
-### Inspirations files (all `preserved`, unaffected by the redesign, not re-verified this run)
+## Coverage gaps (subsystems without a dedicated `systems/*.md`)
 
-- `references/inspirations/_overview.md`
-- `references/inspirations/recurring-patterns.md`
-- `references/inspirations/stem-core/_overview.md`
-- `references/inspirations/stem-core/chemistry-biology.md`
-- `references/inspirations/stem-core/computer-science.md`
-- `references/inspirations/stem-core/general-platforms.md`
-- `references/inspirations/stem-core/machine-learning.md`
-- `references/inspirations/stem-core/mathematics.md`
-- `references/inspirations/stem-core/neuroscience.md`
-- `references/inspirations/stem-core/physics.md`
-- `references/inspirations/technical-specialised/_overview.md`
-- `references/inspirations/technical-specialised/blockchain.md`
-- `references/inspirations/technical-specialised/compilers-languages.md`
-- `references/inspirations/technical-specialised/cryptography.md`
-- `references/inspirations/technical-specialised/databases.md`
-- `references/inspirations/technical-specialised/electronics-hardware.md`
-- `references/inspirations/technical-specialised/networking.md`
-- `references/inspirations/technical-specialised/os-systems.md`
-- `references/inspirations/technical-specialised/quant-finance.md`
-- `references/inspirations/technical-specialised/quantum-computing.md`
-- `references/inspirations/wildcards/_overview.md`
-- `references/inspirations/wildcards/anatomy.md`
-- `references/inspirations/wildcards/climate.md`
-- `references/inspirations/wildcards/history-geography-art.md`
-- `references/inspirations/wildcards/interactive-journalism.md`
-- `references/inspirations/wildcards/linguistics-phonetics.md`
-- `references/inspirations/wildcards/music-theory.md`
-- `references/inspirations/wildcards/philosophy-systems.md`
+| Repository area | Inferred system | Proposed filename | Why it deserves a file |
+|---|---|---|---|
+| `src/lib/graph/` + `src/components/nav/` | concept-graph + navigation | `systems/concept-graph.md` | New load-bearing subsystem (typed graph + linker + nav); only design-doc coverage in `plans/curriculum-graph.md`. |
+| `src/components/ui/` + `widgets/shared/WidgetFrame.tsx` | component-layer | `systems/component-layer.md` | The globalised primitives + WidgetFrame; design-doc coverage in `plans/component-system.md`. |
+| `e2e/` + `vitest.config.ts` + `src/**/*.test.ts` | testing-framework | `systems/testing-framework.md` | New self-audit harness; design-doc coverage in `plans/testing-framework.md`. |
 
-## Coverage-gap report
+These three are inventoried in the architecture.md subsystem table (pointing at their plan docs) but lack dedicated `systems/` files. Recommended for the next upkeep pass; not created this run to keep the pass proportionate.
 
-Subsystems with real code surface but no dedicated `context/` file:
+## Deferred this run (see WIDND in the skill log)
 
-| Repository area | Inferred system name | Proposed filename | Why it deserves a file |
-|-----------------|----------------------|-------------------|------------------------|
-| `src/lib/llm/` (7 files) + `src-tauri/src/llm/` | llm-integration | `systems/llm-integration.md` | Ollama client (Rust reqwest streaming + JS hooks), chatbot, recommender, state-aware widget explanations, tiered hints. Currently only partially covered inline in `frontend-shell.md` / `tauri-host.md`. |
-| `src/lib/telemetry/` (4 files) + `src-tauri/src/telemetry/` | telemetry | `systems/telemetry.md` | Event schema + JSONL flight recorder spanning JS + Rust; no dedicated doc. |
-| `src/components/widgets/` (~50 widgets) + `src/lessons/` + `registry.ts` | content-and-widgets | `systems/content-and-widgets.md` | The bulk of the codebase (88 LA-widget files); the lesson/registry/MDX pipeline and the widget kit have no canonical system doc. |
+- The `architecture.html` migration the upkeep-context skill prescribes (arch_orchestrate + 5 workstreams + arch_verify) was **not** performed — a structural change with blast radius on every tool that reads `architecture.md` (CLAUDE.md startup, orient, wrap-up), beyond the user's "reconcile the docs" intent. `architecture.md` (markdown) updated in place instead.
+- Deep re-verification of `architecture.md`'s scaffold-era inner sections + the three new `systems/*.md` files were deferred to a dedicated frontend pass.
 
-These gaps predate this run and are deferred; this pass added `styling-system.md` and corrected the architecture framing rather than initialising three new system docs.
+## Remaining files — preserved (unaffected by the four-feature build)
+
+All verdict `preserved`: pedagogy/authoring notes, prior-feature plans, and the inspirations
+reference corpus — none describe code this build touched, so none needed re-verification.
+
+- `notes/assessment-design.md`, `notes/authoring-discipline.md`, `notes/enrich-lesson-skill.md`, `notes/explanations-must-adapt-to-state.md`, `notes/lesson-voice.md`, `notes/lessons-as-living-documents.md`, `notes/lineage-over-snapshot.md`, `notes/playground-engine-scope.md`, `notes/stack-rationale.md`, `notes/three-pillar-model.md`, `notes/visualisation-over-prose.md`, `notes/widget-creativity-discipline.md`
+- `plans/creative-widgets-catalogue.md`, `plans/linear-algebra-curriculum.md`, `plans/ui-redesign-chocolate-luxe.md`
+- `references/inspirations/_overview.md`, `references/inspirations/recurring-patterns.md`
+- `references/inspirations/stem-core/_overview.md`, `references/inspirations/stem-core/chemistry-biology.md`, `references/inspirations/stem-core/computer-science.md`, `references/inspirations/stem-core/general-platforms.md`, `references/inspirations/stem-core/machine-learning.md`, `references/inspirations/stem-core/mathematics.md`, `references/inspirations/stem-core/neuroscience.md`, `references/inspirations/stem-core/physics.md`
+- `references/inspirations/technical-specialised/_overview.md`, `references/inspirations/technical-specialised/blockchain.md`, `references/inspirations/technical-specialised/compilers-languages.md`, `references/inspirations/technical-specialised/cryptography.md`, `references/inspirations/technical-specialised/databases.md`, `references/inspirations/technical-specialised/electronics-hardware.md`, `references/inspirations/technical-specialised/networking.md`, `references/inspirations/technical-specialised/os-systems.md`, `references/inspirations/technical-specialised/quant-finance.md`, `references/inspirations/technical-specialised/quantum-computing.md`
+- `references/inspirations/wildcards/_overview.md`, `references/inspirations/wildcards/anatomy.md`, `references/inspirations/wildcards/climate.md`, `references/inspirations/wildcards/history-geography-art.md`, `references/inspirations/wildcards/interactive-journalism.md`, `references/inspirations/wildcards/linguistics-phonetics.md`, `references/inspirations/wildcards/music-theory.md`, `references/inspirations/wildcards/philosophy-systems.md`

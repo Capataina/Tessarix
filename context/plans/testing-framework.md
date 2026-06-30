@@ -1,6 +1,12 @@
 # Testing framework — self-auditing frontend + backend
 
-**Status: planned (not started). Adds new dev dependencies → needs user confirmation.**
+**Status: BUILT (2026-06-30).** The vitest unit layer (`src/lib/ascii`, `src/lib/graph` — 19 tests)
+and the Playwright self-audit harness (`e2e/audit.mjs`) shipped and RAN: first run surfaced 75
+findings, reduced to 9 real ones after fixing the classes it caught (a non-Tauri IPC-throw, a
+false-positive probe, widget overflow). Deps added with the user's go-ahead. Remaining layer: the
+vision design-audit dossiers (the agent reviews the gallery against a rubric — done ad-hoc this
+run, not yet a persisted per-surface dossier set). Two real bugs are flagged in `e2e/output/`: 4
+over-wide widgets (now scroll-contained) and a basis-lesson React #185 infinite-render on interaction.
 
 ## Goal
 

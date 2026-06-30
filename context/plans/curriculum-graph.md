@@ -1,6 +1,10 @@
 # Curriculum graph — the typed concept DAG, the index, and graph navigation
 
-**Status: planned (not started). This is the keystone — build it first.**
+**Status: BUILT (2026-06-30).** The concept graph (`src/lib/graph/{meta,linker,build}`), the
+deterministic linker, and the graph-nav front door (`src/components/nav/GraphNav.tsx`) shipped.
+Remaining sub-item: auto-linking *authored lesson prose* (the linker runs on generated content —
+the mini-lesson — today; an MDX rehype pass would extend it to lesson bodies). Edges shown are
+prerequisite-order + teaches; a richer node-graph render is a future enhancement.
 
 ## Why this is the keystone
 

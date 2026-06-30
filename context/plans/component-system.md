@@ -1,6 +1,9 @@
 # Component system — globalised primitives, the WidgetFrame, per-category theming
 
-**Status: planned (not started). One open decision for the user to land (below).**
+**Status: BUILT (2026-06-30).** Radix + `vaul` primitives (`src/components/ui/`), the universal
+`<WidgetFrame>`, and full per-category theming (`injectDesignTokens` palette override +
+`src/lib/graph/themes.ts`) shipped; all 53 widgets wrapped. The decision below is LOCKED: Radix +
+`vaul` on the tokens, fully animated.
 
 ## Goal
 

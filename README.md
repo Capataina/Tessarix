@@ -282,17 +282,17 @@ The naive "right → harder, wrong → easier" loop converges on a single diffic
 
 ## 13. Status
 
-**Past Milestone 1, well into Milestone 2 (version 0.3.3).** Scaffolded 2026-05-11. Since then:
+**Past Milestones 1–2, with the first cut of Milestones 3–5 landed (version 0.4.0).** Scaffolded 2026-05-11. State:
 
 | Built | Planned |
 |---|---|
-| M1 substrate — Tauri + Vite + React + MDX + KaTeX; the A-FINE lesson with all three views rendering | SQLite (WAL) spaced-repetition store |
-| 8 MDX lessons (A-FINE + a 7-lesson linear-algebra track), **53 widgets** (9 A-FINE + 44 linear-algebra + shared kit) | The adaptive scheduler + the live Quiz/Interview engines (chrome exists; engines don't) |
-| Local-LLM layer (**Ollama**) — in-lesson chat, catalog recommender, state-aware widget explanations, tiered hints, wrong-answer thread | The concept graph + graph navigation (replaces the card grid) |
-| Telemetry layer (JSONL) | Inline concept linking (the concept index + deterministic linker) |
-| Single-source styling system (`src/styles/`) under the chocolate-luxe / terminal identity + tesseract mark + boot-cascade motion | The globalised component layer + `<WidgetFrame>` + per-category palettes |
-| **ASCII custom displays** (`src/lib/ascii/`): the rotating donut + ASCII embedding heatmaps | The fullscreen mini-lesson drawer + "explain here" + "turn into lesson" |
-| Complexity tiers + three-pillar reading shell | The sync-learning agent; the Claude-API grader / conversational interview |
+| M1 substrate — Tauri + Vite + React + MDX + KaTeX; A-FINE with all three views | SQLite (WAL) spaced-repetition store |
+| 8 MDX lessons (A-FINE + a 7-lesson linear-algebra track), **53 widgets**, each wrapped in a universal `<WidgetFrame>` | The adaptive scheduler + the live Quiz/Interview engines (chrome exists; engines don't) |
+| **Concept graph + graph navigation** (`src/lib/graph` + `GraphNav`) — the category ▸ topic ▸ lesson tree, replacing the card grid | Breadth beyond linear algebra (Hebbian, CNN, quant, an algorithm playground) |
+| **Globalised component layer** (Radix + `vaul` on the tokens) + `<WidgetFrame>` + **full per-category palettes** | Auto-linking *authored lesson prose* (the linker runs on generated content today) |
+| **Widget fullscreen mini-lesson** drawer (LLM-generated, concept-linked) | "Explain here" + ephemeral "turn into lesson" |
+| **Self-auditing test framework** — vitest unit + a Playwright structural/interaction/visual harness (run: 75→9 findings) | The sync-learning agent; the Claude-API grader / conversational interview |
+| Local-LLM layer (**Ollama**, now with a browser fetch fallback), telemetry, ASCII custom displays, complexity tiers + three-pillar shell, the chocolate-luxe identity | The vision design-audit dossier layer of the test harness |
 
 The host (Rust) side stays thin beyond the Ollama + telemetry IPC modules. The README's Claude-API mentions describe *future* intent (the grader + sync agent); the shipped interactive LLM features run on local Ollama.
 
@@ -308,14 +308,14 @@ Tauri shell + Vite + React + MDX + KaTeX; minimal component library; the A-FINE 
 ### 🟡 Milestone 2 — Component-library expansion + breadth of lessons + the adaptive layer
 Lessons across the breadth of interests to stress-test the substrate. *Done:* the linear-algebra track (44 widgets), the LLM layer, the styling system, ASCII displays. *Remaining:* breadth beyond linear algebra (Hebbian plasticity, CNN, options/compound-interest, an algorithm playground), and the SQLite + within-session adaptive-difficulty layer that turns Quiz from chrome into an engine.
 
-### Milestone 3 — The concept graph + navigation (keystone)
-The typed DAG from lesson frontmatter (`category` / `topic` / `teaches` / `prerequisites`), the `concept → owning-lesson` index, the deterministic linker, and the graph-nav landing that replaces the card grid. **Inline concept links ship first** as the cheapest durable win. (→ [`context/plans/curriculum-graph.md`](context/plans/curriculum-graph.md))
+### ✅ Milestone 3 — The concept graph + navigation (keystone) — BUILT
+The typed graph from lesson metadata (`category` / `topic` / `teaches` / `prerequisites`), the `concept → owning-lesson` index, the deterministic linker, and the graph-nav landing that replaces the card grid — all shipped (`src/lib/graph`, `src/components/nav/GraphNav.tsx`). *Remaining:* auto-linking authored lesson prose (the linker runs on generated content today). (→ [`context/plans/curriculum-graph.md`](context/plans/curriculum-graph.md))
 
-### Milestone 4 — The component spine + visual identity
-The globalised primitive layer + `<WidgetFrame>` (fixes containment, carries affordances) + per-category palettes wired through the token system. (→ [`context/plans/component-system.md`](context/plans/component-system.md))
+### ✅ Milestone 4 — The component spine + visual identity — BUILT
+The globalised Radix + `vaul` primitive layer + the universal `<WidgetFrame>` (containment, chrome, the mini-lesson affordance) + full per-category palettes wired through the token system — shipped; all 53 widgets wrapped. (→ [`context/plans/component-system.md`](context/plans/component-system.md))
 
-### Milestone 5 — On-demand explanation + generation
-The fullscreen widget mini-lesson (bottom drawer), "explain here", and ephemeral "turn into lesson" — all generation-separated-from-linking, all reusing the M3 concept index. (→ [`context/notes/llm-integrations.md`](context/notes/llm-integrations.md) §10)
+### 🟡 Milestone 5 — On-demand explanation + generation — mini-lesson BUILT
+The fullscreen widget mini-lesson (bottom drawer, LLM-generated, concept-linked) is shipped and verified against `llama3.2:3b`. *Remaining:* "explain here" (selection popover) and ephemeral "turn into lesson". All generation-separated-from-linking, reusing the M3 concept index. (→ [`context/notes/llm-integrations.md`](context/notes/llm-integrations.md) §10)
 
 ### Milestone 6 — Sync-learning agent
 `.claude/skills/sync-learning-app/` reads `Learning/` deltas, classifies, emits drafts to `lessons/_drafts/`. Manual-fire only; editorial review required.
@@ -326,8 +326,8 @@ The fullscreen widget mini-lesson (bottom drawer), "explain here", and ephemeral
 ### Milestone 8+ — Graduated abstractions
 Lift abstractions (fully-generic playground engine, parameterised lesson templates, shared rubric library) only where repetition by then obviously pays. Deferred until the patterns surface.
 
-### Cross-cutting — the self-auditing test harness
-Built incrementally alongside everything above (Performance-Profiler-style), not as a single milestone: the unit layer lands first (cheap, immediate), then the structural-probe + adaptive-interaction harness grows to cover every lesson generically, then the vision design audit. The agent verifies the app itself; the author stops being the only bug-catcher. (→ [`context/plans/testing-framework.md`](context/plans/testing-framework.md))
+### 🟡 Cross-cutting — the self-auditing test harness — FIRST CUT BUILT
+Built incrementally alongside everything above (Performance-Profiler-style). *Shipped:* the vitest unit layer (donut metrics + the linker, 19 tests) and the Playwright structural-probe + adaptive-interaction harness — run against every lesson, generic by construction (75 findings → 9 after fixing the classes it caught). *Remaining:* the vision design-audit dossier layer as a persisted artefact (done ad-hoc this run). The agent verifies the app itself; the author stops being the only bug-catcher. (→ [`context/plans/testing-framework.md`](context/plans/testing-framework.md))
 
 ---
 
