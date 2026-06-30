@@ -58,11 +58,13 @@
   overflow: hidden;
   font-family: var(--font-mono);
   /* Scale the 32-col heatmap to fit its panel so it shrinks (sidebars open,
-     mini-lesson) instead of scrolling. */
-  font-size: clamp(0.18rem, calc(100cqw / 23), 0.58rem);
+     mini-lesson) instead of scrolling. /21 fills the panel; text-align:center
+     keeps the residual slack symmetric rather than all on the right. */
+  font-size: clamp(0.18rem, calc(100cqw / 21), 0.58rem);
   line-height: 0.92;
   letter-spacing: 0.02em;
   white-space: pre;
+  text-align: center;
   padding: var(--space-2);
   border-radius: var(--radius-sm);
   border: 1px solid var(--widget-border);

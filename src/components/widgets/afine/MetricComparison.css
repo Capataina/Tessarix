@@ -64,11 +64,14 @@
   overflow: hidden;
   font-family: var(--font-mono);
   /* Scale the donut to fit its panel (≈56 cols × 0.6 advance) so it shrinks when
-     the column narrows (sidebars open, mini-lesson) instead of scrolling. */
-  font-size: clamp(0.22rem, calc(100cqw / 38), 0.5rem);
+     the column narrows (sidebars open, mini-lesson) instead of scrolling. /36
+     fills the panel nearly fully; text-align:center splits the residual fit-slack
+     evenly instead of dumping it all on the right. */
+  font-size: clamp(0.22rem, calc(100cqw / 36), 0.5rem);
   line-height: 1.05;
   letter-spacing: 0;
   white-space: pre;
+  text-align: center;
   padding: var(--space-2);
   border-radius: var(--radius-sm);
   border: 1px solid var(--widget-border);
