@@ -486,7 +486,11 @@
   color: var(--accent-cyan);
 }
 
-.lesson pre {
+/* Code-block styling. Excludes widget ASCII displays (`*__ascii`): those are not
+   code blocks — they scale their own font to fit (container queries) and must not
+   inherit the code-block's overflow-x:auto (which turned a too-wide donut into a
+   scrollbar instead of letting it shrink). */
+.lesson pre:not([class*="__ascii"]) {
   margin: var(--space-5) 0;
   padding: var(--space-4) var(--space-5);
   background: var(--bg-surface);
