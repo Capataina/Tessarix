@@ -1,9 +1,9 @@
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
 import { IconButton, Tooltip, Drawer } from "../../ui";
-import { RichText } from "../../RichText";
 import { extractLessonContext } from "../../../lib/llm/dom";
-import { generateWidgetMiniLesson } from "../../../lib/llm/miniLesson";
-import { linkConceptsToHtml } from "../../../lib/graph";
+import { useLLMStream } from "../../../lib/llm/hooks";
+import { buildWidgetMiniLessonMessages } from "../../../lib/llm/miniLesson";
+import { renderMiniLessonHtml } from "../../../lib/llm/format";
 import { emit as emitTelemetry } from "../../../lib/telemetry";
 import type { WidgetDescriptor } from "../../../lib/widgets/descriptor";
 import "./WidgetFrame.css";
@@ -16,31 +16,29 @@ interface WidgetFrameProps {
   children: ReactNode;
 }
 
-type MiniStatus = "idle" | "loading" | "done" | "error";
+/** Current lesson slug from the hash, so the mini-lesson doesn't self-link. */
+function currentSlug(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return /#\/lesson\/([^?]+)/.exec(window.location.hash)?.[1];
+}
 
 /**
- * The universal widget container. Every interactive widget sits inside one of
- * these, which gives the app three things for free:
+ * The universal widget container. Every interactive widget sits inside one,
+ * which gives the app coherent terminal-pane chrome, a hard containment boundary
+ * (overflow:hidden — content can't escape the page), the `data-widget` /
+ * `data-controls` test-discovery hooks, and the fullscreen mini-lesson.
  *
- *  - **Coherent chrome** — one hairline terminal-pane frame + mono label, so no
- *    widget styles its own outer box (consistency by construction).
- *  - **Containment** — the frame is the canonical overflow boundary; combined
- *    with styles/containment.css, widget content cannot escape its column. This
- *    is the structural fix for the "escaping box" / leaking-donut class of bug.
- *  - **The fullscreen mini-lesson** — an expand control opens a draggable bottom
- *    drawer where the LLM explains the widget (background + how-to-read), with
- *    cross-lesson links woven in by the deterministic linker. Distinct from the
- *    live state caption (<WidgetExplainer>).
- *
- * The `data-widget` / `data-teaches` / `data-controls` attributes are the test
- * harness's discovery hooks (context/plans/testing-framework.md): the harness
- * reads them to enumerate widgets and drive their declared interactions, and
- * probes the frame's bounding box for overflow.
+ * The mini-lesson (the `⤢` control → a draggable bottom drawer) is an *isolated
+ * environment*: it renders a fresh, fully-interactive copy of the widget itself
+ * alongside a streamed LLM explanation, so the reader can actually work the
+ * widget while reading about it. The explanation streams token-by-token; once
+ * complete, the deterministic concept-linker injects cross-lesson links into it
+ * (generation separated from linking).
  */
 export function WidgetFrame({ descriptor, stateSummary, children }: WidgetFrameProps) {
   const [open, setOpen] = useState(false);
-  const [content, setContent] = useState("");
-  const [status, setStatus] = useState<MiniStatus>("idle");
+  const startedRef = useRef(false);
+  const { text, isStreaming, error, stream } = useLLMStream();
 
   const onExpand = useCallback(() => {
     setOpen(true);
@@ -48,28 +46,33 @@ export function WidgetFrame({ descriptor, stateSummary, children }: WidgetFrameP
       kind: "click",
       data: { widget: descriptor.name, target_role: "widget_fullscreen" },
     });
-    if (status === "loading" || status === "done") return;
-    setStatus("loading");
-    const lessonContext = extractLessonContext();
-    generateWidgetMiniLesson({
+    if (startedRef.current) return;
+    startedRef.current = true;
+    const messages = buildWidgetMiniLessonMessages({
       widgetName: descriptor.name,
       widgetDescription: descriptor.description,
       howToRead: descriptor.howToRead,
       teaches: descriptor.teaches,
-      lessonContext,
+      lessonContext: extractLessonContext(),
       stateSummary,
-    })
-      .then((text) => {
-        // Generation is separated from linking: the model wrote plain prose;
-        // we inject the cross-lesson links deterministically here.
-        setContent(linkConceptsToHtml(text));
-        setStatus("done");
-      })
-      .catch((e: unknown) => {
-        setContent(e instanceof Error ? e.message : String(e));
-        setStatus("error");
-      });
-  }, [descriptor, stateSummary, status]);
+    });
+    void stream(messages, {
+      temperature: 0.3,
+      maxTokens: 700,
+      telemetryFeature: "widget_mini_lesson",
+    });
+  }, [descriptor, stateSummary, stream]);
+
+  // Render markdown → structured HTML on every token (so paragraphs/bold/lists
+  // appear live). Concept links are injected only once the stream finishes —
+  // linking mid-stream would thrash and could link a half-typed term.
+  const miniHtml = useMemo(() => {
+    if (!text) return null;
+    return renderMiniLessonHtml(
+      text,
+      isStreaming ? {} : { link: true, excludeSlug: currentSlug() },
+    );
+  }, [text, isStreaming]);
 
   return (
     <figure
@@ -80,7 +83,7 @@ export function WidgetFrame({ descriptor, stateSummary, children }: WidgetFrameP
     >
       <figcaption className="widget-frame__head">
         <span className="widget-frame__label">{descriptor.name}</span>
-        <Tooltip content="Open as a full mini-lesson">
+        <Tooltip content="Open as an isolated mini-lesson">
           <IconButton
             aria-label={`Expand ${descriptor.name} into a mini-lesson`}
             className="widget-frame__expand"
@@ -98,20 +101,27 @@ export function WidgetFrame({ descriptor, stateSummary, children }: WidgetFrameP
         onOpenChange={setOpen}
         title={`${descriptor.name} — mini-lesson`}
       >
-        {status === "loading" && (
-          <p className="widget-frame__mini-status">Generating a mini-lesson…</p>
-        )}
-        {status === "done" && (
+        <div className="widget-frame__mini-layout">
+          {/* The isolated, fully-interactive copy of the widget to work with. */}
+          <div className="widget-frame__mini-widget">{open ? children : null}</div>
+
+          {/* The streamed, markdown-formatted, then concept-linked explanation. */}
           <div className="widget-frame__mini">
-            <RichText html={content} />
+            {error ? (
+              <p className="widget-frame__mini-status">
+                Couldn't generate the mini-lesson ({error}). Make sure the local
+                model (Ollama) is running.
+              </p>
+            ) : miniHtml ? (
+              <>
+                <div dangerouslySetInnerHTML={{ __html: miniHtml }} />
+                {isStreaming && <span className="widget-frame__caret" />}
+              </>
+            ) : (
+              <p className="widget-frame__mini-status">Generating a mini-lesson…</p>
+            )}
           </div>
-        )}
-        {status === "error" && (
-          <p className="widget-frame__mini-status">
-            Couldn't generate the mini-lesson ({content}). Make sure the local
-            model (Ollama) is running.
-          </p>
-        )}
+        </div>
       </Drawer>
     </figure>
   );

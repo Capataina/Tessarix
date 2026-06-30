@@ -36,7 +36,8 @@ type LLMFeature =
   | "chatbot"
   | "tiered_hints"
   | "widget_explainer"
-  | "widget_question";
+  | "widget_question"
+  | "widget_mini_lesson";
 
 export type TelemetryEvent =
   // ─── Session lifecycle ──────────────────────────────────────────────

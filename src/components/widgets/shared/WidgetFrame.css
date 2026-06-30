@@ -31,9 +31,10 @@
   color: var(--widget-text-muted);
 }
 
-/* The expand control stays quiet until the widget is hovered/focused, then warms. */
+/* The expand control is always clearly present (every widget is expandable);
+   it just warms further on hover. */
 .widget-frame__expand {
-  opacity: 0.55;
+  opacity: 0.9;
   transition: opacity var(--dur-fast) var(--ease-standard);
 }
 
@@ -62,12 +63,99 @@
   padding: 0;
 }
 
+/* Drawer layout: the isolated interactive widget copy beside the streamed
+   lesson; stacks on narrow viewports. */
+.widget-frame__mini-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .widget-frame__mini-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The interactive copy of the widget to work with, isolated from the lesson. */
+.widget-frame__mini-widget {
+  min-width: 0;
+}
+
+.widget-frame__mini-widget .widget-frame {
+  margin: 0; /* the copy is already inside the drawer's frame */
+}
+
 /* Mini-lesson prose inside the drawer. */
 .widget-frame__mini {
   max-width: 70ch;
   line-height: 1.6;
   color: var(--widget-text);
   font-size: 0.95rem;
+}
+
+.widget-frame__mini p {
+  margin: 0 0 var(--space-3);
+}
+
+.widget-frame__mini p:last-child {
+  margin-bottom: 0;
+}
+
+.widget-frame__mini h4 {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-camel);
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.widget-frame__mini ul,
+.widget-frame__mini ol {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-5);
+}
+
+.widget-frame__mini li {
+  margin: var(--space-1) 0;
+}
+
+.widget-frame__mini strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.widget-frame__mini code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--widget-bg-soft);
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-sm);
+}
+
+/* Blinking caret while the explanation streams. */
+.widget-frame__caret {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--accent-camel);
+  animation: widget-frame-blink 1s steps(2, start) infinite;
+}
+
+@keyframes widget-frame-blink {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .widget-frame__caret {
+    animation: none;
+  }
 }
 
 .widget-frame__mini a {

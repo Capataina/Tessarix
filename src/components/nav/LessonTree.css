@@ -1,0 +1,71 @@
+/* Layered prerequisite-DAG tree. Node cards positioned absolutely over an SVG
+   edge layer; curved connectors run prerequisite → dependent. Colours are
+   tokens, so the tree recolours with the active category palette. */
+
+.lesson-tree {
+  overflow-x: auto;
+  padding: var(--space-5) 0 var(--space-10);
+}
+
+.lesson-tree__canvas {
+  position: relative;
+  margin: 0 auto;
+}
+
+.lesson-tree__edges {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.lesson-tree__edge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent-camel) 38%, var(--widget-border));
+  stroke-width: 1.5;
+}
+
+.lesson-tree__node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  text-align: left;
+  padding: var(--space-3);
+  background: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.lesson-tree__node:hover {
+  border-color: var(--accent-camel);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+  z-index: 2;
+}
+
+.lesson-tree__node:focus-visible {
+  outline: none;
+  border-color: var(--accent-camel);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-camel) 40%, transparent);
+}
+
+.lesson-tree__node-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.lesson-tree__node-teaches {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}

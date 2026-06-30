@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { buildGraph, type Category, type GraphCategory } from "../../lib/graph";
 import { applyCategoryTheme } from "../../lib/graph/themes";
+import { LessonTree } from "./LessonTree";
 import "./GraphNav.css";
 
 interface GraphNavProps {
@@ -22,7 +23,6 @@ interface GraphNavProps {
 export function GraphNav({ onSelect }: GraphNavProps) {
   const [graph, setGraph] = useState<GraphCategory[] | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let live = true;
@@ -44,17 +44,8 @@ export function GraphNav({ onSelect }: GraphNavProps) {
     [graph, category],
   );
 
-  function openCategory(name: Category, topics: string[]) {
+  function openCategory(name: Category) {
     setCategory(name);
-    setExpanded(new Set(topics)); // expand all topics by default — show the lessons
-  }
-
-  function toggleTopic(name: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      next.has(name) ? next.delete(name) : next.add(name);
-      return next;
-    });
   }
 
   if (!graph) {
@@ -78,7 +69,7 @@ export function GraphNav({ onSelect }: GraphNavProps) {
               type="button"
               className="graphnav__category"
               data-category={c.name}
-              onClick={() => openCategory(c.name, c.topics.map((t) => t.name))}
+              onClick={() => openCategory(c.name)}
             >
               <span className="graphnav__category-name">{c.name}</span>
               <span className="graphnav__category-meta">
@@ -109,56 +100,10 @@ export function GraphNav({ onSelect }: GraphNavProps) {
         <span className="graphnav__cat-count">{active.lessonCount} lessons</span>
       </header>
 
-      <div className="graphnav__tree">
-        {active.topics.map((topic) => {
-          const open = expanded.has(topic.name);
-          return (
-            <div className="graphnav__topic" key={topic.name} data-open={open}>
-              <button
-                type="button"
-                className="graphnav__topic-head"
-                aria-expanded={open}
-                onClick={() => toggleTopic(topic.name)}
-              >
-                <span className="graphnav__caret" data-open={open}>
-                  ▸
-                </span>
-                <span className="graphnav__topic-name">{topic.name}</span>
-                <span className="graphnav__topic-count">
-                  {topic.lessons.length}
-                </span>
-              </button>
-
-              {open && (
-                <ol className="graphnav__lessons">
-                  {topic.lessons.map((l, i) => (
-                    <li key={l.slug} className="graphnav__lesson">
-                      <button
-                        type="button"
-                        className="graphnav__lesson-btn"
-                        onClick={() => onSelect(l.slug)}
-                      >
-                        <span className="graphnav__lesson-idx">{i + 1}</span>
-                        <span className="graphnav__lesson-main">
-                          <span className="graphnav__lesson-title">{l.title}</span>
-                          <span className="graphnav__lesson-summary">
-                            {l.summary}
-                          </span>
-                          {l.teaches.length > 0 && (
-                            <span className="graphnav__lesson-teaches">
-                              {l.teaches.slice(0, 5).join("  ·  ")}
-                            </span>
-                          )}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      <LessonTree
+        lessons={active.topics.flatMap((t) => t.lessons)}
+        onSelect={onSelect}
+      />
     </div>
   );
 }

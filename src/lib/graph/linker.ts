@@ -33,7 +33,7 @@ export const CONCEPT_INDEX: ConceptEntry[] = Object.entries(LESSON_META)
       Math.max(...a.forms.map((f) => f.length)),
   );
 
-function escapeHtml(s: string): string {
+export function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
@@ -54,8 +54,8 @@ export interface LinkOptions {
  * insensitive; never links a concept owned by `excludeSlug`. Input is HTML-
  * escaped first and only known-good anchors are inserted, so LLM prose is safe.
  */
-export function linkConceptsToHtml(text: string, opts: LinkOptions = {}): string {
-  let result = escapeHtml(text);
+export function injectLinks(escaped: string, opts: LinkOptions = {}): string {
+  let result = escaped;
   const usedSlugs = new Set<string>();
   const placeholders: Array<{ token: string; html: string }> = [];
 
@@ -88,4 +88,9 @@ export function linkConceptsToHtml(text: string, opts: LinkOptions = {}): string
 
   for (const { token, html } of placeholders) result = result.replace(token, html);
   return result;
+}
+
+/** Escape + inject concept links — the common case for authored or generated prose. */
+export function linkConceptsToHtml(text: string, opts: LinkOptions = {}): string {
+  return injectLinks(escapeHtml(text), opts);
 }

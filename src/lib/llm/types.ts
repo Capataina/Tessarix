@@ -26,7 +26,8 @@ export interface ChatOptions {
     | "chatbot"
     | "tiered_hints"
     | "widget_explainer"
-    | "widget_question";
+    | "widget_question"
+    | "widget_mini_lesson";
   /** Optional turn index for multi-turn flows (e.g. answer thread Turn 1 vs Turn 3). */
   telemetryTurn?: number;
 }
