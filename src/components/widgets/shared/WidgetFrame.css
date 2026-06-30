@@ -45,6 +45,10 @@
 .widget-frame__body {
   min-width: 0;
   padding: var(--space-4);
+  /* A widget genuinely wider than its column scrolls horizontally inside the
+     frame instead of being clipped (the frame's overflow:hidden keeps it off the
+     page). Content stays reachable; the layout still never breaks. */
+  overflow-x: auto;
 }
 
 /* The widget's own outer box is redundant inside a frame — flatten it so there's

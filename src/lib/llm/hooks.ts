@@ -14,10 +14,16 @@
 import { useCallback, useRef, useState } from "react";
 import { Channel, invoke } from "@tauri-apps/api/core";
 import type { ChatMessage, ChatOptions, StreamEvent } from "./types";
+import { llmComplete } from "./client";
 import { emit as emitTelemetry } from "../telemetry";
 
 function totalPromptLength(messages: ChatMessage[]): number {
   return messages.reduce((acc, m) => acc + m.content.length, 0);
+}
+
+/** True when running inside the Tauri webview (the streaming Channel is available). */
+function inTauri(): boolean {
+  return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -137,6 +143,37 @@ export function useLLMStream() {
             prompt_messages: messages,
           },
         });
+      }
+
+      // Browser fallback: outside Tauri there is no IPC Channel (constructing one
+      // throws on `transformCallback`). Fall back to a non-streaming fetch so the
+      // feature still works in the dev/preview build, Playwright, and a future web
+      // build — the result simply arrives in one piece instead of token-by-token.
+      if (!inTauri()) {
+        try {
+          const result = await llmComplete(messages, opts);
+          if (!localAbort.aborted) {
+            setText(result);
+            if (opts?.telemetryFeature) {
+              emitTelemetry({
+                kind: "llm_response",
+                data: {
+                  feature: opts.telemetryFeature,
+                  turn: opts.telemetryTurn,
+                  response_length: result.length,
+                  response_text: result,
+                  duration_ms: Math.round(performance.now() - tStart),
+                  streamed: false,
+                },
+              });
+            }
+          }
+        } catch (e) {
+          if (!localAbort.aborted) setError(String(e));
+        } finally {
+          if (abortRef.current === localAbort) setIsStreaming(false);
+        }
+        return;
       }
 
       let accumulated = "";

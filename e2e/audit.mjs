@@ -100,7 +100,9 @@ function probe() {
     }
     const t = el.textContent;
     const bad = t.match(/\bNaN\b|\bundefined\b|\bInfinity\b/);
-    if (bad) {
+    // Only a short readout counts — long prose legitimately mentions "NaN" /
+    // "undefined" as words (e.g. "AB is undefined for non-square matrices").
+    if (bad && t.trim().length <= 24) {
       out.push({
         type: "bad-number",
         severity: "high",
