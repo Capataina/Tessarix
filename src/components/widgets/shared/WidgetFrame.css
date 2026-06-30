@@ -63,19 +63,15 @@
   padding: 0;
 }
 
-/* Drawer layout: the isolated interactive widget copy beside the streamed
-   lesson; stacks on narrow viewports. */
+/* Drawer layout: a single readable column — the interactive widget on top, the
+   streamed lesson below, like a normal lesson. (Single column avoids the cramped
+   scaling the two-column split caused.) */
 .widget-frame__mini-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: var(--space-6);
-  align-items: start;
-}
-
-@media (max-width: 860px) {
-  .widget-frame__mini-layout {
-    grid-template-columns: 1fr;
-  }
+  max-width: 820px;
+  margin: 0 auto;
 }
 
 /* The interactive copy of the widget to work with, isolated from the lesson. */

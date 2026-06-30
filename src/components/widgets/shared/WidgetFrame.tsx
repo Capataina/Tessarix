@@ -94,7 +94,11 @@ export function WidgetFrame({ descriptor, stateSummary, children }: WidgetFrameP
         </Tooltip>
       </figcaption>
 
-      <div className="widget-frame__body">{children}</div>
+      {/* When expanded the widget MOVES into the drawer (a single live instance,
+          not a duplicate) — rendering the same element in two slots steals the
+          original's fiber and freezes its animation. The drawer overlay hides
+          this empty frame while open. */}
+      <div className="widget-frame__body">{open ? null : children}</div>
 
       <Drawer
         open={open}
@@ -102,8 +106,11 @@ export function WidgetFrame({ descriptor, stateSummary, children }: WidgetFrameP
         title={`${descriptor.name} — mini-lesson`}
       >
         <div className="widget-frame__mini-layout">
-          {/* The isolated, fully-interactive copy of the widget to work with. */}
-          <div className="widget-frame__mini-widget">{open ? children : null}</div>
+          {/* The interactive widget, moved here while expanded. data-vaul-no-drag
+              stops the drawer's sheet-drag gesture from eating slider/canvas drags. */}
+          <div className="widget-frame__mini-widget" data-vaul-no-drag>
+            {open ? children : null}
+          </div>
 
           {/* The streamed, markdown-formatted, then concept-linked explanation. */}
           <div className="widget-frame__mini">

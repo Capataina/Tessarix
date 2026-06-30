@@ -33,6 +33,8 @@
 /* Flat labelled region — no inner card. */
 .metric-comparison__panel {
   margin: 0;
+  min-width: 0;
+  container-type: inline-size; /* the ASCII pre scales to this panel's width */
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -57,11 +59,13 @@
 .metric-comparison__ascii {
   display: block;
   margin: 0 auto;
-  width: max-content;
-  max-width: 100%;
+  box-sizing: border-box;
+  width: 100%;
   overflow: hidden;
   font-family: var(--font-mono);
-  font-size: 0.46rem;
+  /* Scale the donut to fit its panel (≈56 cols × 0.6 advance) so it shrinks when
+     the column narrows (sidebars open, mini-lesson) instead of scrolling. */
+  font-size: clamp(0.22rem, calc(100cqw / 38), 0.5rem);
   line-height: 1.05;
   letter-spacing: 0;
   white-space: pre;
