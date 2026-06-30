@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { drawReference } from "../../../lib/imaging/render";
-import { gaussianBlur, translate } from "../../../lib/imaging/distortions";
-import { psnr, ssim } from "../../../lib/imaging/metrics";
+import {
+  blur as blurGrid,
+  drawDonutScene,
+  psnr,
+  ssim,
+  translate as translateGrid,
+  type Grid,
+} from "../../../lib/ascii";
 import { LineChart } from "../shared/LineChart";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./TranslationVsBlurPlot.css";
 
-const CANVAS_SIZE = 192;
+// Same scene + resolution + pose as MetricComparison's metric grid, so the two
+// A-FINE metric widgets measure one image and their numbers agree.
+const SCENE_N = 256;
 const TRANS_STEPS = 17; // 0..16 px
 const BLUR_STEPS = 17; // 0..4 sigma
 
@@ -21,10 +28,10 @@ interface ResponseCurve {
  * in a deferred effect so it doesn't block the lesson's initial paint.
  */
 function computeCurves(
-  ref: ImageData,
+  ref: Grid,
   steps: number,
   xMax: number,
-  apply: (img: ImageData, x: number) => ImageData,
+  apply: (img: Grid, x: number) => Grid,
 ): ResponseCurve {
   const xs: number[] = [];
   const psnrs: number[] = [];
@@ -49,19 +56,15 @@ export function TranslationVsBlurPlot() {
   useEffect(() => {
     // Defer past the initial paint so the lesson isn't blocked on this.
     const handle = setTimeout(() => {
-      const canvas = document.createElement("canvas");
-      canvas.width = CANVAS_SIZE;
-      canvas.height = CANVAS_SIZE;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      drawReference(ctx, CANVAS_SIZE, CANVAS_SIZE);
-      const ref = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      const ref = drawDonutScene(SCENE_N, SCENE_N, { a: 1.0, b: 0.3 }, {
+        charAspect: 1,
+      });
 
       const translation = computeCurves(ref, TRANS_STEPS, 16, (img, px) =>
-        translate(img, px),
+        translateGrid(img, px),
       );
       const blur = computeCurves(ref, BLUR_STEPS, 4, (img, sigma) =>
-        gaussianBlur(img, sigma),
+        blurGrid(img, sigma),
       );
       setCurves({ translation, blur });
     }, 100);
@@ -76,7 +79,7 @@ export function TranslationVsBlurPlot() {
     const t = curves.translation;
     const lastPsnr = t.psnrs[t.psnrs.length - 1];
     const lastSsim = t.ssims[t.ssims.length - 1];
-    return `At translation = 0, both metrics report a perfect match. At translation = ${t.xs[t.xs.length - 1].toFixed(0)} px, PSNR has dropped to ${lastPsnr.toFixed(1)} dB while SSIM is at ${lastSsim.toFixed(3)}. PSNR drops monotonically; SSIM drops in shallow steps as content shifts in and out of each 8×8 window.`;
+    return `At translation = 0, both metrics report a perfect match. At translation = ${t.xs[t.xs.length - 1].toFixed(0)} px, PSNR has dropped to ${lastPsnr.toFixed(1)} dB while SSIM is at ${lastSsim.toFixed(3)}. PSNR drops fast and monotonically — every pixel is now misaligned. SSIM holds up far better at small shifts: the scene's horizontal scanlines are nearly invariant under a horizontal shift, so the structural term barely notices until the donut itself has moved appreciably.`;
   }, [curves]);
 
   const blurStateSummary = useMemo(() => {

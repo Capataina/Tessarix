@@ -42,30 +42,6 @@ export function mix(a: string, b: string, t: number): string {
 }
 
 /**
- * Reference test-image palette (MetricComparison). Flat horizontal palette
- * BANDS (not a smooth gradient) plus on-palette flat shapes, all derived from
- * tokens, so the procedural image reads as a flat terminal-style diagram rather
- * than a photograph dropped into the UI. Hard band edges also make blur and
- * translation more legible than a smooth gradient would. Reusable as the
- * "sample raster" style for any widget that needs flat structured pixels.
- */
-export const refImage = {
-  // Each entry is [top y-fraction, fill]; each band runs down to the next
-  // band's top (the last runs to the bottom).
-  bands: [
-    [0, mix(color.bgBase, color.tobacco, 0.5)],
-    [0.32, color.tobacco],
-    [0.58, color.camel],
-    [0.8, mix(color.camel, color.textPrimary, 0.45)],
-  ] as Array<[number, string]>,
-  hatch: alpha(color.textPrimary, 0.3),
-  bar: color.ochre,
-  circle: color.rust,
-  square: color.eucalyptus,
-  topStripe: alpha(color.bgBase, 0.55),
-};
-
-/**
  * Diverging heatmap colour, all shades of brown: espresso at zero, warming to
  * tan for positive values and to rust for negative. Two distinguishable warm
  * hues so embedding structure stays readable while sitting in the palette.
