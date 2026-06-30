@@ -44,16 +44,26 @@
   text-transform: uppercase;
 }
 
-.embedding-heatmap__canvas {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  max-height: 150px;
-  object-fit: contain;
+/* ASCII feature heatmap: 32×16 character grid, glyph density = magnitude,
+   per-cell colour = sign (diverging colormap). Real text, not a raster, so it
+   sits native in the terminal identity. line-height < 1 widens the data aspect
+   a touch; the panel supplies the dark surface + hairline frame. */
+.embedding-heatmap__ascii {
   display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  white-space: pre;
+  padding: var(--space-2);
   border-radius: var(--radius-sm);
   border: 1px solid var(--widget-border);
-  image-rendering: pixelated;
+  background: var(--bg-base);
+  user-select: none;
 }
 
 .embedding-heatmap__metrics {

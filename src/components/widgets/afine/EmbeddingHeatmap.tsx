@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { divergingColor } from "../../../styles";
+import { AsciiField } from "../../../lib/ascii";
 import { WidgetExplainer } from "../shared/WidgetExplainer";
 import "./EmbeddingHeatmap.css";
 
 const EMBED_DIM = 512;
 const GRID_W = 32;
 const GRID_H = 16;
-const CELL_SIZE = 14;
 
 function rng(seed: number): () => number {
   let s = seed | 0;
@@ -90,39 +90,46 @@ function fidelityRatio(a: Float32Array, b: Float32Array): number {
   return num / den;
 }
 
+/** Reshape a flat embedding into a row-major 2D grid for the ASCII field. */
+function toRows(embedding: Float32Array): number[][] {
+  const rows: number[][] = [];
+  for (let y = 0; y < GRID_H; y++) {
+    const row: number[] = [];
+    for (let x = 0; x < GRID_W; x++) row.push(embedding[y * GRID_W + x]);
+    rows.push(row);
+  }
+  return rows;
+}
+
 interface HeatmapProps {
   label: string;
   embedding: Float32Array;
   vmax: number;
 }
 
+/**
+ * One embedding rendered as an ASCII character field: glyph density encodes
+ * magnitude (|value| / vmax), per-cell colour encodes value via the shared
+ * diverging colormap (espresso at zero → tan positive, rust negative). The
+ * coherent terminal-native replacement for the old pixel canvas.
+ */
 function Heatmap({ label, embedding, vmax }: HeatmapProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    for (let y = 0; y < GRID_H; y++) {
-      for (let x = 0; x < GRID_W; x++) {
-        const idx = y * GRID_W + x;
-        const v = embedding[idx];
-        const [r, g, b] = divergingColor(v, vmax);
-        ctx.fillStyle = `rgb(${r | 0}, ${g | 0}, ${b | 0})`;
-        ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-      }
-    }
-  }, [embedding, vmax]);
-
+  const rows = useMemo(() => toRows(embedding), [embedding]);
   return (
     <figure className="embedding-heatmap__panel">
       <figcaption>{label}</figcaption>
-      <canvas
-        ref={canvasRef}
-        width={GRID_W * CELL_SIZE}
-        height={GRID_H * CELL_SIZE}
-        className="embedding-heatmap__canvas"
+      <AsciiField
+        className="embedding-heatmap__ascii"
+        rows={rows}
+        // sqrt gamma lifts the low-magnitude field so the heatmap reads as a
+        // textured surface rather than near-empty (the embedding is sparse); the
+        // spikes still saturate to the densest glyphs.
+        intensity={(v) => Math.sqrt(Math.abs(v) / (vmax || 1e-9))}
+        colorFor={(v) => {
+          const [r, g, b] = divergingColor(v, vmax);
+          return `rgb(${r | 0}, ${g | 0}, ${b | 0})`;
+        }}
+        ariaLabel={`${label} feature heatmap`}
       />
     </figure>
   );
@@ -206,7 +213,7 @@ export function EmbeddingHeatmap() {
 
       <WidgetExplainer
         widgetName="CLIP embedding heatmap"
-        widgetDescription="Two synthetic 512-d CLIP-like embeddings rendered as 32×16 heatmaps with a morph slider linearly interpolating between them. Shows both cosine similarity (the linear-space alignment) and the SSIM-style fidelity ratio (the structural-similarity measure A-FINE's fidelity head actually uses), so the reader can see when the two metrics agree and where they diverge."
+        widgetDescription="Two synthetic 512-d CLIP-like embeddings rendered as 32×16 ASCII character heatmaps (glyph density = magnitude, colour = sign via the diverging colormap) with a morph slider linearly interpolating between them. Shows both cosine similarity (the linear-space alignment) and the SSIM-style fidelity ratio (the structural-similarity measure A-FINE's fidelity head actually uses), so the reader can see when the two metrics agree and where they diverge."
         stateSummary={`Morph value t = ${t.toFixed(2)} (0 = reference, 1 = distorted). Current morphed embedding: cosine(reference, morphed) = ${cosVal.toFixed(3)}, SSIM-in-feature-space fidelity ratio = ${fidVal.toFixed(3)}.`}
         stateKey={JSON.stringify({ t: Number(t.toFixed(2)) })}
       />
