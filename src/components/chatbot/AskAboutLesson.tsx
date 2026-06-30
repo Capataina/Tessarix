@@ -139,7 +139,7 @@ export function AskAboutLesson() {
               will get a "this isn't in the lesson" reply.
             </p>
             <p className="ask-panel__empty-sub ask-panel__empty-hint">
-              Running locally on llama3.2:3b — responses take a few seconds.
+              Running locally on Qwen3-4B-Instruct — responses take a few seconds.
             </p>
           </div>
         )}

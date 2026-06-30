@@ -1,19 +1,23 @@
 # LLM Integrations
 
-## 0. Locked decisions (2026-05-11)
+## 0. Locked decisions
 
-After empirical model testing + parallel benchmark research, the following are committed for the first round of LLM features. The rest of this document remains the longer-term context but should be read with this section as the authoritative current state.
+> [!note] 2026-06-30 — production default switched to `qwen3:4b-instruct-2507-q4_K_M`
+> The default moved off `llama3.2:3b` to **Qwen3-4B-Instruct-2507** — the same non-thinking instruct model the Hindsight brain already runs, so one pulled copy serves both. It's a newer, stronger 4B than llama3.2:3b while staying **non-thinking**, which is the load-bearing property here: a thinking model spends hundreds-to-thousands of tokens reasoning before the first visible word, fatal for the immersion-critical mini-lesson / explain-here surfaces. The newer **Qwen 3.5** family was evaluated and deferred — `qwen3.5:4b-mlx` runs Ollama's faster MLX backend but defaults to **thinking on** (measured 2267 tokens / 66 s for a 2-sentence answer, vs 77 tokens / 2.7 s for the instruct model), and disabling its thinking on the OpenAI-compatible `/v1` path was unresolved. Revisit 3.5 when accuracy outweighs dev-speed. MLX `-mlx` tags exist only for the 3.5 generation; the instruct model runs the llama.cpp Metal backend (measured ~45 tok/s decode, ~291 tok/s prefill, helped by the brew formula's flash-attention + q8_0 KV cache).
+> **Verbatim** in code/settings: `qwen3:4b-instruct-2507-q4_K_M` (Ollama tag, not display name).
 
-### Model choices
+### First round (2026-05-11) — how the original default was chosen
+
+After empirical model testing + parallel benchmark research, the following were committed for the first round of LLM features. Read the rest of this document with the 2026-06-30 note above as the authoritative current state.
+
+#### Model choices (first round)
 
 | Model | Status | Role |
 |---|---|---|
-| `llama3.2:3b` | ✅ Pulled, **production default** | Best in both empirical hallucination testing and benchmark research (IFEval 77.4 — 16-18 point lead over the alternatives). Used by all three features below. |
+| `llama3.2:3b` | First-round default — superseded 2026-06-30 | Best of the first-round candidates in empirical hallucination testing + benchmark research (IFEval 77.4 — 16-18 point lead over the alternatives). Was used by all three features below. |
 | `llama3.2:1b` | ✅ Pulled, dev fallback | When the system is RAM-pressured (Vite + Tauri + browser all running on 8 GB). Hallucinates on technical depth; acceptable for short-turn use cases only. |
-| `qwen2.5:3b` | ✅ Pulled, A/B alternative | Strong raw capability but IFEval 58.2 (lowest of the candidates). Reserve for cases where llama3.2:3b drifts on a specific domain. Known issue: Chinese-token leakage in some Ollama configurations (Ollama issue #13968). |
+| `qwen2.5:3b` | ✅ Pulled, A/B alternative | Strong raw capability but IFEval 58.2 (lowest of the candidates). Known issue: Chinese-token leakage in some Ollama configurations (Ollama issue #13968). |
 | `gemma2:2b` | ❌ Removed | 5× slower per word than llama3.2:3b (137 s for the long-prompt test) AND inverted the dominance relationship on technical content. Architectural symbolic-hallucination issue documented in ceur-ws.org 2025 paper — not fixable via prompting. |
-
-**Verbatim** when referenced in code or settings: `llama3.2:3b` (Ollama tag, not display name).
 
 ### Runner architecture
 
@@ -48,7 +52,7 @@ These are *not* style preferences — they are the levers that make `llama3.2:3b
 
 ### Scoped feature list — first round
 
-Three features, all running on `llama3.2:3b` via Ollama.
+Three features, all running on `qwen3:4b-instruct-2507-q4_K_M` via Ollama (see the 2026-06-30 note in §0).
 
 #### Feature 1 — Wrong-answer thread
 

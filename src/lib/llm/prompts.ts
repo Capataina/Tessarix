@@ -5,7 +5,7 @@
  * - All three features share a single PERSONA system prompt with hard grounding rules.
  * - User prompts are built from per-feature templates that inject lesson context.
  * - Length constraints in the user prompt are load-bearing — bounded output is what
- *   keeps llama3.2:3b from drifting into invented technical detail.
+ *   keeps a small local model from drifting into invented technical detail.
  */
 
 import type { ChatMessage } from "./types";

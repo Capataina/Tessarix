@@ -42,7 +42,7 @@ It does NOT own:
 | `src-tauri/build.rs` | 3 | `tauri_build::build()` — at compile time reads `tauri.conf.json` + `capabilities/default.json` and regenerates `gen/schemas/`. |
 | `src-tauri/src/llm/mod.rs` | 5 | LLM module entry point. Exports `client`, `commands`, `types` submodules. |
 | `src-tauri/src/llm/types.rs` | 60 | Request/response types matching the OpenAI-compatible chat-completions API: `ChatMessage`, `ChatRequest`, `ChatResponse`, `StreamChunk`, `ResponseFormat` (JSON-schema mode). |
-| `src-tauri/src/llm/client.rs` | 195 | `LlmClient` — reqwest-based HTTP client hitting `http://localhost:11434/v1/chat/completions`. Three methods: `chat_complete` (sync), `chat_stream` (SSE streaming with per-token callback), `chat_json` (schema-constrained structured output). Defaults: 180s timeout, temperature 0.2, top_p 0.9. Model defaults to `llama3.2:3b`. |
+| `src-tauri/src/llm/client.rs` | 195 | `LlmClient` — reqwest-based HTTP client hitting `http://localhost:11434/v1/chat/completions`. Three methods: `chat_complete` (sync), `chat_stream` (SSE streaming with per-token callback), `chat_json` (schema-constrained structured output). Defaults: 180s timeout, temperature 0.2, top_p 0.9. Model defaults to `qwen3:4b-instruct-2507-q4_K_M`. |
 | `src-tauri/src/llm/commands.rs` | 85 | Tauri command surface: `llm_chat_complete`, `llm_chat_stream` (uses `tauri::ipc::Channel<StreamEvent>` for token streaming), `llm_chat_json`. |
 
 ### `Cargo.toml` essentials

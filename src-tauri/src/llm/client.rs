@@ -5,7 +5,7 @@
 //! - `chat_stream` — server-sent-events streaming; invokes a callback per token
 //! - `chat_json` — JSON-schema-constrained structured output (used by tiered hints)
 //!
-//! Defaults: base URL `http://localhost:11434/v1` (Ollama), model `llama3.2:3b`,
+//! Defaults: base URL `http://localhost:11434/v1` (Ollama), model `qwen3:4b-instruct-2507-q4_K_M`,
 //! temperature 0.2, top_p 0.9. All overridable per request.
 
 use crate::llm::types::*;
@@ -15,7 +15,7 @@ use serde_json::Value;
 use std::time::Duration;
 
 pub const DEFAULT_BASE_URL: &str = "http://localhost:11434/v1";
-pub const DEFAULT_MODEL: &str = "llama3.2:3b";
+pub const DEFAULT_MODEL: &str = "qwen3:4b-instruct-2507-q4_K_M";
 
 #[derive(Debug, Clone)]
 pub struct ChatOptions {

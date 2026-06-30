@@ -16,7 +16,7 @@ function inTauri(): boolean {
 /** The local-LLM model + endpoint used by the browser fallback (mirrors the
  *  Rust host's Ollama config; see context/notes/llm-integrations.md). */
 const OLLAMA_URL = "http://localhost:11434/v1/chat/completions";
-const OLLAMA_MODEL = "llama3.2:3b";
+const OLLAMA_MODEL = "qwen3:4b-instruct-2507-q4_K_M";
 
 /**
  * Non-streaming completion. In the Tauri app this routes through the Rust host's

@@ -2,7 +2,7 @@
  * Pre-warm the local LLM at app start.
  *
  * Ollama lazy-loads model weights on the first request, which takes several
- * seconds for llama3.2:3b. Without pre-warming, the first WidgetExplainer call
+ * seconds for qwen3:4b-instruct-2507-q4_K_M. Without pre-warming, the first WidgetExplainer call
  * on lesson load pays that cost — and because multiple explainers fire on
  * mount, they queue behind the cold-start, making the first few seconds of
  * every session feel broken.

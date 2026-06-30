@@ -315,7 +315,7 @@ The typed graph from lesson metadata (`category` / `topic` / `teaches` / `prereq
 The globalised Radix + `vaul` primitive layer + the universal `<WidgetFrame>` (containment, chrome, the mini-lesson affordance) + full per-category palettes wired through the token system — shipped; all 53 widgets wrapped. (→ [`context/plans/component-system.md`](context/plans/component-system.md))
 
 ### 🟡 Milestone 5 — On-demand explanation + generation — mini-lesson BUILT
-The fullscreen widget mini-lesson (bottom drawer, LLM-generated, concept-linked) is shipped and verified against `llama3.2:3b`. *Remaining:* "explain here" (selection popover) and ephemeral "turn into lesson". All generation-separated-from-linking, reusing the M3 concept index. (→ [`context/notes/llm-integrations.md`](context/notes/llm-integrations.md) §10)
+The fullscreen widget mini-lesson (bottom drawer, LLM-generated, concept-linked) is shipped and verified against the local Ollama model (`qwen3:4b-instruct-2507` as of 2026-06-30; originally `llama3.2:3b`). *Remaining:* "explain here" (selection popover) and ephemeral "turn into lesson". All generation-separated-from-linking, reusing the M3 concept index. (→ [`context/notes/llm-integrations.md`](context/notes/llm-integrations.md) §10)
 
 ### Milestone 6 — Sync-learning agent
 `.claude/skills/sync-learning-app/` reads `Learning/` deltas, classifies, emits drafts to `lessons/_drafts/`. Manual-fire only; editorial review required.
