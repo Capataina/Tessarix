@@ -15,6 +15,7 @@
 - [explanations-must-adapt-to-state](notes/explanations-must-adapt-to-state.md) — Sibling principle. Once a widget is interactive, its caption must be LLM-generated and state-aware via `<WidgetExplainer>`, plus an "Ask a question" affordance. Static "try isolating" fallbacks are a regression. Mandatory state-aware-explanation audit per widget on every polish pass.
 - [widget-creativity-discipline](notes/widget-creativity-discipline.md) — The mechanism that keeps widget design from defaulting to "slider + chart." Two-draft rule before building any widget; pedagogical-metaphor library (12 named patterns); acid test for when charts are genuinely the right answer.
 - [enrich-lesson-skill](notes/enrich-lesson-skill.md) — Design discussion for a future agent skill that mechanises the lesson audit (visualisation gaps, assessment gaps, cross-page hyperlinks, multi-step goal chains). Not yet built — needs `<GoalChain>` widget designed first.
+- [widget-css-specificity](notes/widget-css-specificity.md) — Recurring trap: global `.lesson <tag>` rules (e.g. `.lesson pre`) override widget-internal styles by specificity, because widgets render inside `.lesson`. Bit twice (donut invisibility, donut scroll-not-scale). Measure `getComputedStyle` to confirm; scope the global rule with `:not()` or raise widget specificity. Verify at the *failing* layout width.
 
 ## Active focus
 
