@@ -32,11 +32,26 @@ What this looks like in practice:
 
 The substrate is [`src/lib/ascii/`](../../src/lib/ascii) (luminance `Grid` + ramp, grid distortions, grid PSNR/SSIM, the donut scene, a reusable `AsciiField` component). A hard-won lesson from the build: when a custom display also carries a pedagogical contract (here, PSNR/SSIM must *diverge* for the lesson's GoalChain), the ASCII form has to be designed to preserve that contract, not just to look right — a bare donut broke the lesson; a donut + scanlines preserved it. See [`../plans/ascii-custom-displays.md`](../plans/ascii-custom-displays.md).
 
+## Per-category palettes
+
+The chocolate-luxe palette is the *house* palette, not the only one. Each top-level category gets its own colour scheme so the reader always knows which domain they're in: **Mathematics → blue, Finance → dark green, Science → light green**, and so on as categories are added. One palette for the whole app sells it short; per-category palettes make the catalog feel like a set of rooms rather than one corridor.
+
+The decision that keeps this from fragmenting into five different apps:
+
+> **Identity = structure (constant) + palette (variable).** The terminal-pane structure — hairline frames, mono labels, warm depth, the motion language, the tesseract — is invariant across categories. Only the *palette* changes: the accent and the chart / pigment set. Maths-blue and finance-green are the same app wearing different jackets, not different apps.
+
+The styling system already makes this nearly free. `injectDesignTokens()` writes the palette to CSS custom properties at runtime, and every component and canvas/ASCII widget reads those vars — so re-injecting a category's palette when the reader enters its subtree recolours the entire app, the rotating donut included, with no per-widget work. This is exactly why a single token source of truth and a [globalised component layer](../plans/component-system.md) matter: they are what make an app-wide recolour a one-line change. See [`../systems/styling-system.md`](../systems/styling-system.md).
+
+**Open decision (flagged, not yet locked):** do surfaces stay warm-neutral dark while only the *accent + charts* shift per category (the cohesive option — current lean), or does the whole surface temperature go cool for maths / green for science? Accent-only preserves the "leather notebook" warmth across every domain; full-temperature is more immersive but risks five identities. Decide deliberately when the category palettes are designed.
+
+Per-category palettes are also the junction where the [concept graph](../plans/curriculum-graph.md) and the visual identity meet: a category is simultaneously a *root of the graph* and a *colour scheme*, so navigating into a category in the graph view is what triggers the palette swap.
+
 ## Guiding Principles
 
 - One bold idea (the tesseract + the terminal language); everything around it quiet and disciplined.
 - Every design value flows from the token source of truth; never hardcode a colour in a widget. See [`../systems/styling-system.md`](../systems/styling-system.md).
 - Custom displays (non-chart bespoke visuals) are ASCII art, built on `src/lib/ascii`; standard charts stay charts.
+- Each top-level category carries its own palette (accent + chart set); the terminal structure stays constant. Identity = structure (constant) + palette (variable).
 - Motion is one orchestrated moment (the boot cascade) plus restraint; always gated by the reduced-motion setting.
 
 ## Related Systems and Notes

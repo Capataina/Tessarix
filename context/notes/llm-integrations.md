@@ -322,7 +322,25 @@ Each command returns either a sync result or a `Channel<...>` for streaming. The
 - **Does the chatbot have its own answer history?** I.e., if the reader asked the same question yesterday, does it remember? Probably yes when SQLite persistence lands, no until then.
 - **Privacy when using cloud APIs.** Even when sending data to Claude, that data is part of an interview that's intrinsically about the user's understanding. The opt-in surface for cloud-vs-local needs to be clear. Per-feature toggle.
 
-## 10. Related Systems and Notes
+## 10. Selection-anchored explanations, turn-into-lesson, and the widget mini-lesson
+
+Three reader-initiated generation surfaces, all on the same `LlmClient` foundation as the features above, all post-processed by the deterministic concept-linker (see [`content-architecture.md`](content-architecture.md)) so their output is correctly cross-linked.
+
+### Explain here (selection-anchored)
+
+The reader highlights a word, sentence, or section, right-clicks, and picks **"explain here"**. A popover opens where the model explains the selection grounded in the surrounding lesson, and the reader can chat about it. This is the [§2 chatbot](#2-ask-the-lesson-chatbot) scoped to a selection rather than the whole section — same grounding rules, same local model, smaller context. Cheap, and shippable on the existing stack.
+
+### Turn into lesson (ephemeral)
+
+From the same right-click menu, **"turn into lesson"** generates a transient mini-lesson for the selection — for when "explain here" isn't enough and the reader wants a structured walkthrough with visuals. The hard constraint from [`content-architecture.md`](content-architecture.md) holds: the model writes prose and *composes from the existing widget kit*; it does not author new widgets, and it leaves `<TODO>` where a widget is needed but unavailable. Generated lessons are **ephemeral and non-durable** in early versions — reader-scoped, never written to `src/lessons/`, regenerated on demand. Later, a good one can be *promoted*: an author hand-finishes its widgets and it becomes durable. This is the reader-facing, immediate cousin of the [§5 sync-learning agent](#5-sync-learning-authoring-agent), which does the durable, editorial version offline.
+
+### The widget fullscreen mini-lesson
+
+The fullscreen-drawer mini-lesson described in [`interface-affordances.md`](interface-affordances.md) §10 is generated here: given a widget's teaching descriptor (an extension of `widgetDescription`: what it teaches, how to read it) + the active lesson + the concept graph, the model produces background + how-to-read prose, linked via the concept-linker. Distinct from `<WidgetExplainer>`'s state caption — see that table.
+
+**Why these don't contradict the "no LLM-generated lesson pages" rejection** in `content-architecture.md`: that rejection is about *durable primary teaching surfaces* written to the corpus. All three here are *reader-scoped and ephemeral* — they extend the reader's immediate understanding and route to durable lessons via links, exactly the scope the chat safety-net occupies. Generation-quality risk is bounded by the prompt discipline in the locked-decisions block and by keeping outputs short and link-routed rather than authoritative.
+
+## 11. Related Systems and Notes
 
 - [`assessment-design.md`](assessment-design.md) — defines the question shapes (free-response, conversational interview) that LLM integration delivers.
 - [`three-pillar-model.md`](three-pillar-model.md) — the Interview pillar is the primary surface for LLM-conversational mode; Teach for the chatbot.
@@ -332,3 +350,5 @@ Each command returns either a sync result or a `Channel<...>` for streaming. The
 - [`stack-rationale.md`](stack-rationale.md) — the broader reason why Tauri + local-first; this note is the LLM-specific elaboration of that posture.
 - [`../systems/tauri-host.md`](../systems/tauri-host.md) — where all of the IPC commands above will land.
 - [`../systems/build-pipeline.md`](../systems/build-pipeline.md) — when `reqwest` + `tokio` + Anthropic crates get added to `Cargo.toml`, this is updated.
+- [`content-architecture.md`](content-architecture.md) — the concept index + the "generation is separated from linking" rule that every surface in §10 runs its output through.
+- [`../plans/curriculum-graph.md`](../plans/curriculum-graph.md) — the concept graph the §10 surfaces query for woven links.

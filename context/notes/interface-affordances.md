@@ -163,7 +163,31 @@ Concrete checklist when designing a new widget:
 
 This is the broader pattern: **mode-flipping is friction; simultaneous display is clarity.** Same principle that drove `<Tier>` to always render and CSS-hide rather than conditionally render — even at the widget level, swapping state to see an alternative is worse than showing both at once.
 
-## 10. Related Systems and Notes
+## 10. The widget frame and the fullscreen mini-lesson
+
+Two related affordances that wrap every interactive widget.
+
+### `<WidgetFrame>` — the canonical container
+
+Every widget sits inside one shared frame component rather than styling its own outer box. The frame owns the hairline terminal-pane border, the mono uppercase label header, the overflow / `max-height` discipline that keeps a widget inside one viewport, and the controls in its corner (the explain affordance, the fullscreen-expand button). This is the structural fix for the "escaping box" class of bug — content overflowing or not fitting its container — because containment lives in one reviewed place instead of being re-solved per widget. It is also the natural seam for the [globalised component system](../plans/component-system.md): the frame is a token-driven component, so per-category recolouring and consistent chrome come for free.
+
+### Fullscreen expand → the bottom-drawer mini-lesson
+
+A small expand arrow in the frame's corner opens the widget into a **draggable bottom drawer** (grab to raise / lower / dismiss). Inside the drawer the widget becomes a **mini-lesson**: the LLM explains what the widget is, how to read it, the background needed to understand it, and weaves in cross-page links to the relevant full lessons.
+
+This is deliberately **distinct from [`explanations-must-adapt-to-state.md`](explanations-must-adapt-to-state.md)'s `<WidgetExplainer>`**:
+
+| | `<WidgetExplainer>` (state caption) | Fullscreen mini-lesson |
+|---|---|---|
+| Answers | "what am I looking at *right now*, given my values?" | "what is this widget, how do I read it, why does it matter?" |
+| Scope | the current state only | background + how-to-read + connections |
+| Length | a sentence or two | a short lesson |
+| Links | none | woven cross-page links to relevant lessons |
+| Lifetime | recomputed per state change | generated on expand; ephemeral (regenerable) |
+
+The woven links are not the model's invention — the generated prose runs through the same deterministic concept-linker as everything else (see [`content-architecture.md`](content-architecture.md), "generation is separated from linking"), so "matrix multiplication" in a mini-lesson links to the matrices lesson correctly, never to a hallucinated slug. To explain a widget well the generator needs a per-widget **teaching descriptor** — extend the existing `widgetDescription` prop with "what concept(s) this teaches" (which also feeds the concept index) and "how to read it". The generation itself is scoped in [`llm-integrations.md`](llm-integrations.md) §10.
+
+## 11. Related Systems and Notes
 
 - [`assessment-design.md`](assessment-design.md) — the complete-tier code question is one place these systems compose. Tier visibility affects which assessments show.
 - [`llm-integrations.md`](llm-integrations.md) — the AI chatbot lives on the right side; this note's layout strategy makes room for it.
@@ -171,3 +195,5 @@ This is the broader pattern: **mode-flipping is friction; simultaneous display i
 - [`three-pillar-model.md`](three-pillar-model.md) — the Teach pillar gets these affordances first; Quiz and Interview pillars may have their own affordances (Quiz: SR-queue sidebar; Interview: rubric sidebar) that compose with the Teach layout.
 - [`../systems/frontend-shell.md`](../systems/frontend-shell.md) — the layout components (`<Layout>`, future `<LessonTOC>`, future `<TierControl>`) live here.
 - [`../references/inspirations/recurring-patterns.md`](../references/inspirations/recurring-patterns.md) — the multi-level zoom (pattern 5) and layer-peel (pattern 13) are related ideas; the tier system is a coarse version of them at the lesson-structure level.
+- [`../plans/component-system.md`](../plans/component-system.md) — the `<WidgetFrame>` container and the globalised token-driven component layer that makes the frame and the drawer consistent and recolourable.
+- [`../plans/curriculum-graph.md`](../plans/curriculum-graph.md) — the concept graph the fullscreen mini-lesson's woven links resolve against.
