@@ -17,10 +17,13 @@
   justify-content: space-between;
   padding: 0 var(--space-6);
   border-bottom: 1px solid var(--border-subtle);
+  /* Token-driven so the topbar follows the active category palette (Maths cool,
+     ML warm) instead of a fixed chocolate — color-mix keeps the frosted
+     translucency the backdrop-blur needs. */
   background: linear-gradient(
     180deg,
-    rgba(28, 22, 17, 0.95),
-    rgba(21, 17, 13, 0.85)
+    color-mix(in srgb, var(--bg-elevated) 95%, transparent),
+    color-mix(in srgb, var(--bg-base) 85%, transparent)
   );
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
