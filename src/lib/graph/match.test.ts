@@ -73,4 +73,12 @@ describe("prose linker — segments", () => {
     const link = linkToSegments("a matrix here", MATHS).find((s) => s.kind === "link");
     expect(link).toMatchObject({ slug: "linear-algebra-matrices", text: "matrix" });
   });
+
+  it("carries the section anchor on a concept that has a harvested header", () => {
+    // PSNR (afine) has a '### PSNR' header → its link deep-links to the section.
+    const link = linkToSegments("we compute PSNR here", ML).find(
+      (s) => s.kind === "link" && s.slug === "afine",
+    );
+    expect(link && "anchor" in link && link.anchor).toBeTruthy();
+  });
 });

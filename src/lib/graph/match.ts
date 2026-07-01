@@ -26,7 +26,7 @@ export interface LinkOpts {
 
 export type Segment =
   | { kind: "text"; text: string }
-  | { kind: "link"; text: string; slug: string; label: string; category: Category };
+  | { kind: "link"; text: string; slug: string; label: string; category: Category; anchor?: string };
 
 /** Scope gate — the heart of the precision policy. */
 function allowed(t: Target, opts: LinkOpts): boolean {
@@ -93,6 +93,7 @@ export function linkToSegments(text: string, opts: LinkOpts): Segment[] {
       slug: h.target.slug,
       label: h.target.label,
       category: h.target.category,
+      anchor: h.target.anchor,
     });
     cursor = h.end;
   }

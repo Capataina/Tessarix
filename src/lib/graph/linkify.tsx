@@ -48,7 +48,7 @@ function useLinkified(children: ReactNode): ReactNode {
       ) : (
         <a
           key={i}
-          href={`#/lesson/${s.slug}`}
+          href={`#/lesson/${s.slug}${s.anchor ? `?s=${s.anchor}` : ""}`}
           className="concept-link"
           data-concept={s.slug}
           title={`${s.label} — ${s.category}`}

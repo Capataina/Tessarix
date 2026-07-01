@@ -24,14 +24,26 @@ type Route =
 function parseHash(): Route {
   const raw = (window.location.hash || "").replace(/^#\/?/, "");
   if (raw.startsWith("lesson/")) {
-    const slug = raw.slice("lesson/".length);
+    const slug = raw.slice("lesson/".length).split("?")[0];
     if (slug) return { kind: "lesson", slug };
   }
   return { kind: "catalog" };
 }
 
+/** Optional `?s=<anchor>` section target from a header-harvested deep-link. */
+function parseSection(): string | null {
+  const q = (window.location.hash || "").split("?")[1];
+  return q ? new URLSearchParams(q).get("s") : null;
+}
+
+/** Stable route identity — a section-only change must not remount the lesson. */
+function routeKey(r: Route): string {
+  return r.kind === "lesson" ? `lesson/${r.slug}` : "catalog";
+}
+
 function App() {
   const [route, setRoute] = useState<Route>(() => parseHash());
+  const [section, setSection] = useState<string | null>(() => parseSection());
   const [fm, setFm] = useState<LessonFrontmatter | null>(null);
 
   useEffect(() => {
@@ -128,10 +140,34 @@ function App() {
 
   // Sync from hash → state and the reverse.
   useEffect(() => {
-    const onHash = () => setRoute(parseHash());
+    const onHash = () => {
+      const next = parseHash();
+      // Preserve route identity when only the section changed, so the lesson's
+      // [route]-keyed effects (telemetry, frontmatter) don't spuriously re-run.
+      setRoute((prev) => (routeKey(prev) === routeKey(next) ? prev : next));
+      setSection(parseSection());
+    };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
+  // Deep-link scroll: when a section anchor is present (a header-harvested link),
+  // scroll to it once the lazy lesson content has mounted the target heading.
+  useEffect(() => {
+    if (route.kind !== "lesson" || !section) return;
+    let raf = 0;
+    let tries = 0;
+    const attempt = () => {
+      const el = document.getElementById(section);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if (tries++ < 90) raf = requestAnimationFrame(attempt); // ~1.5s of retries
+    };
+    raf = requestAnimationFrame(attempt);
+    return () => cancelAnimationFrame(raf);
+  }, [route, section]);
 
   // Emit route-level lifecycle: a `route_change` on every transition, plus
   // `lesson_open` / `lesson_close` pairs that bracket the time a lesson is
@@ -139,11 +175,13 @@ function App() {
   // it carries dwell time accurately.
   useEffect(() => {
     const target =
-      route.kind === "lesson" ? `#/lesson/${route.slug}` : "#/catalog";
+      route.kind === "lesson"
+        ? `#/lesson/${route.slug}${section ? `?s=${section}` : ""}`
+        : "#/catalog";
     if (window.location.hash !== target) {
       window.location.hash = target;
     }
-  }, [route]);
+  }, [route, section]);
 
   useEffect(() => {
     const previousLabel = (window as unknown as { __tessarixPrevRoute?: string }).__tessarixPrevRoute ?? "(init)";
@@ -223,10 +261,12 @@ function App() {
   }, [route, fm]);
 
   const handleSelect = useCallback((slug: string) => {
+    setSection(null);
     setRoute({ kind: "lesson", slug });
   }, []);
 
   const handleHome = useCallback(() => {
+    setSection(null);
     setRoute({ kind: "catalog" });
   }, []);
 

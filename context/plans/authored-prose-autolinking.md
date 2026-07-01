@@ -1,6 +1,7 @@
 # Plan — Auto-linking authored lesson prose
 
-**Status:** FIRST CUT BUILT (2026-07-01) · engine + scope tiers + real lemmatiser + reader dial + MDX wiring + unit tests.
+**Status:** BUILT (2026-07-01) · engine + scope tiers + real lemmatiser + reader dial + MDX wiring + **header harvesting with section deep-links** + unit tests.
+**Direction (2026-07-01):** maximise link density first — see the full connective graph before adding pruning. So header harvesting is BUILT (it *adds* targets), and the pruning layer (per-lesson caps, deny valves, collocation guards) is intentionally HELD until the maximal graph is visible and we know what actually needs pruning.
 **Owner concept:** the M3 "remaining" item — the deterministic linker runs on *generated* content (mini-lessons) today; this extends it to *authored MDX prose*.
 **Related:** [`curriculum-graph.md`](curriculum-graph.md) · [`../notes/content-architecture.md`](../notes/content-architecture.md) (generation ≠ linking) · [`../notes/interface-affordances.md`](../notes/interface-affordances.md) (reader controls depth).
 
@@ -115,20 +116,22 @@ This is the clean part: because inline code, math, and existing links are alread
 
 ## 7. What is BUILT now vs DEFERRED
 
-**Built (first cut):**
+**Built:**
 - `strong`/`contextual` scope on all 8 lessons' concepts.
 - Lemma normaliser (`normalize.ts`) + target index (`targets.ts`) + pure matcher (`match.ts`).
 - Scope gate (all/normal/none), self-exclude, density cap, longest-match.
 - Reader dial (settings field + panel control + persistence).
 - MDX `p`/`li` linkify overrides + `LinkProvider`.
-- Unit tests (`normalize.test.ts`, `match.test.ts`) as the golden corpus.
+- **Header harvesting** (`scripts/harvest-headers.mjs` → `headers.generated.ts`): H2/H3 headers become link targets. An existing concept whose lesson has a matching header gains that header's **section anchor** (its links deep-link to the exact section); a new header concept becomes a global (strong) target. Anchors reproduce `rehype-slug`'s `github-slugger` ids (one slugger per file over every heading), verified 0-mismatch against the live DOM. Runs as the first step of `pnpm build`.
+- **Section deep-link navigation**: links carry `?s=<anchor>`; the router parses it, keeps route identity stable on section-only changes, and scrolls to the heading once the lazy lesson mounts (verified: click → navigate + scroll).
+- Unit tests (`normalize`/`match`/`targets`) as the golden corpus (36 total).
 
-**Deferred (documented, not silent):**
-- **Header harvesting** — auto-deriving targets (and *section anchors*) from each lesson's `##` headers so links land on the exact subsection (`rehype-slug` already emits header ids). The engine carries an optional `anchor` field ready for this; first cut seeds targets from authored `teaches`.
-- **Per-lesson density cap** — the cap is currently **per-paragraph** (first occurrence of each target *per text block*), which is deterministic and React-pure. Per-lesson (one link per target across the whole lesson) would need cross-component mutable dedup during render, which **StrictMode's double-invoke and partial re-renders (settings/tier changes) make unsafe** — so the correct home is the build-time rehype pass (a per-document `Set`, no runtime state). Deferred there. Measured density on the prose-heavy `matrix-operations` lesson: ~91 links across 6 concepts (≈15× "matrix"). Mitigated for now by a lesson-scoped calm style (`.lesson .concept-link`: prose-coloured, faint underline, accent on hover) so repetition reads quietly rather than repainting the prose; the reader dial (Off) is the hard escape.
-- **Deny valve** — per-target deny forms/collocations, added reactively when a `contextual` term proves noisy in the calibration run (the `bases`/`base` class is the first candidate).
-- **Aho-Corasick index** — the current matcher iterates the (small) target set per token, O(tokens × targets). Swap to an Aho-Corasick automaton over lemmas (O(text)) when the corpus makes it worth it; precise *and* faster, no recall trade.
-- **Unifying with `injectLinks`** — the HTML-string linker for LLM prose (`linker.ts`) still runs the old regex path; the new lemma engine and it should converge on one matching core later. Left independent this cut to avoid destabilising the shipped mini-lesson.
+**Intentionally HELD — the pruning layer (per "max density first, prune later"):**
+- **Per-lesson density cap** — the cap is currently **per-paragraph** (first occurrence per text block), deterministic and React-pure. Per-lesson (one link per target across the whole lesson) would need cross-component mutable dedup during render, which **StrictMode's double-invoke and partial re-renders make unsafe** — its correct home is the build-time rehype pass. Held. Measured density: `matrix-operations` renders ~94 links (22 now section-deep). Kept readable meanwhile by the lesson-scoped calm style (`.lesson .concept-link`); the dial (Off) is the hard escape.
+- **Deny valve** — per-target deny forms/collocations, added reactively when a term proves noisy (the `bases`/`base` class is the first candidate).
+- **Aho-Corasick index** — swap the per-token target scan (O(tokens × targets)) for an automaton over lemmas (O(text)) when the corpus makes it worth it; precise *and* faster.
+- **Unifying with `injectLinks`** — the HTML-string linker for LLM prose (`linker.ts`) still runs the old regex path; converge on one matching core later.
+- **Smarter header-phrase extraction** — a header like "Change of basis as a transformation" yields a 6-word phrase that won't match prose; recognising the embedded concept ("change of basis") would let more headers enrich existing concepts. Held with the pruning work.
 
 ---
 
