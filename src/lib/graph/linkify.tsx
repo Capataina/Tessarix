@@ -18,6 +18,7 @@ import { Children, createContext, useContext, type ComponentProps, type ReactNod
 import { LESSON_META, type Category } from "./meta";
 import { linkToSegments } from "./match";
 import { useSettings } from "../../state/SettingsContext";
+import { ConceptLink } from "../../components/ConceptLink";
 
 interface LinkCtx {
   slug?: string;
@@ -46,15 +47,15 @@ function useLinkified(children: ReactNode): ReactNode {
       s.kind === "text" ? (
         s.text
       ) : (
-        <a
+        <ConceptLink
           key={i}
           href={`#/lesson/${s.slug}${s.anchor ? `?s=${s.anchor}` : ""}`}
-          className="concept-link"
-          data-concept={s.slug}
-          title={`${s.label} — ${s.category}`}
+          slug={s.slug}
+          label={s.label}
+          category={s.category}
         >
           {s.text}
-        </a>
+        </ConceptLink>
       ),
     );
   });

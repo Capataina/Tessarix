@@ -1,0 +1,90 @@
+/* Hover "instant summary" affordance for concept links. The base link styling
+   lives in src/styles/concept-link.css; this adds the progress-fill underline
+   and the floating tooltip. */
+
+.concept-link {
+  position: relative;
+}
+
+/* The fill bar sits under the link and grows left→right as --hover-progress
+   goes 0→1 (driven by rAF in ConceptLink.tsx). It rides on top of the base
+   text-decoration underline as a brighter, filling accent. */
+.concept-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent-camel);
+  transform: scaleX(var(--hover-progress, 0));
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.concept-tip {
+  position: fixed;
+  transform: translate(-50%, calc(-100% - 10px)); /* above the link */
+  max-width: 320px;
+  z-index: 200;
+  padding: 9px 12px;
+  background: var(--bg-elevated, #241d16);
+  border: 1px solid var(--border-strong, #42352a);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  font-family: var(--font-mono);
+  pointer-events: none;
+  animation: concept-tip-in 0.14s var(--ease-out, ease-out);
+}
+
+.concept-tip[data-below="true"] {
+  transform: translate(-50%, 10px); /* below when near the top edge */
+}
+
+@keyframes concept-tip-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.concept-tip__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+
+.concept-tip__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent-camel);
+}
+
+.concept-tip__cat {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3, #8a7962);
+  white-space: nowrap;
+}
+
+.concept-tip__body {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-1, #ece3d5);
+}
+
+.concept-tip__thinking {
+  color: var(--text-3, #8a7962);
+  font-style: italic;
+}
+
+[data-reduced-motion="true"] .concept-tip {
+  animation: none;
+}
