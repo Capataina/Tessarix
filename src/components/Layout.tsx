@@ -5,6 +5,7 @@ import { TierControl } from "./TierControl";
 import { TesseractMark } from "./TesseractMark";
 import { SettingsButton } from "./SettingsPanel";
 import { AskAboutLesson } from "./chatbot/AskAboutLesson";
+import { ExplainHere } from "./ExplainHere";
 import { emit as emitTelemetry } from "../lib/telemetry";
 
 interface LayoutProps {
@@ -251,6 +252,9 @@ export function Layout({
           </aside>
         )}
       </main>
+
+      {/* Select text in the lesson → right-click → Explain here (drawer + chat). */}
+      {!hideSidebars && <ExplainHere />}
     </div>
   );
 }
