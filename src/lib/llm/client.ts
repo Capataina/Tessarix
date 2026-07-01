@@ -7,6 +7,7 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import type { ChatMessage, ChatOptions } from "./types";
+import { enqueueLLM } from "./queue";
 
 /** True when running inside the Tauri webview (IPC available). */
 function inTauri(): boolean {
@@ -30,6 +31,13 @@ export async function llmComplete(
   messages: ChatMessage[],
   opts?: ChatOptions,
 ): Promise<string> {
+  // All completions go through the shared priority queue so a background herd
+  // (widget captions on load) can't starve a reader-initiated call. Interactive
+  // is the common case → default "high"; background callers opt down to "low".
+  return enqueueLLM(() => rawComplete(messages, opts), opts?.priority ?? "high");
+}
+
+async function rawComplete(messages: ChatMessage[], opts?: ChatOptions): Promise<string> {
   if (inTauri()) {
     return invoke<string>("llm_chat_complete", {
       messages,

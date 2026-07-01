@@ -59,7 +59,7 @@ export function conceptTooltip(term: string, rawPassage: string, lessonTitle: st
   // that for being fireable from this cached module function on hover.
   const p = llmComplete(
     buildConceptTooltipMessages({ term, passage, lessonTitle }),
-    { temperature: 0.2, maxTokens: 120 },
+    { temperature: 0.2, maxTokens: 120, priority: "high" },
   )
     .then((t) => t.trim())
     .catch((e) => {

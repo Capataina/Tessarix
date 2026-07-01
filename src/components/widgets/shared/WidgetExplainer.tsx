@@ -90,6 +90,29 @@ export function WidgetExplainer({
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlightRef = useRef<boolean>(false);
 
+  // Visibility gate: a lesson can have many widgets, each of which would fire an
+  // LLM caption on mount — a herd that saturates the single-slot local model.
+  // Defer a widget's auto-generation until it scrolls into view, so only what's
+  // ON SCREEN generates first and off-screen widgets wait their turn.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect(); // only the first generation is gated
+        }
+      },
+      { rootMargin: "200px 0px" }, // begin a little before it's fully on screen
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   // State-change handler. Two phases:
   //   (1) Immediately abort + clear any prior explanation. The reader should
   //       not see stale tokens from a previous state while they're still
@@ -102,6 +125,7 @@ export function WidgetExplainer({
       debounceTimerRef.current = null;
     }
     if (explanationKeyRef.current === stateKey) return;
+    if (!visible) return; // defer generation until the widget is on screen
 
     // Phase 1 — invalidate the existing explanation immediately. This is what
     // makes the UX feel responsive: the moment the reader touches a slider,
@@ -132,6 +156,7 @@ export function WidgetExplainer({
       void streamExplain(messages, {
         ...EXPLAINER_SAMPLING,
         telemetryFeature: "widget_explainer",
+        priority: "low", // background auto-caption — yields to reader-initiated calls
       }).finally(() => {
         inFlightRef.current = false;
       });
@@ -144,7 +169,7 @@ export function WidgetExplainer({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateKey, debounceMs, widgetName, widgetDescription, stateSummary]);
+  }, [stateKey, debounceMs, widgetName, widgetDescription, stateSummary, visible]);
 
   const handleOpenQuestion = useCallback(() => {
     setQuestionOpen(true);
@@ -246,7 +271,7 @@ export function WidgetExplainer({
   const streamingAnswerVisible = answering && questionAnswer.length > 0;
 
   return (
-    <div className="widget-explainer">
+    <div className="widget-explainer" ref={rootRef}>
       <div className="widget-explainer__commentary">
         <div className="widget-explainer__commentary-head">
           <span className="widget-explainer__label">Explanation</span>

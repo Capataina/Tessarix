@@ -27,9 +27,21 @@ export interface ChatOptions {
     | "tiered_hints"
     | "widget_explainer"
     | "widget_question"
-    | "widget_mini_lesson";
+    | "widget_mini_lesson"
+    | "concept_tooltip"
+    | "explain_here";
   /** Optional turn index for multi-turn flows (e.g. answer thread Turn 1 vs Turn 3). */
   telemetryTurn?: number;
+  /**
+   * Scheduling priority for the client-side LLM queue (src/lib/llm/queue.ts).
+   * "high" = reader-initiated / interactive (tooltip, explain-here, chat,
+   * mini-lesson) — jumps ahead of "low" = background auto-generation (widget
+   * state captions, prewarm). Defaults to "high" (interactive is the common
+   * case); the two background callers opt down to "low". The local model runs
+   * one request at a time, so this is what stops a widget-caption herd from
+   * starving a hover.
+   */
+  priority?: "high" | "low";
 }
 
 /**

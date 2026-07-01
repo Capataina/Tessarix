@@ -3820,7 +3820,7 @@ dependencies = [
 
 [[package]]
 name = "tessarix"
-version = "0.4.5"
+version = "0.4.6"
 dependencies = [
  "futures-util",
  "reqwest 0.12.28",

@@ -37,7 +37,9 @@ type LLMFeature =
   | "tiered_hints"
   | "widget_explainer"
   | "widget_question"
-  | "widget_mini_lesson";
+  | "widget_mini_lesson"
+  | "concept_tooltip"
+  | "explain_here";
 
 export type TelemetryEvent =
   // ─── Session lifecycle ──────────────────────────────────────────────

@@ -15,6 +15,7 @@ import { useCallback, useRef, useState } from "react";
 import { Channel, invoke } from "@tauri-apps/api/core";
 import type { ChatMessage, ChatOptions, StreamEvent } from "./types";
 import { llmComplete } from "./client";
+import { enqueueLLM } from "./queue";
 import { emit as emitTelemetry } from "../telemetry";
 
 function totalPromptLength(messages: ChatMessage[]): number {
@@ -240,13 +241,18 @@ export function useLLMStream() {
       };
 
       try {
-        await invoke("llm_chat_stream", {
-          messages,
-          onEvent: channel,
-          temperature: opts?.temperature,
-          topP: opts?.topP,
-          maxTokens: opts?.maxTokens,
-        });
+        // Through the shared priority queue (one call at a time). The abort
+        // guard means a stream cancelled while still queued never claims a slot.
+        await enqueueLLM(() => {
+          if (localAbort.aborted) return Promise.resolve();
+          return invoke("llm_chat_stream", {
+            messages,
+            onEvent: channel,
+            temperature: opts?.temperature,
+            topP: opts?.topP,
+            maxTokens: opts?.maxTokens,
+          });
+        }, opts?.priority ?? "high");
       } catch (e) {
         if (!localAbort.aborted) {
           setError(String(e));
