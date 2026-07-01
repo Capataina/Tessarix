@@ -160,13 +160,14 @@ The four-tier [content architecture](context/notes/content-architecture.md) — 
 
 ## 8. Adaptive explanation and on-demand generation
 
-Four reader-facing LLM surfaces, **local-first** (Ollama today) with Claude reserved for the quality-critical paths, all grounded in the lesson and all cross-linked via the §6 linker:
+Five reader-facing LLM surfaces, **local-first** (Ollama today) with Claude reserved for the quality-critical paths, all grounded in the lesson and all cross-linked via the §6 linker. All LLM calls are serialised through a client-side **priority queue** (interactive "high" jumps ahead of background auto-generation "low"), so the single-slot local model never has a reader-facing call starved by a herd of widget captions; widget state-captions are additionally **visibility-gated** (a widget generates its caption only once it scrolls into view — "what's on screen shows first"):
 
 | Surface | What it does | Distinct from |
 |---|---|---|
-| **State caption** (`<WidgetExplainer>`) | Explains the widget's *current* state in the reader's exact values; recomputed on every change | — (the baseline; shipped) |
+| **State caption** (`<WidgetExplainer>`) | Explains the widget's *current* state in the reader's exact values; recomputed on every change; generated on scroll-into-view | — (the baseline; shipped) |
+| **Instant summary** (hover, `<ConceptLink>`) | Hover a concept link → its underline fills like a progress bar → a tooltip explains what the term means *in that passage* (not a generic definition); generation starts at ~1s so it's ready by reveal (~2.6s); cached per (term, passage) | the state caption — per-term-in-context on hover, not per-widget. **(shipped)** |
 | **Fullscreen mini-lesson** | Expand a widget into a draggable bottom drawer; the LLM explains what it is, how to read it, the background, and weaves in links to relevant lessons | the state caption — this is background + how-to-read, not "what am I seeing now" |
-| **Explain here** | Select any text → right-click → an inline popover explains it, grounded in the surroundings; chat to go deeper | the chatbot — scoped to a selection, not the whole section |
+| **Explain here** | Select any text → right-click → Explain here → a bottom drawer streams a grounded explanation of the selection in its passage + lesson (concept-linked), then a follow-up chat to go deeper | the chatbot — scoped to a selection, not the whole section. **(shipped)** |
 | **Turn into lesson** | Select text → generate a *transient, non-durable* structured mini-lesson composed from the existing widget kit (with `<TODO>` where a widget is missing) | a durable lesson — reader-scoped, regenerable, promote-to-durable later |
 
 The hard constraints: the model writes prose and *composes existing widgets* — it never authors new widgets (that stays human until the kit is rich enough); outputs are short, link-routed, and grounded, never authoritative; and generated lessons are ephemeral until an author promotes one. (→ [`context/notes/llm-integrations.md`](context/notes/llm-integrations.md), [`context/notes/interface-affordances.md`](context/notes/interface-affordances.md))
@@ -282,15 +283,15 @@ The naive "right → harder, wrong → easier" loop converges on a single diffic
 
 ## 13. Status
 
-**Past Milestones 1–2, with the first cut of Milestones 3–5 landed (version 0.4.0).** Scaffolded 2026-05-11. State:
+**Past Milestones 1–2, Milestones 3–4 built and Milestone 5 well underway (version 0.4.8).** Scaffolded 2026-05-11. State:
 
 | Built | Planned |
 |---|---|
 | M1 substrate — Tauri + Vite + React + MDX + KaTeX; A-FINE with all three views | SQLite (WAL) spaced-repetition store |
 | 8 MDX lessons (A-FINE + a 7-lesson linear-algebra track), **53 widgets**, each wrapped in a universal `<WidgetFrame>` | The adaptive scheduler + the live Quiz/Interview engines (chrome exists; engines don't) |
 | **Concept graph + graph navigation** (`src/lib/graph` + `GraphNav`) — the category ▸ topic ▸ lesson tree, replacing the card grid | Breadth beyond linear algebra (Hebbian, CNN, quant, an algorithm playground) |
-| **Globalised component layer** (Radix + `vaul` on the tokens) + `<WidgetFrame>` + **full per-category palettes** | Auto-linking *authored lesson prose* (the linker runs on generated content today) |
-| **Widget fullscreen mini-lesson** drawer (LLM-generated, concept-linked) | "Explain here" + ephemeral "turn into lesson" |
+| **Globalised component layer** (Radix + `vaul` on the tokens) + `<WidgetFrame>` + **full per-category palettes** + **authored-prose auto-linking** (lemma matcher, strong/contextual scope, header-harvested section deep-links, reader dial) | Deny-valves / per-lesson link caps (deferred until the max link graph is seen) |
+| **Widget fullscreen mini-lesson** drawer + **hover instant-summaries** + **"explain here"** drawer, all via a priority-queued LLM path with on-screen-first widget captions (LLM-generated, concept-linked) | Ephemeral "turn into lesson" |
 | **Self-auditing test framework** — vitest unit + a Playwright structural/interaction/visual harness (run: 75→9 findings) | The sync-learning agent; the Claude-API grader / conversational interview |
 | Local-LLM layer (**Ollama**, now with a browser fetch fallback), telemetry, ASCII custom displays, complexity tiers + three-pillar shell, the chocolate-luxe identity | The vision design-audit dossier layer of the test harness |
 
@@ -309,13 +310,13 @@ Tauri shell + Vite + React + MDX + KaTeX; minimal component library; the A-FINE 
 Lessons across the breadth of interests to stress-test the substrate. *Done:* the linear-algebra track (44 widgets), the LLM layer, the styling system, ASCII displays. *Remaining:* breadth beyond linear algebra (Hebbian plasticity, CNN, options/compound-interest, an algorithm playground), and the SQLite + within-session adaptive-difficulty layer that turns Quiz from chrome into an engine.
 
 ### ✅ Milestone 3 — The concept graph + navigation (keystone) — BUILT
-The typed graph from lesson metadata (`category` / `topic` / `teaches` / `prerequisites`), the `concept → owning-lesson` index, the deterministic linker, and the graph-nav landing that replaces the card grid — all shipped (`src/lib/graph`, `src/components/nav/GraphNav.tsx`). *Remaining:* auto-linking authored lesson prose (the linker runs on generated content today). (→ [`context/plans/curriculum-graph.md`](context/plans/curriculum-graph.md))
+The typed graph from lesson metadata (`category` / `topic` / `teaches` / `prerequisites`), the `concept → owning-lesson` index, the deterministic linker, and the graph-nav landing that replaces the card grid — all shipped (`src/lib/graph`, `src/components/nav/GraphNav.tsx`). **Auto-linking authored lesson prose is now built too**: a lemma-based matcher (`wink-lemmatizer`) with per-concept `strong` (cross-domain) / `contextual` (in-domain) scope, header-harvested section deep-links, and a reader-facing visibility dial (All / Normal / Off). *Remaining:* the deny-valve / per-lesson-cap pruning layer (deliberately deferred until the maximal link graph is visible). (→ [`context/plans/curriculum-graph.md`](context/plans/curriculum-graph.md), [`context/plans/authored-prose-autolinking.md`](context/plans/authored-prose-autolinking.md))
 
 ### ✅ Milestone 4 — The component spine + visual identity — BUILT
 The globalised Radix + `vaul` primitive layer + the universal `<WidgetFrame>` (containment, chrome, the mini-lesson affordance) + full per-category palettes wired through the token system — shipped; all 53 widgets wrapped. (→ [`context/plans/component-system.md`](context/plans/component-system.md))
 
-### 🟡 Milestone 5 — On-demand explanation + generation — mini-lesson BUILT
-The fullscreen widget mini-lesson (bottom drawer, LLM-generated, concept-linked) is shipped and verified against the local Ollama model (`qwen3:4b-instruct-2507` as of 2026-06-30; originally `llama3.2:3b`). *Remaining:* "explain here" (selection popover) and ephemeral "turn into lesson". All generation-separated-from-linking, reusing the M3 concept index. (→ [`context/notes/llm-integrations.md`](context/notes/llm-integrations.md) §10)
+### 🟡 Milestone 5 — On-demand explanation + generation — mini-lesson + instant-summaries + explain-here BUILT
+The fullscreen widget mini-lesson (bottom drawer, LLM-generated, concept-linked) is shipped and verified against the local Ollama model (`qwen3:4b-instruct-2507` as of 2026-06-30; originally `llama3.2:3b`). Two more surfaces landed: **hover instant-summaries** (a concept link's underline fills as a progress bar, generation starts at ~1s, a tooltip explains the term *in its passage*) and **"explain here"** (select text → right-click → a drawer streams a grounded explanation + a follow-up chat). All LLM calls now run through a client-side **priority queue** (interactive jumps ahead of background captions, which are themselves visibility-gated), so the single-slot local model isn't starved. *Remaining:* ephemeral "turn into lesson". All generation-separated-from-linking, reusing the M3 concept index. (→ [`context/notes/llm-integrations.md`](context/notes/llm-integrations.md) §10)
 
 ### Milestone 6 — Sync-learning agent
 `.claude/skills/sync-learning-app/` reads `Learning/` deltas, classifies, emits drafts to `lessons/_drafts/`. Manual-fire only; editorial review required.
