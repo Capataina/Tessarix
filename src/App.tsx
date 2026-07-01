@@ -5,6 +5,7 @@ import { GraphNav } from "./components/nav/GraphNav";
 import { applyCategoryTheme } from "./lib/graph/themes";
 import { LESSON_META } from "./lib/graph/meta";
 import { mdxComponents } from "./components/MDXComponents";
+import { LinkProvider } from "./lib/graph/linkify";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { TierProvider } from "./state/TierContext";
 import { SettingsProvider } from "./state/SettingsContext";
@@ -283,7 +284,9 @@ function App() {
               onBrandClick={handleHome}
             >
               <Suspense fallback={<div className="lesson-loading">Loading…</div>}>
-                <LessonComponent />
+                <LinkProvider slug={route.slug}>
+                  <LessonComponent />
+                </LinkProvider>
               </Suspense>
             </Layout>
           </MDXProvider>

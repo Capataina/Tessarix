@@ -4,6 +4,7 @@ import {
   type FontSize,
   type ContentWidth,
   type Density,
+  type AutolinkMode,
 } from "../state/SettingsContext";
 import "./SettingsPanel.css";
 
@@ -25,6 +26,12 @@ const DENSITY_OPTIONS: { value: Density; label: string }[] = [
   { value: "tight", label: "Tight" },
   { value: "default", label: "Default" },
   { value: "airy", label: "Airy" },
+];
+
+const AUTOLINK_OPTIONS: { value: AutolinkMode; label: string }[] = [
+  { value: "all", label: "Exploratory" },
+  { value: "normal", label: "Normal" },
+  { value: "none", label: "Off" },
 ];
 
 export function SettingsButton() {
@@ -130,6 +137,17 @@ function SettingsPanel({ onClose }: SettingsPanelProps) {
               value={settings.density}
               options={DENSITY_OPTIONS}
               onChange={(v) => update("density", v)}
+            />
+          </SettingGroup>
+
+          <SettingGroup
+            label="Concept links"
+            description="Auto-links concepts in lesson prose to the lessons that teach them. Normal links core concepts everywhere and domain-specific terms only inside their subject; Exploratory also shows speculative cross-domain links (denser, occasionally a stretch); Off disables them."
+          >
+            <SegmentedControl
+              value={settings.autolinkMode}
+              options={AUTOLINK_OPTIONS}
+              onChange={(v) => update("autolinkMode", v)}
             />
           </SettingGroup>
 

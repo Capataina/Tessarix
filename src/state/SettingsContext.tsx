@@ -23,12 +23,15 @@ import { emit as emitTelemetry } from "../lib/telemetry";
 export type FontSize = "compact" | "default" | "comfortable" | "large";
 export type ContentWidth = "narrow" | "default" | "wide" | "full";
 export type Density = "tight" | "default" | "airy";
+/** Concept-autolink visibility. See context/plans/authored-prose-autolinking.md. */
+export type AutolinkMode = "all" | "normal" | "none";
 
 export interface Settings {
   fontSize: FontSize;
   contentWidth: ContentWidth;
   density: Density;
   reducedMotion: boolean;
+  autolinkMode: AutolinkMode;
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -36,6 +39,7 @@ const DEFAULT_SETTINGS: Settings = {
   contentWidth: "default",
   density: "default",
   reducedMotion: false,
+  autolinkMode: "normal",
 };
 
 const STORAGE_KEY = "tessarix:settings:v1";
@@ -92,6 +96,9 @@ function applySettingsToRoot(s: Settings) {
     s.reducedMotion ? "0" : "1",
   );
   root.dataset.reducedMotion = s.reducedMotion ? "true" : "false";
+  // Read in JS by the concept linker, not by CSS; exposed as a data attribute
+  // for debuggability and any future link-density styling.
+  root.dataset.autolink = s.autolinkMode;
 }
 
 interface SettingsContextValue {

@@ -12,3 +12,18 @@
 .concept-link:hover {
   text-decoration-color: var(--accent-camel);
 }
+
+/* Inside authored lesson prose the linker can match a concept in many
+   paragraphs (the density cap is per-block), so keep in-prose links quiet:
+   prose-coloured with a faint underline, warming to the accent on hover. The
+   mini-lesson keeps the accent-camel treatment above — it's short generated
+   prose where the colour reads as a helpful highlight rather than noise. */
+.lesson .concept-link {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, var(--accent-camel) 30%, transparent);
+}
+
+.lesson .concept-link:hover {
+  color: var(--accent-camel);
+  text-decoration-color: var(--accent-camel);
+}
