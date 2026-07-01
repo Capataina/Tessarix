@@ -322,6 +322,7 @@ function App() {
               lessonTag={fm?.tag ?? "Lesson"}
               activePillar="teach"
               onBrandClick={handleHome}
+              lessonSlug={route.slug}
             >
               <Suspense fallback={<div className="lesson-loading">Loading…</div>}>
                 <LinkProvider slug={route.slug}>

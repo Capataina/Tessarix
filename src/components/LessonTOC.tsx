@@ -8,6 +8,12 @@ interface TOCEntry {
   level: 2 | 3 | 4;
 }
 
+/** The current lesson slug from the router hash (`#/lesson/<slug>[?s=…]`). */
+function lessonSlugFromHash(): string | null {
+  const raw = (window.location.hash || "").replace(/^#\/?/, "");
+  return raw.startsWith("lesson/") ? raw.slice("lesson/".length).split("?")[0] : null;
+}
+
 /**
  * Scans the rendered lesson DOM for h2/h3/h4 headings (which carry `id`s
  * thanks to rehype-slug), builds a hierarchical TOC, and tracks which
@@ -25,26 +31,35 @@ export function LessonTOC() {
   // currently-hidden tier blocks (data-tier-hidden="true") are excluded so the
   // reader doesn't see TOC entries they can't navigate to. The DOM still
   // contains them (for LLM-context extraction); the TOC just hides them.
+  //
+  // The lesson body is lazy-loaded (Suspense), so headings are usually NOT in
+  // the DOM on the first frame after mount — a single rAF scan finds nothing and
+  // leaves the TOC empty. We retry across frames until they appear. (Lesson-to-
+  // lesson swaps are handled by the `key={slug}` remount in Layout, which gives
+  // a fresh scan per lesson.)
   useEffect(() => {
-    // Defer to next frame so React has flushed the tier-driven re-render
-    const handle = requestAnimationFrame(() => {
+    let raf = 0;
+    let tries = 0;
+    const scan = () => {
       const headings = Array.from(
         document.querySelectorAll<HTMLHeadingElement>(
           ".lesson h2[id], .lesson h3[id], .lesson h4[id]",
         ),
       ).filter((h) => !h.closest('[data-tier-hidden="true"]'));
+      if (headings.length === 0 && tries++ < 120) {
+        raf = requestAnimationFrame(scan); // ~2s of retries for the lazy body
+        return;
+      }
       const next: TOCEntry[] = headings.map((h) => ({
         id: h.id,
         text: h.textContent ?? "",
         level: Number(h.tagName.slice(1)) as 2 | 3 | 4,
       }));
       setEntries(next);
-      if (next.length > 0 && !next.some((e) => e.id === activeId)) {
-        setActiveId(next[0].id);
-      }
-    });
-    return () => cancelAnimationFrame(handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      setActiveId((cur) => (next.some((e) => e.id === cur) ? cur : (next[0]?.id ?? null)));
+    };
+    raf = requestAnimationFrame(scan);
+    return () => cancelAnimationFrame(raf);
   }, [tier]);
 
   // Track active heading via IntersectionObserver
@@ -80,13 +95,18 @@ export function LessonTOC() {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
-      // Update URL hash without triggering a jump
-      history.replaceState(null, "", `#${id}`);
+      // Write the URL in the router's scheme (`#/lesson/<slug>?s=<id>`), NOT a
+      // bare `#<id>` — a bare hash doesn't match the `lesson/` route prefix and
+      // would resolve to the catalog on the next reload/back. replaceState keeps
+      // section jumps out of the history stack, so Back steps by lesson.
+      const slug = lessonSlugFromHash();
+      if (slug) history.replaceState(null, "", `#/lesson/${slug}?s=${id}`);
       setActiveId(id);
     }
   };
 
   const headingCount = useMemo(() => entries.length, [entries]);
+  const slug = lessonSlugFromHash();
 
   if (headingCount === 0) {
     return null;
@@ -105,7 +125,10 @@ export function LessonTOC() {
               entry.id === activeId ? "toc__item--active" : ""
             }`}
           >
-            <a href={`#${entry.id}`} onClick={handleClick(entry.id)}>
+            <a
+              href={slug ? `#/lesson/${slug}?s=${entry.id}` : `#${entry.id}`}
+              onClick={handleClick(entry.id)}
+            >
               {entry.text}
             </a>
           </li>

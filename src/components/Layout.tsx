@@ -17,6 +17,8 @@ interface LayoutProps {
   /** Render the lesson body full-width with no TOC / chat sidebars. Used for
       catalog and other non-lesson views. */
   hideSidebars?: boolean;
+  /** Current lesson slug — keys the TOC so it re-scans per lesson. */
+  lessonSlug?: string;
 }
 
 /**
@@ -35,6 +37,7 @@ export function Layout({
   activePillar = "teach",
   onBrandClick,
   hideSidebars,
+  lessonSlug,
 }: LayoutProps) {
   const [tocOpen, setTocOpen] = useState(true);
   const [chatOpen, setChatOpen] = useState(true);
@@ -146,6 +149,31 @@ export function Layout({
           </div>
         )}
 
+        {/* History back/forward — the app is hash-routed, so every lesson
+            navigation is a real history entry; these traverse that stack.
+            (Section jumps use replaceState, so back steps by lesson, not by
+            heading.) */}
+        <nav className="app-topbar__history" aria-label="History navigation">
+          <button
+            type="button"
+            className="app-topbar__navbtn"
+            onClick={() => window.history.back()}
+            aria-label="Go back"
+            title="Back"
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            className="app-topbar__navbtn"
+            onClick={() => window.history.forward()}
+            aria-label="Go forward"
+            title="Forward"
+          >
+            →
+          </button>
+        </nav>
+
         {/* Lesson title chip + lesson-mode controls (tier, pillar nav) only
             show in lesson view. Catalog and other non-lesson views surface
             just the brand and the global Settings affordance. */}
@@ -198,7 +226,7 @@ export function Layout({
               {tocOpen ? "‹" : "›"}
             </button>
             <div className="app-sidebar__content">
-              <LessonTOC />
+              <LessonTOC key={lessonSlug} />
             </div>
           </aside>
         )}

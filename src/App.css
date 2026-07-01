@@ -132,6 +132,34 @@
   cursor: not-allowed;
 }
 
+.app-topbar__history {
+  display: flex;
+  gap: 4px;
+}
+
+.app-topbar__navbtn {
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-md);
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+}
+
+.app-topbar__navbtn:hover {
+  color: var(--accent-camel);
+  border-color: var(--border-accent);
+  background: rgba(201, 162, 107, 0.08);
+}
+
 /* Main column */
 
 /* ===========================================================================
